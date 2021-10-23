@@ -15,6 +15,7 @@ Wskey: # 填空默认禁用wskey转换 需要的填true
 IsAddFriend: #填写true或者false  false
 Lim: #填写1-N 代表限制次数
 Tyt: #填写1-N 代表推一推需要的互助值，默认为8
+Later: #延时防止黑IP自己设置 默认60 不怕黑的改为1即可 单位是秒
 theme: ./theme/admin.html #自定义主题，支持本地、网络路径
 static: ./static #静态文件 便于自定义二维码页面时，引入css、js等文件（不用动）
 master:  #管理员账户pin，有多个用'&'拼接（访问ip:8080/admin使用）可以自定义密码如  admin 后面不能有注释，配置后删除
