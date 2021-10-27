@@ -39,7 +39,7 @@ let tools = []
     while (helps.length && tools.length) {
         tool = tools.pop()
         cookie = tool.cookie
-        data = await openRedEnvelopeInteract({redEnvelopeId: helps[0].redEnvelopeId,inviter: helps[0].markedPin, helpType:"1"})
+        data = await openRedEnvelopeInteract({redEnvelopeId: helps[0].redEnvelopeId,inviter: helps[0].markedPin, helpType:"2"})
         errMsg = data?.data?.helpResult?.errMsg
         if(errMsg){
             console.log(`${tool.id}->${helps[0].id} ${errMsg}`)

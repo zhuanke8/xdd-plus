@@ -119,6 +119,34 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
+		Command: []string{"大赢家提现助力"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.handleJdCookies(func(ck *JdCookie) {
+				runTask(&Task{Path: "jd_dyj_tx.js", Envs: []Env{
+					{Name: "dyjHelpPins", Value: PtPin},
+				}}, sender)
+				sender.Reply("开始大赢家助力")
+			})
+
+			return nil
+		},
+	},
+	{
+		Command: []string{"大赢家助力"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.handleJdCookies(func(ck *JdCookie) {
+				runTask(&Task{Path: "jd_dyj_help.js", Envs: []Env{
+					{Name: "dyjHelpPins", Value: PtPin},
+				}}, sender)
+				sender.Reply("开始大赢家助力")
+			})
+
+			return nil
+		},
+	},
+	{
 		Command: []string{"清空WCK"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
