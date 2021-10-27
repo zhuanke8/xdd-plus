@@ -110,6 +110,24 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		{
+			if strings.Contains(msg, "口令") {
+				logs.Info("进入转口令")
+				rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+				rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
+				data, err := rsp.Response()
+
+				if err != nil {
+					return "口令转换失败"
+				}
+				body, _ := ioutil.ReadAll(data.Body)
+				if strings.Contains(string(body), "口令转换失败") {
+					return "口令转换失败"
+				} else {
+					return string(body)
+				}
+			}
+		}
+		{
 			ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 			if len(ss) > 0 {
 				for _, s := range ss {
