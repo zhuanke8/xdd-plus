@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -206,8 +207,14 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 		}
+		{
+			//
+			ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
+			log.Info(ss)
+		}
 		{ //tyt
 			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)currentActId`).FindStringSubmatch(msg)
+			log.Info(ss)
 			if len(ss) > 0 {
 				if !sender.IsAdmin {
 					coin := GetCoin(sender.UserID)
