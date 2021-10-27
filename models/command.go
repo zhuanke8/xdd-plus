@@ -6,6 +6,7 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
+	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
@@ -116,6 +117,27 @@ var codeSignals = []CodeSignal{
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			return Count()
+		},
+	},
+	{
+		Command: []string{"转口令"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			kl := sender.Contents[0]
+			rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+			rsp.Body(fmt.Sprintf(`url=%s&type=hy`, kl))
+			data, err := rsp.Response()
+
+			if err != nil {
+				return "口令转换失败"
+			}
+			body, _ := ioutil.ReadAll(data.Body)
+			if strings.Contains(string(body), "口令转换失败") {
+				return "口令转换失败"
+			} else {
+				return string(body)
+			}
+			return nil
 		},
 	},
 	{
