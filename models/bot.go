@@ -111,9 +111,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{
 			if strings.Contains(msg, "口令") {
-				logs.Info("进入转口令")
 				rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
-				rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
+				rsp.Param("url", msg)
+				rsp.Param("type", "hy")
+				//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
 				data, err := rsp.Response()
 
 				if err != nil {
