@@ -208,9 +208,19 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		{
-			//
+			//k1k
 			ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
-			log.Info(ss)
+			if len(ss) > 0 {
+				if !sender.IsAdmin {
+					sender.Reply("仅管理员可用")
+				} else {
+					sender.Reply(fmt.Sprintf("砍价开始，管理员通道"))
+					runTask(&Task{Path: "jd_kanjia.js", Envs: []Env{
+						{Name: "launchid", Value: ss[1]},
+					}}, sender)
+				}
+				return nil
+			}
 		}
 		{ //tyt
 			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)currentActId`).FindStringSubmatch(msg)
