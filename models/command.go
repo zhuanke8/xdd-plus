@@ -123,7 +123,9 @@ var codeSignals = []CodeSignal{
 		Command: []string{"转口令"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
+			logs.Info("进入转口令")
 			kl := sender.Contents[0]
+			logs.Info(kl)
 			rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
 			rsp.Body(fmt.Sprintf(`url=%s&type=hy`, kl))
 			data, err := rsp.Response()
