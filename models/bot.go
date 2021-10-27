@@ -208,6 +208,22 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		{
+			//dyj
+			ss := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)helpType`).FindStringSubmatch(msg)
+			if len(ss) > 0 {
+				if !sender.IsAdmin {
+					sender.Reply("仅管理员可用")
+				} else {
+					sender.Reply(fmt.Sprintf("砍价开始，管理员通道"))
+					runTask(&Task{Path: "jd_dyj_help.js", Envs: []Env{
+						{Name: "inviterId", Value: ss[1]},
+					}}, sender)
+				}
+				return nil
+			}
+
+		}
+		{
 			//k1k
 			ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
 			if len(ss) > 0 {
