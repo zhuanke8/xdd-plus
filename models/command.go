@@ -402,7 +402,7 @@ var codeSignals = []CodeSignal{
 				//sender.Contents = sender.Contents[1:]
 				logs.Info(sender.Contents[1:])
 				AdddCoin(qq, Int(sender.Contents[1]))
-				sender.Reply(fmt.Sprintf("你获得%d枚许愿币。", Int(sender.Contents[1])))
+				sender.Reply(fmt.Sprintf("你获得%d枚许愿币。", qq, Int(sender.Contents[1])))
 			}
 			return nil
 		},
@@ -411,6 +411,7 @@ var codeSignals = []CodeSignal{
 		{
 			Command: []string{"我要钱", "给点钱", "我干", "给我钱", "给我", "我要"},
 			Handle: func(sender *Sender) interface{} {
+			if getLimit(sender.UserID, 2) {
 				cost := Int(sender.JoinContens())
 				if cost <= 0 {
 					cost = 1
@@ -426,14 +427,18 @@ var codeSignals = []CodeSignal{
 					AdddCoin(sender.UserID, cost)
 					sender.Reply(fmt.Sprintf("你获得%d枚许愿币。", cost))
 				}
-				return nil
-			},
+			} else {
+				return "超过今日限制"
+			}
+
+			return nil
 		},
-		{
-			Command: []string{"梭哈", "拼了", "梭了"},
-			Handle: func(sender *Sender) interface{} {
-				u := &User{}
-				cost := GetCoin(sender.UserID)
+	},
+	{
+		Command: []string{"梭哈", "拼了", "梭了"},
+		Handle: func(sender *Sender) interface{} {
+			u := &User{}
+			cost := GetCoin(sender.UserID)
 
 				if cost <= 0 || cost > 10000 {
 					cost = 1
