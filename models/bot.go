@@ -251,6 +251,26 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		{
+			//dyj
+			inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)helpType`).FindStringSubmatch(msg)
+			redEnvelopeId := regexp.MustCompile(`redEnvelopeId=(\S+)(&|&amp;)inviterId`).FindStringSubmatch(msg)
+			if len(inviterId) > 0 && len(redEnvelopeId) > 0 {
+				if !sender.IsAdmin {
+					sender.Reply("仅管理员可用")
+				} else {
+
+					sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
+
+					runTask(&Task{Path: "xdd_fcdyj.js", Envs: []Env{
+						{Name: "djyinviter", Value: inviterId[1]},
+						{Name: "djyredEnvelopeId", Value: redEnvelopeId[1]},
+					}}, sender)
+				}
+				return nil
+			}
+
+		}
+		{
 			//k1k
 			ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
 			if len(ss) > 0 {
