@@ -254,19 +254,21 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if !sender.IsAdmin {
 					sender.Reply("仅管理员可用")
 				} else {
-
 					sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
-					num, f := startdyj(inviterId[1], redEnvelopeId[1])
+					num, num1, f, f1 := startdyj(inviterId[1], redEnvelopeId[1], 1)
 					if f {
-						sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个", num))
+						sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,火爆账号:%d个", num, num1))
+						if f1 {
+							sender.Reply("满足提现条件，开始自动提现助力")
+							n, i, _, f12 := startdyj(inviterId[1], redEnvelopeId[1], 2)
+							if f12 {
+								sender.Reply(fmt.Sprintf("提现助力完成，助力成功：%d个,火爆账号:%d个", n, i))
+							}
+						}
 					} else {
-						sender.Reply(fmt.Sprintf("你已经黑IP拉！，助力成功：%d个", num))
+						sender.Reply(fmt.Sprintf("你已经黑IP拉！，助力成功：%d个,火爆账号:%d个", num, num1))
 					}
 
-					//runTask(&Task{Path: "xdd_fcdyj.js", Envs: []Env{
-					//	{Name: "djyinviter", Value: inviterId[1]},
-					//	{Name: "djyredEnvelopeId", Value: redEnvelopeId[1]},
-					//}}, sender)
 				}
 				return nil
 			}
@@ -405,13 +407,14 @@ var handleMessage = func(msgs ...interface{}) interface{} {
             }
 */
 
-func startdyj(ine string, red string) (num int, f bool) {
+func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 bool) {
 	i := 0
+	n := 0
 	cks := GetJdCookies()
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(5))
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
-		sprintf := fmt.Sprintf(`https://api.m.jd.com/client.action?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine)
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/client.action?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"%d"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine, type1)
 		req := httplib.Get(sprintf)
 		req.Header("User-Agent", ua)
 		req.Header("Host", "api.m.jd.com")
@@ -427,13 +430,18 @@ func startdyj(ine string, red string) (num int, f bool) {
 			i++
 		} else if strings.Contains(data, "火爆") {
 			logs.Info("火爆了")
+			n++
 		} else if strings.EqualFold(data, "") {
-			return i, false
+			return i, n, false, false
+		} else if strings.Contains(data, "今日帮好友拆红包次数已达上限") {
+			logs.Info("助力上限")
+		} else if strings.Contains(data, "哎呀，你的好友已成功提现") {
+			return i, n, true, true
 		} else {
 			logs.Info("要么助力过了，要么没登录")
 		}
 	}
-	return i, true
+	return i, n, true, false
 }
 
 func FetchJdCookieValue(key string, cookies string) string {
