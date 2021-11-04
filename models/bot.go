@@ -396,7 +396,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 }
 
 func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 bool) {
-	i := 0
+	k := 0
 	n := 0
 	cks := GetJdCookies()
 	for i := range cks {
@@ -416,7 +416,7 @@ func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 
 		data, _ := req.String()
 		if strings.Contains(data, "助力成功") {
 			logs.Info("助力成功")
-			i++
+			k++
 		} else if strings.Contains(data, "火爆") {
 			logs.Info("火爆了")
 			n++
@@ -430,7 +430,7 @@ func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 
 			logs.Info("要么助力过了，要么没登录")
 		}
 	}
-	return i, n, true, false
+	return k, n, true, false
 }
 
 func FetchJdCookieValue(key string, cookies string) string {
