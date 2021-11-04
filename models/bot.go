@@ -405,7 +405,7 @@ func startdyj(ine string, red string) (num int) {
 	cks := GetJdCookies()
 	for i := range cks {
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
-		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, ine, red)
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine)
 		logs.Info(sprintf)
 		req := httplib.Get(sprintf)
 		req.Header("User-Agent", ua)
