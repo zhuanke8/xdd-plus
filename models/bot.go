@@ -258,10 +258,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
 					num := startdyj(inviterId[1], redEnvelopeId[1])
 					sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个", num))
-					runTask(&Task{Path: "xdd_fcdyj.js", Envs: []Env{
-						{Name: "djyinviter", Value: inviterId[1]},
-						{Name: "djyredEnvelopeId", Value: redEnvelopeId[1]},
-					}}, sender)
+					//runTask(&Task{Path: "xdd_fcdyj.js", Envs: []Env{
+					//	{Name: "djyinviter", Value: inviterId[1]},
+					//	{Name: "djyredEnvelopeId", Value: redEnvelopeId[1]},
+					//}}, sender)
 				}
 				return nil
 			}
