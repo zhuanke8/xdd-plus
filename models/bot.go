@@ -430,7 +430,7 @@ func startdyj(ine string, red string) (num int, f bool) {
 		} else if strings.EqualFold(data, "") {
 			return i, false
 		} else {
-
+			logs.Info("要么助力过了，要么没登录")
 		}
 	}
 	return i, true
