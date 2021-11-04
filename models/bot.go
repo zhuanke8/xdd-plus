@@ -427,8 +427,10 @@ func startdyj(ine string, red string) (num int, f bool) {
 			i++
 		} else if strings.Contains(data, "火爆") {
 			logs.Info("火爆了")
-		} else {
+		} else if strings.EqualFold(data, "") {
 			return i, false
+		} else {
+
 		}
 	}
 	return i, true
