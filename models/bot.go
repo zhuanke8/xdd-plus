@@ -256,8 +256,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				} else {
 
 					sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
-					num := startdyj(inviterId[1], redEnvelopeId[1])
-					sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个", num))
+					num, f := startdyj(inviterId[1], redEnvelopeId[1])
+					if f {
+						sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个", num))
+					} else {
+						sender.Reply(fmt.Sprintf("你已经黑IP拉！，助力成功：%d个", num))
+					}
+
 					//runTask(&Task{Path: "xdd_fcdyj.js", Envs: []Env{
 					//	{Name: "djyinviter", Value: inviterId[1]},
 					//	{Name: "djyredEnvelopeId", Value: redEnvelopeId[1]},
@@ -400,10 +405,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
             }
 */
 
-func startdyj(ine string, red string) (num int) {
+func startdyj(ine string, red string) (num int, f bool) {
 	i := 0
 	cks := GetJdCookies()
 	for i := range cks {
+		time.Sleep(time.Second * time.Duration(5))
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
 		sprintf := fmt.Sprintf(`https://api.m.jd.com/client.action?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine)
 		req := httplib.Get(sprintf)
@@ -422,10 +428,10 @@ func startdyj(ine string, red string) (num int) {
 		} else if strings.Contains(data, "火爆") {
 			logs.Info("火爆了")
 		} else {
-			return
+			return i, false
 		}
 	}
-	return i
+	return i, true
 }
 
 func FetchJdCookieValue(key string, cookies string) string {
