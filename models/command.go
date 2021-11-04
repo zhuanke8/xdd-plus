@@ -407,8 +407,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-	/*
-		{
+	{
 			Command: []string{"我要钱", "给点钱", "我干", "给我钱", "给我", "我要"},
 			Handle: func(sender *Sender) interface{} {
 			if getLimit(sender.UserID, 2) {
@@ -527,8 +526,7 @@ var codeSignals = []CodeSignal{
 				db.Model(u).Update("coin", gorm.Expr(fmt.Sprintf("coin + %d", cost)))
 				return nil
 			},
-		},
-	*/
+	},
 	{
 		Command: []string{"许愿", "愿望", "wish", "hope", "want"},
 		Handle: func(sender *Sender) interface{} {
