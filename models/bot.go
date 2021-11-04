@@ -416,8 +416,11 @@ func startdyj(ine string, red string) (num int) {
 		if strings.Contains(data, "恭喜帮好友助力成功") {
 			i++
 		} else {
+			i++
 			logs.Info(data)
 			logs.Info("火爆了")
+		}
+		if i == 10 {
 			return
 		}
 	}
