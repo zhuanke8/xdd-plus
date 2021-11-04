@@ -425,7 +425,7 @@ func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 
 		req.Header("Origin", "https://618redpacket.jd.com")
 		req.Header("Cookie", cookie)
 		data, _ := req.String()
-		if strings.Contains(data, "恭喜帮好友助力成功") {
+		if strings.Contains(data, "助力成功") {
 			logs.Info("助力成功")
 			i++
 		} else if strings.Contains(data, "火爆") {
@@ -435,7 +435,7 @@ func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 
 			return i, n, false, false
 		} else if strings.Contains(data, "今日帮好友拆红包次数已达上限") {
 			logs.Info("助力上限")
-		} else if strings.Contains(data, "哎呀，你的好友已成功提现") {
+		} else if strings.Contains(data, "已成功提现") {
 			return i, n, true, true
 		} else {
 			logs.Info("要么助力过了，要么没登录")
