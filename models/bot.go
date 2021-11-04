@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	browser "github.com/EDDYCJY/fake-useragent"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -403,7 +404,8 @@ func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
 		sprintf := fmt.Sprintf(`https://api.m.jd.com/client.action?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"%d"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine, type1)
 		req := httplib.Get(sprintf)
-		req.Header("User-Agent", ua)
+		random := browser.Random()
+		req.Header("User-Agent", random)
 		req.Header("Host", "api.m.jd.com")
 		req.Header("Accept", "application/json, text/plain, */*")
 		req.Header("Connection", "keep-alive")
