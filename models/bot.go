@@ -411,21 +411,23 @@ func startdyj(ine string, red string) (num int) {
 		req := httplib.Get(sprintf)
 		req.Header("User-Agent", ua)
 		req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Connection", "keep-alive")
+		req.Header("Accept-Language", "zh-cn")
+		req.Header("Accept-Encoding", "gzip, deflate, br")
 		req.Header("Origin", "https://618redpacket.jd.com")
 		req.Header("Cookie", cookie)
-		data, _ := req.Response()
-		println(data)
-		return
-		//if strings.Contains(string(data), "恭喜帮好友助力成功") {
-		//	i++
-		//} else {
-		//	i++
-		//	logs.Info(data)
-		//	logs.Info("火爆了")
-		//}
-		//if i == 10 {
-		//	return
-		//}
+		data, _ := req.String()
+		if strings.Contains(data, "恭喜帮好友助力成功") {
+			i++
+		} else {
+			i++
+			logs.Info(data)
+			logs.Info("火爆了")
+		}
+		if i == 10 {
+			return
+		}
 	}
 	return i
 }
