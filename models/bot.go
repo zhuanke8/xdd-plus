@@ -37,10 +37,6 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 
 var replies = map[string]string{}
 
-func AggQQ() {
-
-}
-
 func InitReplies() {
 	f, err := os.Open(ExecPath + "/conf/reply.php")
 	if err == nil {
@@ -260,7 +256,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				} else {
 
 					sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
-
+					num := startdyj(inviterId[1], redEnvelopeId[1])
+					sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个", num))
 					runTask(&Task{Path: "xdd_fcdyj.js", Envs: []Env{
 						{Name: "djyinviter", Value: inviterId[1]},
 						{Name: "djyredEnvelopeId", Value: redEnvelopeId[1]},
@@ -390,6 +387,44 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 	}
 	return nil
+}
+
+/*
+ url: `https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"${ redEnvelopeId }","inviter":"${ inviter }","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`,
+
+            headers: {
+                "Origin": "https://618redpacket.jd.com",
+                "Host": "api.m.jd.com",
+                "User-Agent": "User-Agent:jdapp;android;10.2.2;11;2623632613665613-4636264326366343;model/V2141A;addressid/1294647027;aid/b26b1fe1dcb4bc64;oaid/0b3ff6566ee75f3d558fd06149d16d310473ed980a032fe0228878ebe5092edb;osVer/30;appBuild/91077;partner/vivo;eufv/1;jdSupportDarkMode/0;Mozilla/5.0 (Linux; Android 11; V2141A Build/RP1A.200720.012; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045714 Mobile Safari/537.36",
+                "Cookie": cookie,
+            }
+*/
+
+func startdyj(ine string, red string) (num int) {
+	i := 0
+	cks := GetJdCookies()
+	for i := range cks {
+		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
+		req := httplib.Get(fmt.Sprintf(`https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, ine, red))
+		req.Header("User-Agent", ua)
+		req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "*/*")
+		req.Header("Connection", "keep-alive")
+		req.Header("Accept-Language", "zh-cn")
+		req.Header("Accept-Encoding", "gzip, deflate, br")
+		req.Header("Origin", "https://618redpacket.jd.com")
+		req.Header("Cookie", cookie)
+		data, err := req.String()
+		if err != nil {
+			logs.Debug("报错一个")
+		}
+		if strings.Contains(data, "恭喜帮好友助力成功") {
+			i++
+		} else {
+			logs.Info("火爆了")
+		}
+	}
+	return i
 }
 
 func FetchJdCookieValue(key string, cookies string) string {
