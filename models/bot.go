@@ -394,17 +394,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	return nil
 }
 
-/*
- url: `https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"${ redEnvelopeId }","inviter":"${ inviter }","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`,
-
-            headers: {
-                "Origin": "https://618redpacket.jd.com",
-                "Host": "api.m.jd.com",
-                "User-Agent": "User-Agent:jdapp;android;10.2.2;11;2623632613665613-4636264326366343;model/V2141A;addressid/1294647027;aid/b26b1fe1dcb4bc64;oaid/0b3ff6566ee75f3d558fd06149d16d310473ed980a032fe0228878ebe5092edb;osVer/30;appBuild/91077;partner/vivo;eufv/1;jdSupportDarkMode/0;Mozilla/5.0 (Linux; Android 11; V2141A Build/RP1A.200720.012; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045714 Mobile Safari/537.36",
-                "Cookie": cookie,
-            }
-*/
-
 func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 bool) {
 	i := 0
 	n := 0
