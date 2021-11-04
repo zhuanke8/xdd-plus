@@ -406,7 +406,7 @@ func startdyj(ine string, red string) (num int) {
 	for i := range cks {
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
 		logs.Info(cookie)
-		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine)
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/client.action?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine)
 		req := httplib.Get(sprintf)
 		req.Header("User-Agent", ua)
 		req.Header("Host", "api.m.jd.com")
