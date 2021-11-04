@@ -405,8 +405,8 @@ func startdyj(ine string, red string) (num int) {
 	cks := GetJdCookies()
 	for i := range cks {
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
+		logs.Info(cookie)
 		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"1"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine)
-		logs.Info(sprintf)
 		req := httplib.Get(sprintf)
 		req.Header("User-Agent", ua)
 		req.Header("Host", "api.m.jd.com")
@@ -416,15 +416,11 @@ func startdyj(ine string, red string) (num int) {
 		req.Header("Accept-Encoding", "gzip, deflate, br")
 		req.Header("Origin", "https://618redpacket.jd.com")
 		req.Header("Cookie", cookie)
-		data, err := req.String()
-		if err != nil {
-			logs.Debug("报错一个")
-		}
+		data, _ := req.String()
 		if strings.Contains(data, "恭喜帮好友助力成功") {
 			i++
 		} else {
 			logs.Info(data)
-
 			logs.Info("火爆了")
 			return
 		}
