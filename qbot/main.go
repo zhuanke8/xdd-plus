@@ -127,7 +127,7 @@ func Main() {
 	// }
 
 	//通过-c 参数替换 配置文件路径
-	config.DefaultConfigFile = models.ExecPath + "/qbot"
+	config.DefaultConfigFile = models.ExecPath + "/qbot/config.yml"
 	conf = config.Get()
 	log.Info(conf.Account.Uin)
 
