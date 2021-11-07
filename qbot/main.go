@@ -427,6 +427,7 @@ func Main() {
 	} else {
 		coolq.SetMessageFormat(conf.Message.PostFormat)
 	}
+
 	coolq.IgnoreInvalidCQCode = conf.Message.IgnoreInvalidCQCode
 	coolq.SplitURL = conf.Message.FixURL
 	coolq.ForceFragmented = conf.Message.ForceFragment
@@ -455,6 +456,7 @@ func Main() {
 			if err := c.Decode(rc); err != nil {
 				log.Warn("读取反向Websocket配置失败 :", err)
 			} else {
+				log.Info("测试测试")
 				go server.RunWebSocketClient(bot, rc)
 			}
 		}
