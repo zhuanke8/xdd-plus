@@ -408,8 +408,8 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
-			Command: []string{"我要钱", "给点钱", "我干", "给我钱", "给我", "我要"},
-			Handle: func(sender *Sender) interface{} {
+		Command: []string{"我要钱", "给点钱", "我干", "给我钱", "给我", "我要"},
+		Handle: func(sender *Sender) interface{} {
 			if getLimit(sender.UserID, 2) {
 				cost := Int(sender.JoinContens())
 				if cost <= 0 {
@@ -439,93 +439,93 @@ var codeSignals = []CodeSignal{
 			u := &User{}
 			cost := GetCoin(sender.UserID)
 
-				if cost <= 0 || cost > 10000 {
-					cost = 1
-				}
+			if cost <= 0 || cost > 10000 {
+				cost = 1
+			}
 
-				if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
+			if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
 					return "许愿币不足，先去打卡吧。"
-				} else {
+			} else {
 					sender.Reply(fmt.Sprintf("你使用%d枚许愿币。", cost))
-				}
-				baga := 0
-				if u.Coin > 100000 {
-					baga = u.Coin
-					cost = u.Coin
-				}
-				r := time.Now().Nanosecond() % 10
-				if r < 7 || baga > 0 {
+			}
+			baga := 0
+			if u.Coin > 100000 {
+				baga = u.Coin
+				cost = u.Coin
+			}
+			r := time.Now().Nanosecond() % 10
+			if r < 7 || baga > 0 {
 					sender.Reply(fmt.Sprintf("很遗憾你失去了%d枚许愿币。", cost))
-					cost = -cost
-				} else {
-					if r == 9 {
-						cost *= 4
+				cost = -cost
+			} else {
+				if r == 9 {
+					cost *= 4
 						sender.Reply(fmt.Sprintf("恭喜你4倍暴击获得%d枚许愿币，20秒后自动转入余额。", cost))
-						time.Sleep(time.Second * 20)
-					} else {
-						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
-						time.Sleep(time.Second * 10)
-					}
-					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
-				}
-				db.Model(u).Update("coin", gorm.Expr(fmt.Sprintf("coin + %d", cost)))
-				return nil
-			},
-		},
-
-		//{
-		//	Command: []string{"按许愿币更新排名"},
-		//	Admin:   true,
-		//	Handle: func(sender *Sender) interface{} {
-		//		cookies:= GetJdCookies()
-		//		for i := range cookies {
-		//			cookie := cookies[i]
-		//			if cookie.QQ {
-		//
-		//			}
-		//			cookie.Update(Priority,cookie.)
-		//		}
-		//		sender.handleJdCookies(func(ck *JdCookie) {
-		//			sender.Reply(ck.Query())
-		//		})
-		//		return "已更新排行"
-		//	},
-		//},
-		{
-			Command: []string{"翻翻乐"},
-			Handle: func(sender *Sender) interface{} {
-
-				cost := Int(sender.JoinContens())
-				if cost <= 0 || cost > 10000 {
-					cost = 1
-				}
-				u := &User{}
-				if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
-					return "许愿币不足，先去打卡吧。"
-				}
-				baga := 0
-				if u.Coin > 100000 {
-					baga = u.Coin
-					cost = u.Coin
-				}
-				r := time.Now().Nanosecond() % 10
-				if r < 6 || baga > 0 {
-					sender.Reply(fmt.Sprintf("很遗憾你失去了%d枚许愿币。", cost))
-					cost = -cost
+					time.Sleep(time.Second * 20)
 				} else {
-					if r == 9 {
-						cost *= 2
-						sender.Reply(fmt.Sprintf("恭喜你幸运暴击获得%d枚许愿币，20秒后自动转入余额。", cost))
-						time.Sleep(time.Second * 20)
-					} else {
 						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
-						time.Sleep(time.Second * 10)
-					}
-					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
+					time.Sleep(time.Second * 10)
 				}
-				db.Model(u).Update("coin", gorm.Expr(fmt.Sprintf("coin + %d", cost)))
-				return nil
-			},
+					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
+			}
+			db.Model(u).Update("coin", gorm.Expr(fmt.Sprintf("coin + %d", cost)))
+			return nil
+		},
+	},
+
+	//{
+	//	Command: []string{"按许愿币更新排名"},
+	//	Admin:   true,
+	//	Handle: func(sender *Sender) interface{} {
+	//		cookies:= GetJdCookies()
+	//		for i := range cookies {
+	//			cookie := cookies[i]
+	//			if cookie.QQ {
+	//
+	//			}
+	//			cookie.Update(Priority,cookie.)
+	//		}
+	//		sender.handleJdCookies(func(ck *JdCookie) {
+	//			sender.Reply(ck.Query())
+	//		})
+	//		return "已更新排行"
+	//	},
+	//},
+	{
+			Command: []string{"翻翻乐"},
+		Handle: func(sender *Sender) interface{} {
+
+			cost := Int(sender.JoinContens())
+			if cost <= 0 || cost > 10000 {
+				cost = 1
+			}
+			u := &User{}
+			if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
+					return "许愿币不足，先去打卡吧。"
+			}
+			baga := 0
+			if u.Coin > 100000 {
+				baga = u.Coin
+				cost = u.Coin
+			}
+			r := time.Now().Nanosecond() % 10
+			if r < 6 || baga > 0 {
+					sender.Reply(fmt.Sprintf("很遗憾你失去了%d枚许愿币。", cost))
+				cost = -cost
+			} else {
+				if r == 9 {
+					cost *= 2
+						sender.Reply(fmt.Sprintf("恭喜你幸运暴击获得%d枚许愿币，20秒后自动转入余额。", cost))
+					time.Sleep(time.Second * 20)
+				} else {
+						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
+					time.Sleep(time.Second * 10)
+				}
+					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
+			}
+			db.Model(u).Update("coin", gorm.Expr(fmt.Sprintf("coin + %d", cost)))
+			return nil
+		},
 	},
 	{
 		Command: []string{"许愿", "愿望", "wish", "hope", "want"},
