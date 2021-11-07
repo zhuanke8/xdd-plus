@@ -434,6 +434,7 @@ func Main() {
 	coolq.RemoveReplyAt = conf.Message.RemoveReplyAt
 	coolq.ExtraReplyData = conf.Message.ExtraReplyData
 	coolq.SkipMimeScan = conf.Message.SkipMimeScan
+	log.Info("测试测试")
 	for _, m := range conf.Servers {
 		if h, ok := m["http"]; ok {
 			hc := new(config.HTTPServer)

@@ -353,8 +353,7 @@ func (c *Container) read() error {
 }
 
 func (c *Container) getToken() error {
-	version, err := GetQlVersion(c.Address)
-	logs.Debug(err)
+	version, _ := GetQlVersion(c.Address)
 	if version == "openapi" {
 		token := &Token{}
 		err, b2 := getT(c, token)
@@ -383,7 +382,6 @@ func (c *Container) getToken() error {
 }
 
 func getT(c *Container, token *Token) (error, bool) {
-	logs.Info("获取token")
 	req := httplib.Get(c.Address + fmt.Sprintf(`/open/auth/token?client_id=%s&client_secret=%s`, c.Cid, c.Secret))
 	req.Header("Content-Type", "application/json;charset=UTF-8")
 	if rsp, err := req.Response(); err == nil {
@@ -396,7 +394,6 @@ func getT(c *Container, token *Token) (error, bool) {
 		zero, _ := time.ParseInLocation("2006-01-02", time.Now().Local().Format("2006-01-02"), time.Local)
 		token.Expiration = zero
 		token.Address = c.Address
-		logs.Info(c.Token + token.Expiration.String())
 	} else {
 		return err, true
 	}
