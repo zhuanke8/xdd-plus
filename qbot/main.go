@@ -126,16 +126,17 @@ func Main() {
 	// 	resetWorkDir(*wd)
 	// }
 
-	// 通过-c 参数替换 配置文件路径
-	// config.DefaultConfigFile = models.ExecPath + "/qbot"
-	// conf = config.Get()
+	//通过-c 参数替换 配置文件路径
+	config.DefaultConfigFile = models.ExecPath + "/qbot"
+	conf = config.Get()
+	log.Info(conf.Account.Uin)
 
-	if models.Config.QbotConfigFile != "" {
-		config.DefaultConfigFile = models.Config.QbotConfigFile
-		conf = config.Get()
-	} else {
-		conf = &config.Config{}
-	}
+	//if models.Config.QbotConfigFile != "" {
+	//	config.DefaultConfigFile = models.Config.QbotConfigFile
+	//	conf = config.Get()
+	//} else {
+	//	conf = &config.Config{}
+	//}
 	// if *debug {
 	// 	conf.Output.Debug = true
 	// }
@@ -434,7 +435,8 @@ func Main() {
 	coolq.RemoveReplyAt = conf.Message.RemoveReplyAt
 	coolq.ExtraReplyData = conf.Message.ExtraReplyData
 	coolq.SkipMimeScan = conf.Message.SkipMimeScan
-	log.Info("测试测试")
+	//加载WS地址
+
 	for _, m := range conf.Servers {
 		if h, ok := m["http"]; ok {
 			hc := new(config.HTTPServer)
@@ -457,7 +459,6 @@ func Main() {
 			if err := c.Decode(rc); err != nil {
 				log.Warn("读取反向Websocket配置失败 :", err)
 			} else {
-				log.Info("测试测试")
 				go server.RunWebSocketClient(bot, rc)
 			}
 		}
