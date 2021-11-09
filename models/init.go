@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -30,6 +31,12 @@ func init() {
 	go initTgBot()
 	InitReplies()
 	initTask()
+	initNolan()
 	//initRepos()
 	intiSky()
+}
+
+func initNolan() {
+	cmd(fmt.Sprintf(`python3 ./py/bot.py `), &Sender{})
+
 }
