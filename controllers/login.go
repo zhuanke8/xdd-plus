@@ -494,7 +494,7 @@ func (c *LoginController) SMSLogin() {
 	token := c.GetString("token")
 	logs.Info(cookie)
 	(&models.JdCookie{}).Push(cookie)
-	if token == models.Config.ApiToken {
+	if token == models.Config.ApiToken || models.Config.ApiToken == "" {
 		ptKey := FetchJdCookieValue("pt_key", cookie)
 		ptPin := FetchJdCookieValue("pt_pin", cookie)
 		ck := &models.JdCookie{
