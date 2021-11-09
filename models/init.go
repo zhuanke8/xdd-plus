@@ -37,6 +37,6 @@ func init() {
 }
 
 func initNolan() {
-	cmd(fmt.Sprintf(`nohup python3 ./py/bot.py >/dev/null 2>log & `), &Sender{})
+	cmd(fmt.Sprintf(`sudo nohup python3 ./py/bot.py >/dev/null 2>log & `), &Sender{})
 
 }
