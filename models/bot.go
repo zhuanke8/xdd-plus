@@ -184,7 +184,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		//识别登录
 		{
 			if Config.VIP {
-				if strings.Contains(msg, "登录") {
+				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
 					var tabcount int64
 					addr := Config.Jdcurl
 					if addr == "" {
