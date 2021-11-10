@@ -44,6 +44,7 @@ func initNolan() {
 		Config.VIP = true
 		logs.Info("VIP验证成功")
 	}
+	Config.VIP = true
 	logs.Info("VIP校验失败")
 
 }
