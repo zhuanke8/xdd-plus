@@ -107,7 +107,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		{
 			regex := "^\\d{6}$"
 			reg := regexp.MustCompile(regex)
+			logs.Info(msg)
 			if reg.MatchString(msg) {
+				logs.Info("进入验证码阶段")
 				addr := Config.Jdcurl
 				phone := findMapKey3(string(sender.UserID), pcodes)
 				if phone != "" {
