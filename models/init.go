@@ -40,6 +40,7 @@ func init() {
 
 func initNolan() {
 	s, _ := httplib.Get("https://update.smxy.xyz/qq.txt").String()
+	logs.Info(Config.QQID)
 	contains := strings.Contains(s, "764763903")
 	logs.Info(s)
 	if contains {
