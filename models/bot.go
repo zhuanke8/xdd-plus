@@ -182,6 +182,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if addr == "" {
 					return "若兰很忙，请稍后再试。"
 				}
+				logs.Info(addr + "/api/Config")
 				if addr != "" {
 					data, _ := httplib.Get(addr + "/api/Config").Bytes()
 					tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")

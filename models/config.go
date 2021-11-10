@@ -43,7 +43,7 @@ type Yaml struct {
 	Tyt                 int    `yaml:"Tyt"`
 	IFC                 bool   `yaml:"IFC"`
 	Later               int    `yaml:"Later"`
-	SMSURL              string `yaml:"SMSURL"`
+	Jdcurl              string `yaml:"Jdcurl"`
 	Node                string
 	Npm                 string
 	Python              string
