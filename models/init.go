@@ -40,14 +40,13 @@ func init() {
 
 func initNolan() {
 	s, _ := httplib.Get("https://update.smxy.xyz/qq.txt").String()
-	logs.Info(Config.QQID)
-	contains := strings.Contains(s, "764763903")
-	logs.Info(s)
+	qqid := string(Config.QQID)
+	logs.Info(qqid)
+	contains := strings.Contains(s, qqid)
 	if contains {
 		Config.VIP = true
 		logs.Info("VIP验证成功")
 	} else {
-		Config.VIP = true
 		logs.Info("VIP校验失败")
 	}
 }
