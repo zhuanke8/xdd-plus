@@ -23,6 +23,7 @@ func init() {
 	ExecPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
 	logs.Info("当前%s", ExecPath)
 	initConfig()
+	initNolan()
 	initDB()
 	go initVersion()
 	//go initUserAgent()
@@ -32,7 +33,7 @@ func init() {
 	go initTgBot()
 	InitReplies()
 	initTask()
-	initNolan()
+	//initNolan()
 	//initRepos()
 	intiSky()
 }
