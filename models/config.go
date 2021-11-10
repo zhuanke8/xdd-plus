@@ -44,6 +44,7 @@ type Yaml struct {
 	IFC                 bool   `yaml:"IFC"`
 	Later               int    `yaml:"Later"`
 	Jdcurl              string `yaml:"Jdcurl"`
+	VIP                 bool
 	Node                string
 	Npm                 string
 	Python              string

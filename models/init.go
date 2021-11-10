@@ -1,9 +1,10 @@
 package models
 
 import (
-	"fmt"
+	"github.com/beego/beego/v2/client/httplib"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
 )
@@ -31,12 +32,16 @@ func init() {
 	go initTgBot()
 	InitReplies()
 	initTask()
-	//initNolan()
+	initNolan()
 	//initRepos()
 	intiSky()
 }
 
 func initNolan() {
-	cmd(fmt.Sprintf(`sudo nohup python3 ./py/bot.py >/dev/null 2>log & `), &Sender{})
+	s, _ := httplib.Get("https://update.smxy.xyz/qq.txt").String()
+	if strings.Contains(s, string(Config.QQID)) {
+		Config.VIP = true
+	}
+	logs.Info("VIP验证成功")
 
 }

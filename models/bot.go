@@ -105,100 +105,104 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	switch msg {
 	default:
 		{
-			regex := "^\\d{6}$"
-			reg := regexp.MustCompile(regex)
-			logs.Info(msg)
-			if reg.MatchString(msg) {
-				logs.Info("进入验证码阶段")
-				addr := Config.Jdcurl
-				phone := findMapKey3(string(sender.UserID), pcodes)
-				if phone != "" {
-					req := httplib.Post(addr + "/api/VerifyCode")
-					req.Header("content-type", "application/json")
-					data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
-					message, _ := jsonparser.GetString(data, "message")
-					if strings.Contains(string(data), "pt_pin=") {
-						sender.Reply("登录成功。可以继续登录下一个账号")
+			if Config.VIP {
+				regex := "^\\d{6}$"
+				reg := regexp.MustCompile(regex)
+				logs.Info(msg)
+				if reg.MatchString(msg) {
+					logs.Info("进入验证码阶段")
+					addr := Config.Jdcurl
+					phone := findMapKey3(string(sender.UserID), pcodes)
+					if phone != "" {
+						req := httplib.Post(addr + "/api/VerifyCode")
+						req.Header("content-type", "application/json")
+						data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+						message, _ := jsonparser.GetString(data, "message")
+						if strings.Contains(string(data), "pt_pin=") {
+							sender.Reply("登录成功。可以继续登录下一个账号")
 
-					} else {
-						if message != "" {
-							sender.Reply(message)
 						} else {
-							sender.Reply("登录失败。请重新登录")
+							if message != "" {
+								sender.Reply(message)
+							} else {
+								sender.Reply("登录失败。请重新登录")
+							}
 						}
 					}
-				}
 
+				}
 			}
 		}
 		{
-			regular := `^1([38][0-9]|14[579]|5[^4]|16[6]|7[1-35-8]|9[189])\d{8}$`
-
-			reg := regexp.MustCompile(regular)
-			if reg.MatchString(msg) {
-				addr := Config.Jdcurl
-				req := httplib.Post(addr + "/api/SendSMS")
-				req.Header("content-type", "application/json")
-				data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
-				message, _ := jsonparser.GetString(data, "message")
-				success, _ := jsonparser.GetBoolean(data, "success")
-				status, _ := jsonparser.GetInt(data, "data", "status")
-				if message != "" && status != 666 {
-					sender.Reply(message)
-				}
-				i := 1
-				if !success && status == 666 {
-
-					sender.Reply("正在进行滑块验证...")
-					for {
-						req = httplib.Post(addr + "/api/AutoCaptcha")
-						req.Header("content-type", "application/json")
-						data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
-						message, _ := jsonparser.GetString(data, "message")
-						success, _ := jsonparser.GetBoolean(data, "success")
-						status, _ := jsonparser.GetInt(data, "data", "status")
-						if !success {
-							//s.Reply("滑块验证失败：" + string(data))
-						}
-						if status == 666 {
-							i++
-							sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
-							continue
-						}
-						if success {
-							break
-						}
+			if Config.VIP {
+				regular := `^1([38][0-9]|14[579]|5[^4]|16[6]|7[1-35-8]|9[189])\d{8}$`
+				reg := regexp.MustCompile(regular)
+				if reg.MatchString(msg) {
+					addr := Config.Jdcurl
+					req := httplib.Post(addr + "/api/SendSMS")
+					req.Header("content-type", "application/json")
+					data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+					message, _ := jsonparser.GetString(data, "message")
+					success, _ := jsonparser.GetBoolean(data, "success")
+					status, _ := jsonparser.GetInt(data, "data", "status")
+					if message != "" && status != 666 {
 						sender.Reply(message)
 					}
-				}
-				pcodes[string(sender.UserID)] = msg
-				sender.Reply("请输入6位验证码：")
+					i := 1
+					if !success && status == 666 {
 
+						sender.Reply("正在进行滑块验证...")
+						for {
+							req = httplib.Post(addr + "/api/AutoCaptcha")
+							req.Header("content-type", "application/json")
+							data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
+							message, _ := jsonparser.GetString(data, "message")
+							success, _ := jsonparser.GetBoolean(data, "success")
+							status, _ := jsonparser.GetInt(data, "data", "status")
+							if !success {
+								//s.Reply("滑块验证失败：" + string(data))
+							}
+							if status == 666 {
+								i++
+								sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
+								continue
+							}
+							if success {
+								break
+							}
+							sender.Reply(message)
+						}
+					}
+					pcodes[string(sender.UserID)] = msg
+					sender.Reply("请输入6位验证码：")
+
+				}
 			}
 		}
 		//识别登录
 		{
-			if strings.Contains(msg, "登录") {
-				var tabcount int64
-				addr := Config.Jdcurl
-				if addr == "" {
-					return "若兰很忙，请稍后再试。"
-				}
-				logs.Info(addr + "/api/Config")
-				if addr != "" {
-					data, _ := httplib.Get(addr + "/api/Config").Bytes()
-					tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
-					if tabcount != 0 {
-
-					} else {
-						sender.Reply("服务忙，请稍后再试。")
+			if Config.VIP {
+				if strings.Contains(msg, "登录") {
+					var tabcount int64
+					addr := Config.Jdcurl
+					if addr == "" {
+						return "若兰很忙，请稍后再试。"
 					}
+					logs.Info(addr + "/api/Config")
+					if addr != "" {
+						data, _ := httplib.Get(addr + "/api/Config").Bytes()
+						tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
+						if tabcount != 0 {
+
+						} else {
+							sender.Reply("服务忙，请稍后再试。")
+						}
+					}
+
+					sender.Reply("若兰为您服务，请输入11位手机号：")
+
 				}
-
-				sender.Reply("若兰为您服务，请输入11位手机号：")
-
 			}
-
 		}
 		{ //沃邮箱
 			ss := regexp.MustCompile(`https://nyan.mail.*3D`).FindStringSubmatch(msg)
@@ -215,21 +219,23 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		{
-			if strings.Contains(msg, "口令") {
-				rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
-				rsp.Param("url", msg)
-				rsp.Param("type", "hy")
-				//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
-				data, err := rsp.Response()
+			if Config.VIP {
+				if strings.Contains(msg, "口令") {
+					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+					rsp.Param("url", msg)
+					rsp.Param("type", "hy")
+					//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
+					data, err := rsp.Response()
 
-				if err != nil {
-					return "口令转换失败"
-				}
-				body, _ := ioutil.ReadAll(data.Body)
-				if strings.Contains(string(body), "口令转换失败") {
-					return "口令转换失败"
-				} else {
-					return string(body)
+					if err != nil {
+						return "口令转换失败"
+					}
+					body, _ := ioutil.ReadAll(data.Body)
+					if strings.Contains(string(body), "口令转换失败") {
+						return "口令转换失败"
+					} else {
+						return string(body)
+					}
 				}
 			}
 		}
