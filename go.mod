@@ -12,16 +12,19 @@ require (
 	github.com/Mrs4s/MiraiGo v0.0.0-20210726103104-1d68826cef0e
 	github.com/Mrs4s/go-cqhttp v1.0.0-beta5
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
+	github.com/beego/bee/v2 v2.0.2 // indirect
 	github.com/beego/beego/v2 v2.0.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/guonaihong/gout v0.2.1
+	github.com/karalabe/xgo v0.0.0-20191115072854-c5ccff8648a7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.7.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
@@ -34,7 +37,7 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/tucnak/telebot.v2 v2.4.0
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.3.0
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/driver/sqlite v1.1.4
