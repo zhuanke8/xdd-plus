@@ -169,6 +169,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							if success {
 								break
 							}
+							if strings.Contains(message, "上限") {
+								i = 6
+							}
 							sender.Reply(message)
 						}
 					} else {
