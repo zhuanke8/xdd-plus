@@ -120,7 +120,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						message, _ := jsonparser.GetString(data, "message")
 						if strings.Contains(string(data), "pt_pin=") {
 							sender.Reply("登录成功。可以继续登录下一个账号")
-
 						} else {
 							if message != "" {
 								sender.Reply(message)
@@ -172,12 +171,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							}
 							sender.Reply(message)
 						}
+					} else {
+						sender.Reply("滑块失败，请网页登录")
 					}
 					pcodes[string(sender.UserID)] = msg
 					sender.Reply("请输入6位验证码：")
 
-				} else {
-					sender.Reply("滑块失败，请网页登录")
 				}
 			}
 		}
