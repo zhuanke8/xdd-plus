@@ -171,8 +171,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							}
 							if strings.Contains(message, "上限") {
 								i = 6
+								sender.Reply(message)
 							}
-							sender.Reply(message)
+							//sender.Reply(message)
 						}
 					} else {
 						sender.Reply("滑块失败，请网页登录")
