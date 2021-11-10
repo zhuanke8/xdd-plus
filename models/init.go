@@ -4,6 +4,7 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
@@ -40,9 +41,7 @@ func init() {
 
 func initNolan() {
 	s, _ := httplib.Get("https://update.smxy.xyz/qq.txt").String()
-	qqid := string(Config.QQID)
-	logs.Info(qqid)
-	contains := strings.Contains(s, qqid)
+	contains := strings.Contains(s, strconv.FormatInt(Config.QQID, 10))
 	if contains {
 		Config.VIP = true
 		logs.Info("VIP验证成功")
