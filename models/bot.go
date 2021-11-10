@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	browser "github.com/EDDYCJY/fake-useragent"
+	"github.com/buger/jsonparser"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -35,6 +36,7 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 	}
 }
 
+var pcodes = make(map[string]string)
 var replies = map[string]string{}
 
 func InitReplies() {
@@ -50,6 +52,16 @@ func InitReplies() {
 	if _, ok := replies["壁纸"]; !ok {
 		replies["壁纸"] = "https://acg.toubiec.cn/random.php"
 	}
+}
+
+func findMapKey3(str string, m map[string]string) string {
+	if val, ok := m[str]; ok {
+		fmt.Println("查询到", str, "省的省会为：", val)
+		return val
+	} else {
+		fmt.Println("未能检索到该数据")
+	}
+	return ""
 }
 
 var handleMessage = func(msgs ...interface{}) interface{} {
@@ -92,6 +104,99 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	}
 	switch msg {
 	default:
+		{
+			regex := "^\\d{6}$"
+			reg := regexp.MustCompile(regex)
+			if reg.MatchString(msg) {
+				addr := Config.Jdcurl
+				phone := findMapKey3(string(sender.UserID), pcodes)
+				if phone != "" {
+					req := httplib.Post(addr + "/api/VerifyCode")
+					req.Header("content-type", "application/json")
+					data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + fmt.Sprint(time.Now().Unix()) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+					message, _ := jsonparser.GetString(data, "message")
+					if strings.Contains(string(data), "pt_pin=") {
+						sender.Reply("登录成功。")
+
+					} else {
+						if message != "" {
+							sender.Reply(message)
+						} else {
+							sender.Reply("登录失败。")
+						}
+					}
+				}
+
+			}
+		}
+		{
+			regular := `^1([38][0-9]|14[579]|5[^4]|16[6]|7[1-35-8]|9[189])\d{8}$`
+
+			reg := regexp.MustCompile(regular)
+			if reg.MatchString(msg) {
+				addr := Config.Jdcurl
+				req := httplib.Post(addr + "/api/SendSMS")
+				req.Header("content-type", "application/json")
+				data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+				message, _ := jsonparser.GetString(data, "message")
+				success, _ := jsonparser.GetBoolean(data, "success")
+				status, _ := jsonparser.GetInt(data, "data", "status")
+				if message != "" && status != 666 {
+					sender.Reply(message)
+				}
+				i := 1
+				if !success && status == 666 {
+
+					sender.Reply("正在进行滑块验证...")
+					for {
+						req = httplib.Post(addr + "/api/AutoCaptcha")
+						req.Header("content-type", "application/json")
+						data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
+						message, _ := jsonparser.GetString(data, "message")
+						success, _ := jsonparser.GetBoolean(data, "success")
+						status, _ := jsonparser.GetInt(data, "data", "status")
+						if !success {
+							//s.Reply("滑块验证失败：" + string(data))
+						}
+						if status == 666 {
+							i++
+							sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
+							continue
+						}
+						if success {
+							break
+						}
+						sender.Reply(message)
+					}
+				}
+				pcodes[string(sender.UserID)] = msg
+				sender.Reply("请输入6位验证码：")
+
+			}
+		}
+		//识别登录
+		{
+			if strings.Contains(msg, "登录") {
+				var tabcount int64
+				addr := Config.Jdcurl
+				if addr == "" {
+					return "若兰很忙，请稍后再试。"
+				}
+				if addr != "" {
+					data, _ := httplib.Get(addr + "/api/Config").Bytes()
+					tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
+					if tabcount != 0 {
+
+					} else {
+						sender.Reply("服务忙，请稍后再试。")
+					}
+				}
+
+				sender.Reply("若兰为您服务，请输入11位手机号：")
+
+			}
+
+		}
 		{ //沃邮箱
 			ss := regexp.MustCompile(`https://nyan.mail.*3D`).FindStringSubmatch(msg)
 			if len(ss) > 0 {

@@ -31,7 +31,7 @@ func init() {
 	go initTgBot()
 	InitReplies()
 	initTask()
-	initNolan()
+	//initNolan()
 	//initRepos()
 	intiSky()
 }
