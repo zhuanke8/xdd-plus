@@ -126,17 +126,18 @@ func Main() {
 	// 	resetWorkDir(*wd)
 	// }
 
-	//通过-c 参数替换 配置文件路径
-	config.DefaultConfigFile = models.ExecPath + "/qbot/config.yml"
-	conf = config.Get()
-	log.Info(conf.Account.Uin)
+	////通过-c 参数替换 配置文件路径
+	//config.DefaultConfigFile = models.ExecPath + "/qbot/config.yml"
+	//conf = config.Get()
+	//
 
-	//if models.Config.QbotConfigFile != "" {
-	//	config.DefaultConfigFile = models.Config.QbotConfigFile
-	//	conf = config.Get()
-	//} else {
-	//	conf = &config.Config{}
-	//}
+	if models.Config.QbotConfigFile != "" {
+		config.DefaultConfigFile = models.Config.QbotConfigFile
+		conf = config.Get()
+	} else {
+		conf = &config.Config{}
+	}
+
 	// if *debug {
 	// 	conf.Output.Debug = true
 	// }
