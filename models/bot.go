@@ -149,7 +149,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						sender.Reply(message)
 					}
 					i := 1
-					if !success && status == 666 {
+					if !success && status == 666 && i < 5 {
 
 						sender.Reply("正在进行滑块验证...")
 						for {
@@ -176,6 +176,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					pcodes[string(sender.UserID)] = msg
 					sender.Reply("请输入6位验证码：")
 
+				} else {
+					sender.Reply("滑块失败，请网页登录")
 				}
 			}
 		}
