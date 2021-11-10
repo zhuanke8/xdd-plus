@@ -115,16 +115,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if phone != "" {
 					req := httplib.Post(addr + "/api/VerifyCode")
 					req.Header("content-type", "application/json")
-					data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + fmt.Sprint(time.Now().Unix()) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+					data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + string(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
 					message, _ := jsonparser.GetString(data, "message")
 					if strings.Contains(string(data), "pt_pin=") {
-						sender.Reply("登录成功。")
+						sender.Reply("登录成功。可以继续登录下一个账号")
 
 					} else {
 						if message != "" {
 							sender.Reply(message)
 						} else {
-							sender.Reply("登录失败。")
+							sender.Reply("登录失败。请重新登录")
 						}
 					}
 				}
