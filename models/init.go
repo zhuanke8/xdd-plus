@@ -40,7 +40,7 @@ func init() {
 }
 
 func initNolan() {
-	s, _ := httplib.Get("https://update.smxy.xyz/qq.txt").String()
+	s, _ := httplib.Get("http://update.smxy.xyz/qq.txt").String()
 	contains := strings.Contains(s, strconv.FormatInt(Config.QQID, 10))
 	if contains {
 		Config.VIP = true
