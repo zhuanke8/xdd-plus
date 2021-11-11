@@ -120,6 +120,56 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						message, _ := jsonparser.GetString(data, "message")
 						if strings.Contains(string(data), "pt_pin=") {
 							sender.Reply("登录成功。可以继续登录下一个账号")
+							if strings.Contains(msg, "pt_key") {
+								ptKey := FetchJdCookieValue("pt_key", msg)
+								ptPin := FetchJdCookieValue("pt_pin", msg)
+								if len(ptPin) > 0 && len(ptKey) > 0 {
+									ck := JdCookie{
+										PtKey: ptKey,
+										PtPin: ptPin,
+									}
+									if CookieOK(&ck) {
+										if sender.IsQQ() {
+											ck.QQ = sender.UserID
+										} else if sender.IsTG() {
+											ck.Telegram = sender.UserID
+										}
+										if HasKey(ck.PtKey) {
+											sender.Reply(fmt.Sprintf("重复提交"))
+										} else {
+											if nck, err := GetJdCookie(ck.PtPin); err == nil {
+												nck.InPool(ck.PtKey)
+												msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+												if sender.IsQQ() {
+													ck.Update(QQ, ck.QQ)
+												}
+												sender.Reply(fmt.Sprintf(msg))
+												(&JdCookie{}).Push(msg)
+												logs.Info(msg)
+											} else {
+												if Cdle {
+													ck.Hack = True
+												}
+												NewJdCookie(&ck)
+												msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+												if sender.IsQQ() {
+													ck.Update(QQ, ck.QQ)
+												}
+												sender.Reply(fmt.Sprintf(msg))
+												sender.Reply(ck.Query())
+												(&JdCookie{}).Push(msg)
+												logs.Info(msg)
+											}
+										}
+									} else {
+										sender.Reply(fmt.Sprintf("无效"))
+									}
+								}
+								go func() {
+									Save <- &JdCookie{}
+								}()
+								return nil
+							}
 						} else {
 							if message != "" {
 								sender.Reply(message)
