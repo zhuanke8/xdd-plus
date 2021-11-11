@@ -122,7 +122,7 @@ type UserInfoResult struct {
 func initCookie() {
 	cks := GetJdCookies()
 	for i := range cks {
-		if cks[i].Available == True {
+		if cks[i].Available == True && !CookieOK(&cks[i]) {
 			logs.Info("开始禁用")
 			cks[i].OutPool()
 		}
