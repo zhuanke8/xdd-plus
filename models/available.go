@@ -122,7 +122,8 @@ type UserInfoResult struct {
 func initCookie() {
 	cks := GetJdCookies()
 	for i := range cks {
-		if cks[i].Available == True && !CookieOK(&cks[i]) {
+		time.Sleep(time.Second * time.Duration(Config.Later))
+		if cks[i].Available == True {
 			logs.Info("开始禁用")
 			cks[i].OutPool()
 		}
