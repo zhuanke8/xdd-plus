@@ -223,6 +223,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								i = 6
 								sender.Reply(message)
 							}
+							i++
 							//sender.Reply(message)
 						}
 					} else {
