@@ -184,7 +184,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{
 			if Config.VIP {
-				regular := `^1([39][0-9]|14[579]|5[^4]|16[6]|7[1-35-8]|9[189])\d{8}$`
+				regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 				reg := regexp.MustCompile(regular)
 				if reg.MatchString(msg) {
 					addr := Config.Jdcurl
