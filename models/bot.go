@@ -219,11 +219,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							if success {
 								break
 							}
+							if i > 5 {
+								break
+							}
 							if strings.Contains(message, "上限") {
 								i = 6
 								sender.Reply(message)
 							}
-							i++
 							//sender.Reply(message)
 						}
 					} else {
