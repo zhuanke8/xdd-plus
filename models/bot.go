@@ -23,10 +23,12 @@ var SendQQGroup = func(a int64, b int64, c interface{}) {
 }
 
 var ListenQQPrivateMessage = func(uid int64, msg string) {
+	logs.Info("进入聊天")
 	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
 }
 
 var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
+	logs.Info("进入群聊")
 	if gid == Config.QQGroupID {
 		if Config.QbotPublicMode {
 			SendQQGroup(gid, uid, handleMessage(msg, "qqg", int(uid), int(gid)))
@@ -66,7 +68,6 @@ func findMapKey3(str string, m map[string]string) string {
 
 var handleMessage = func(msgs ...interface{}) interface{} {
 	msg := msgs[0].(string)
-	logs.Info(msg + "测试")
 	args := strings.Split(msg, " ")
 	head := args[0]
 	contents := args[1:]
