@@ -56,7 +56,7 @@ func InitReplies() {
 
 func findMapKey3(str string, m map[string]string) string {
 	if val, ok := m[str]; ok {
-		fmt.Println("查询到", str, "省的省会为：", val)
+		fmt.Println("查询到", str, "手机号为：", val)
 		return val
 	} else {
 		fmt.Println("未能检索到该数据")
@@ -170,6 +170,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								}()
 								return nil
 							}
+						} else if strings.Contains(message, "添加xdd成功") {
+							sender.Reply("登录成功。可以继续登录下一个账号")
 						} else {
 							if message != "" {
 								sender.Reply(message)
@@ -221,6 +223,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								continue
 							}
 							if success {
+								pcodes[string(sender.UserID)] = msg
+								sender.Reply("请输入6位验证码：")
 								break
 							}
 							if strings.Contains(message, "上限") {
@@ -232,8 +236,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					} else {
 						sender.Reply("滑块失败，请网页登录")
 					}
-					pcodes[string(sender.UserID)] = msg
-					sender.Reply("请输入6位验证码：")
 
 				}
 			}
