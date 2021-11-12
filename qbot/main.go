@@ -423,6 +423,7 @@ func Main() {
 			a.Accept()
 		})
 	}
+
 	if conf.Message.PostFormat != "string" && conf.Message.PostFormat != "array" {
 		log.Warnf("post-format 配置错误, 将自动使用 string")
 		coolq.SetMessageFormat("string")

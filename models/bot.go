@@ -23,12 +23,10 @@ var SendQQGroup = func(a int64, b int64, c interface{}) {
 }
 
 var ListenQQPrivateMessage = func(uid int64, msg string) {
-	logs.Info("进入聊天")
 	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
 }
 
 var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
-	logs.Info("进入群聊")
 	if gid == Config.QQGroupID {
 		if Config.QbotPublicMode {
 			SendQQGroup(gid, uid, handleMessage(msg, "qqg", int(uid), int(gid)))
@@ -213,15 +211,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							if !success {
 								//s.Reply("滑块验证失败：" + string(data))
 							}
+							if i > 5 {
+								sender.Reply("滑块验证失败,请联系管理员或者手动登录")
+								break
+							}
 							if status == 666 {
 								i++
 								sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
 								continue
 							}
 							if success {
-								break
-							}
-							if i > 5 {
 								break
 							}
 							if strings.Contains(message, "上限") {
