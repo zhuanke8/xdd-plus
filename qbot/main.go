@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"github.com/beego/beego/v2/core/logs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -76,15 +75,16 @@ func Main() {
 		switch msg.(type) {
 		case string:
 			if bot != nil {
-				if strings.Contains(msg.(string), "data:image") {
-					photo := msg.(string)
-					logs.Info(photo)
-					//b := []byte(photo)
-					//log.Error(b)
-					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&coolq.LocalImageElement{File: "./output.jpg"}}})
-				} else {
-					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
-				}
+				bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
+				//if strings.Contains(msg.(string), "data:image") {
+				//	photo := msg.(string)
+				//	logs.Info(photo)
+				//	//b := []byte(photo)
+				//	//log.Error(b)
+				//	bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&coolq.LocalImageElement{File: "./output.jpg"}}})
+				//} else {
+				//	bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
+				//}
 			}
 		case *http.Response:
 			data, _ := ioutil.ReadAll(msg.(*http.Response).Body)

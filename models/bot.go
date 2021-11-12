@@ -66,6 +66,7 @@ func findMapKey3(str string, m map[string]string) string {
 
 var handleMessage = func(msgs ...interface{}) interface{} {
 	msg := msgs[0].(string)
+	logs.Info(msg + "测试")
 	args := strings.Split(msg, " ")
 	head := args[0]
 	contents := args[1:]
