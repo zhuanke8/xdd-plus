@@ -43,7 +43,7 @@ func initNolan() {
 	//a := GetLocalMac()
 	//
 	//logs.Info(fmt.Printf("您的设备码是:%s,请发送给管理员进行认证\n", a))
-	sprintf := fmt.Sprintf("http://auth.smxy.xyz/user/auth?qqNum=%d", strconv.FormatInt(Config.QQID, 10))
+	sprintf := fmt.Sprintf("http://auth.smxy.xyz/user/auth?qqNum=%s", strconv.FormatInt(Config.QQID, 10))
 	logs.Info(sprintf)
 	s, _ := httplib.Get(sprintf).String()
 	logs.Info(s)
