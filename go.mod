@@ -31,7 +31,6 @@ require (
 	github.com/tidwall/gjson v1.8.1
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
