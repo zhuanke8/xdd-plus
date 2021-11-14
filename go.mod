@@ -12,7 +12,7 @@ require (
 	github.com/Mrs4s/MiraiGo v0.0.0-20210726103104-1d68826cef0e
 	github.com/Mrs4s/go-cqhttp v1.0.0-beta5
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
-	github.com/StackExchange/wmi v1.2.1
+	//github.com/StackExchange/wmi v1.2.1
 	github.com/beego/beego/v2 v2.0.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/go-playground/locales v0.13.0
