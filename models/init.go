@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"os"
@@ -40,9 +39,9 @@ func init() {
 }
 
 func initNolan() {
-	a := GetPhysicalID()
-
-	logs.Info(fmt.Printf("您的设备码是:%s,请发送给管理员进行认证\n", a))
+	//a := GetPhysicalID()
+	//
+	//logs.Info(fmt.Printf("您的设备码是:%s,请发送给管理员进行认证\n", a))
 
 	s, _ := httplib.Get("http://update.smxy.xyz/qq.txt").String()
 	contains := strings.Contains(s, strconv.FormatInt(Config.QQID, 10))
@@ -53,10 +52,10 @@ func initNolan() {
 		logs.Info("VIP校验失败")
 	}
 
-	if Config.VIP == false {
-		logs.Info(fmt.Printf("您的设备码是:%s,请发送给管理员进行认证\n", a))
-	} else {
-		logs.Info("VIP验证成功")
-	}
+	//if Config.VIP == false {
+	//	logs.Info(fmt.Printf("您的设备码是:%s,请发送给管理员进行认证\n", a))
+	//} else {
+	//	logs.Info("VIP验证成功")
+	//}
 
 }
