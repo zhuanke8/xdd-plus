@@ -631,7 +631,7 @@ func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 
 }
 
 func startfcwb(ine string, red string) (num int, num1 int, f bool) {
-
+	logs.Info("开始发财挖宝")
 	k := 0
 	n := 0
 	cks := GetJdCookies()
