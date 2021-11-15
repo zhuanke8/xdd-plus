@@ -265,7 +265,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{
 			//发财挖宝
-			if Config.VIP == true {
+			if Config.VIP {
 				//dyj
 				inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)inviterCode`).FindStringSubmatch(msg)
 				inviterCode := regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
