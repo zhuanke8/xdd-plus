@@ -424,6 +424,10 @@ func Main() {
 		})
 	}
 
+	bot.Client.OnTempMessage(func(qqClient *client.QQClient, event *client.TempMessageEvent) {
+		models.ListenQQPrivateMessage(event.Session.Sender, event.Message.ToString())
+	})
+
 	if conf.Message.PostFormat != "string" && conf.Message.PostFormat != "array" {
 		log.Warnf("post-format 配置错误, 将自动使用 string")
 		coolq.SetMessageFormat("string")
