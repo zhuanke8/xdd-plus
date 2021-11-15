@@ -639,7 +639,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 		if k > 36 {
 			return k, n, true
 		}
-		time.Sleep(time.Second * time.Duration(10))
+		time.Sleep(time.Second * time.Duration(3))
 		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
 		sprintf := fmt.Sprintf(`https://api.m.jd.com//?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"%s","inviteCode":"%s"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0`, red, ine)
 		logs.Info(sprintf)
