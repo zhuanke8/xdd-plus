@@ -107,74 +107,76 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		{
 			regex := "^\\d{6}$"
 			reg := regexp.MustCompile(regex)
-			if Config.VIP && len(msg) == 6 && reg.MatchString(msg) {
-				logs.Info("进入验证码阶段")
-				addr := Config.Jdcurl
-				phone := findMapKey3(string(sender.UserID), pcodes)
-				if phone != "" {
-					req := httplib.Post(addr + "/api/VerifyCode")
-					req.Header("content-type", "application/json")
-					data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
-					message, _ := jsonparser.GetString(data, "message")
-					if strings.Contains(string(data), "pt_pin=") {
-						sender.Reply("登录成功。可以继续登录下一个账号")
-						if strings.Contains(msg, "pt_key") {
-							ptKey := FetchJdCookieValue("pt_key", msg)
-							ptPin := FetchJdCookieValue("pt_pin", msg)
-							if len(ptPin) > 0 && len(ptKey) > 0 {
-								ck := JdCookie{
-									PtKey: ptKey,
-									PtPin: ptPin,
-								}
-								if CookieOK(&ck) {
-									if sender.IsQQ() {
-										ck.QQ = sender.UserID
-									} else if sender.IsTG() {
-										ck.Telegram = sender.UserID
+			if Config.VIP && len(msg) == 6 {
+				if reg.MatchString(msg) {
+					logs.Info("进入验证码阶段")
+					addr := Config.Jdcurl
+					phone := findMapKey3(string(sender.UserID), pcodes)
+					if phone != "" {
+						req := httplib.Post(addr + "/api/VerifyCode")
+						req.Header("content-type", "application/json")
+						data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+						message, _ := jsonparser.GetString(data, "message")
+						if strings.Contains(string(data), "pt_pin=") {
+							sender.Reply("登录成功。可以继续登录下一个账号")
+							if strings.Contains(msg, "pt_key") {
+								ptKey := FetchJdCookieValue("pt_key", msg)
+								ptPin := FetchJdCookieValue("pt_pin", msg)
+								if len(ptPin) > 0 && len(ptKey) > 0 {
+									ck := JdCookie{
+										PtKey: ptKey,
+										PtPin: ptPin,
 									}
-									if HasKey(ck.PtKey) {
-										sender.Reply(fmt.Sprintf("重复提交"))
-									} else {
-										if nck, err := GetJdCookie(ck.PtPin); err == nil {
-											nck.InPool(ck.PtKey)
-											msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-											if sender.IsQQ() {
-												ck.Update(QQ, ck.QQ)
-											}
-											sender.Reply(fmt.Sprintf(msg))
-											(&JdCookie{}).Push(msg)
-											logs.Info(msg)
-										} else {
-											if Cdle {
-												ck.Hack = True
-											}
-											NewJdCookie(&ck)
-											msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-											if sender.IsQQ() {
-												ck.Update(QQ, ck.QQ)
-											}
-											sender.Reply(fmt.Sprintf(msg))
-											sender.Reply(ck.Query())
-											(&JdCookie{}).Push(msg)
-											logs.Info(msg)
+									if CookieOK(&ck) {
+										if sender.IsQQ() {
+											ck.QQ = sender.UserID
+										} else if sender.IsTG() {
+											ck.Telegram = sender.UserID
 										}
+										if HasKey(ck.PtKey) {
+											sender.Reply(fmt.Sprintf("重复提交"))
+										} else {
+											if nck, err := GetJdCookie(ck.PtPin); err == nil {
+												nck.InPool(ck.PtKey)
+												msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+												if sender.IsQQ() {
+													ck.Update(QQ, ck.QQ)
+												}
+												sender.Reply(fmt.Sprintf(msg))
+												(&JdCookie{}).Push(msg)
+												logs.Info(msg)
+											} else {
+												if Cdle {
+													ck.Hack = True
+												}
+												NewJdCookie(&ck)
+												msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+												if sender.IsQQ() {
+													ck.Update(QQ, ck.QQ)
+												}
+												sender.Reply(fmt.Sprintf(msg))
+												sender.Reply(ck.Query())
+												(&JdCookie{}).Push(msg)
+												logs.Info(msg)
+											}
+										}
+									} else {
+										sender.Reply(fmt.Sprintf("无效"))
 									}
-								} else {
-									sender.Reply(fmt.Sprintf("无效"))
 								}
+								go func() {
+									Save <- &JdCookie{}
+								}()
+								return nil
 							}
-							go func() {
-								Save <- &JdCookie{}
-							}()
-							return nil
-						}
-					} else if strings.Contains(message, "添加xdd成功") {
-						sender.Reply("登录成功。可以继续登录下一个账号")
-					} else {
-						if message != "" {
-							sender.Reply(message)
+						} else if strings.Contains(message, "添加xdd成功") {
+							sender.Reply("登录成功。可以继续登录下一个账号")
 						} else {
-							sender.Reply("登录失败。请重新登录")
+							if message != "" {
+								sender.Reply(message)
+							} else {
+								sender.Reply("登录失败。请重新登录")
+							}
 						}
 					}
 				}
