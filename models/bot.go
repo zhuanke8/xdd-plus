@@ -656,6 +656,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 		req.Header("Cookie", cookie)
 
 		data, _ := req.String()
+		logs.Info(data)
 		if strings.Contains(data, "true") {
 			logs.Info("助力成功")
 			k++
@@ -663,6 +664,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 			logs.Info("已经邀请过")
 		} else {
 			n++
+
 			logs.Info("要么助力过了，要么没登录,要么火爆")
 		}
 	}
