@@ -508,9 +508,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{
 			if strings.Contains(msg, "pt_key") {
-				logs.Info(msg)
+				logs.Info(msg + "开始CK登录")
 				ptKey := FetchJdCookieValue("pt_key", msg)
+				logs.Info(ptKey)
 				ptPin := FetchJdCookieValue("pt_pin", msg)
+				logs.Info(ptPin)
 				if len(ptPin) > 0 && len(ptKey) > 0 {
 					ck := JdCookie{
 						PtKey: ptKey,
