@@ -269,8 +269,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//dyj
 				inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)inviterCode`).FindStringSubmatch(msg)
 				inviterCode := regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
-				logs.Info(inviterId[1])
-				logs.Info(inviterCode[1])
 				if len(inviterId) > 0 && len(inviterCode) > 0 {
 					if !sender.IsAdmin {
 						sender.Reply("仅管理员可用")
