@@ -508,7 +508,17 @@ func (c *LoginController) SMSLogin() {
 		}
 		if ptKey != "" && ptPin != "" {
 			if models.CookieOK(ck) {
-				if !models.HasPin(ptPin) {
+				if nck, err := models.GetJdCookie(ck.PtPin); err == nil {
+
+					nck.InPool(ptKey)
+					if qq != "" && len(qq) > 6 {
+						ck.Update(models.QQ, qq)
+					}
+					msg := fmt.Sprintf("来自短信的更新,账号：%s,QQ: %v", ck.PtPin, qq)
+					(&models.JdCookie{}).Push(msg)
+
+				} else {
+
 					models.NewJdCookie(ck)
 					ck.Query()
 					if qq != "" {
@@ -518,14 +528,7 @@ func (c *LoginController) SMSLogin() {
 						msg := fmt.Sprintf("来自短信的添加,账号：%s", ck.PtPin)
 						(&models.JdCookie{}).Push(msg)
 					}
-				} else {
-					ck, _ := models.GetJdCookie(ptPin)
-					ck.InPool(ptKey)
-					if qq != "" && len(qq) > 6 {
-						ck.Update(models.QQ, qq)
-					}
-					msg := fmt.Sprintf("来自短信的更新,账号：%s,QQ: %v", ck.PtPin, qq)
-					(&models.JdCookie{}).Push(msg)
+
 				}
 
 				result := Result{
