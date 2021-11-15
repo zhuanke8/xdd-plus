@@ -642,15 +642,25 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 		time.Sleep(time.Second * time.Duration(3))
 		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
 		//https://api.m.jd.com/?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"-ftyyGV7YwjPJ63tnKLwjw","inviteCode":"7476e3bed5d74f74b0a547b7e4d1e07225061636959196596"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0
-		sprintf := fmt.Sprintf(`https://api.m.jd.com//?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"%s","inviteCode":"%s"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0`, ine, red)
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"%s","inviteCode":"%s"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0`, ine, red)
 		logs.Info(sprintf)
 		req := httplib.Get(sprintf)
+		random := browser.Random()
+		req.Header("User-Agent", random)
+		//req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Connection", "keep-alive")
+		req.Header("Accept-Language", "zh-cn")
+		req.Header("Accept-Encoding", "gzip, deflate, br")
 		req.Header("Origin", "https://api.m.jd.com")
 		req.Header("Cookie", cookie)
+
 		data, _ := req.String()
 		if strings.Contains(data, "true") {
 			logs.Info("助力成功")
 			k++
+		} else if strings.Contains(data, "已经邀请过") {
+			logs.Info("已经邀请过")
 		} else {
 			n++
 			logs.Info("要么助力过了，要么没登录,要么火爆")
