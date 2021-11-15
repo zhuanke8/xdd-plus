@@ -277,7 +277,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					if !sender.IsAdmin {
 						sender.Reply("仅管理员可用")
 					} else {
-						sender.Reply(fmt.Sprintf("发财挖宝开始，管理员通道"))
+						//sender.Reply(fmt.Sprintf("发财挖宝开始，管理员通道"))
 						num, num1, f := startfcwb(inviterId[1], inviterCode[1])
 						if f {
 							sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,无效助力账号:%d个", num, num1))
