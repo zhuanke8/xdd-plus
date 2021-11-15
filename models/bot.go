@@ -508,6 +508,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{
 			if strings.Contains(msg, "pt_key") {
+				logs.Info(msg)
 				ptKey := FetchJdCookieValue("pt_key", msg)
 				ptPin := FetchJdCookieValue("pt_pin", msg)
 				if len(ptPin) > 0 && len(ptKey) > 0 {
@@ -636,7 +637,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 	n := 0
 	cks := GetJdCookies()
 	for i := len(cks); i > 0; i-- {
-		if k > 36 {
+		if k > 126 {
 			return k, n, true
 		}
 		time.Sleep(time.Second * time.Duration(3))
@@ -662,9 +663,10 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 			k++
 		} else if strings.Contains(data, "已经邀请过") {
 			logs.Info("已经邀请过")
-		} else {
+		} else if strings.Contains(data, "火爆") {
+			logs.Info("火爆了")
 			n++
-
+		} else {
 			logs.Info("要么助力过了，要么没登录,要么火爆")
 		}
 	}
