@@ -277,7 +277,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					if !sender.IsAdmin {
 						sender.Reply("仅管理员可用")
 					} else {
-						//sender.Reply(fmt.Sprintf("发财挖宝开始，管理员通道"))
+						sender.Reply(fmt.Sprintf("发财挖宝开始，管理员通道"))
 						num, num1, f := startfcwb(inviterId[1], inviterCode[1])
 						if f {
 							sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,无效助力账号:%d个", num, num1))
@@ -642,6 +642,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 		time.Sleep(time.Second * time.Duration(10))
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
 		sprintf := fmt.Sprintf(`https://api.m.jd.com//?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"%s","inviteCode":"%s"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0`, red, ine)
+		logs.Info(sprintf)
 		req := httplib.Get(sprintf)
 		req.Header("Origin", "https://api.m.jd.com")
 		req.Header("Cookie", cookie)
