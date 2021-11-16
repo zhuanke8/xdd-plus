@@ -509,12 +509,13 @@ func (c *LoginController) SMSLogin() {
 		if ptKey != "" && ptPin != "" {
 			if models.CookieOK(ck) {
 				if nck, err := models.GetJdCookie(ck.PtPin); err == nil {
-
+					logs.Info(nck.PtPin)
+					logs.Info(nck.PtKey)
 					nck.InPool(ptKey)
 					if qq != "" && len(qq) > 6 {
 						ck.Update(models.QQ, qq)
 					}
-					msg := fmt.Sprintf("来自短信的更新,账号：%s,QQ: %v", ck.PtPin, qq)
+					msg := fmt.Sprintf("来自短信的更新,账号：%s,QQ: %v", nck.PtPin, qq)
 					(&models.JdCookie{}).Push(msg)
 
 				} else {
