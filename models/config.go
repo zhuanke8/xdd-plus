@@ -45,6 +45,7 @@ type Yaml struct {
 	Later               int    `yaml:"Later"`
 	Jdcurl              string `yaml:"Jdcurl"`
 	GAMEOPEN            bool   `yaml:"GameOpen"`
+	Note                string `yaml:"Note"`
 	VIP                 bool
 	Node                string
 	Npm                 string
@@ -92,6 +93,9 @@ func initConfig() {
 	}
 	if ExecPath == "/Users/cdle/Desktop/xdd" || Config.NoAdmin {
 		Cdle = true
+	}
+	if Config.Note == "" {
+		Config.Note = "pin"
 	}
 	if Config.Master == "" {
 		Config.Master = "xxxx"
