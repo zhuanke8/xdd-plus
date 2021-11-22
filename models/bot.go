@@ -184,57 +184,60 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{
 			if Config.VIP {
-				regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
-				reg := regexp.MustCompile(regular)
-				if reg.MatchString(msg) {
-					addr := Config.Jdcurl
-					req := httplib.Post(addr + "/api/SendSMS")
-					req.Header("content-type", "application/json")
-					data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
-					message, _ := jsonparser.GetString(data, "message")
-					success, _ := jsonparser.GetBoolean(data, "success")
-					status, _ := jsonparser.GetInt(data, "data", "status")
-					if message != "" && status != 666 {
-						sender.Reply(message)
-					}
-					i := 1
-					if !success && status == 666 && i < 5 {
-
-						sender.Reply("正在进行滑块验证...")
-						for {
-							req = httplib.Post(addr + "/api/AutoCaptcha")
-							req.Header("content-type", "application/json")
-							data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
-							message, _ := jsonparser.GetString(data, "message")
-							success, _ := jsonparser.GetBoolean(data, "success")
-							status, _ := jsonparser.GetInt(data, "data", "status")
-							if !success {
-								//s.Reply("滑块验证失败：" + string(data))
-							}
-							if i > 5 {
-								sender.Reply("滑块验证失败,请联系管理员或者手动登录")
-								break
-							}
-							if status == 666 {
-								i++
-								sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
-								continue
-							}
-							if success {
-								pcodes[string(sender.UserID)] = msg
-								sender.Reply("请输入6位验证码：")
-								break
-							}
-							if strings.Contains(message, "上限") {
-								i = 6
-								sender.Reply(message)
-							}
-							//sender.Reply(message)
+				ist := findMapKey3(string(sender.UserID), pcodes)
+				if strings.EqualFold(ist, "true") {
+					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
+					reg := regexp.MustCompile(regular)
+					if reg.MatchString(msg) {
+						addr := Config.Jdcurl
+						req := httplib.Post(addr + "/api/SendSMS")
+						req.Header("content-type", "application/json")
+						data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+						message, _ := jsonparser.GetString(data, "message")
+						success, _ := jsonparser.GetBoolean(data, "success")
+						status, _ := jsonparser.GetInt(data, "data", "status")
+						if message != "" && status != 666 {
+							sender.Reply(message)
 						}
-					} else {
-						sender.Reply("滑块失败，请网页登录")
-					}
+						i := 1
+						if !success && status == 666 && i < 5 {
 
+							sender.Reply("正在进行滑块验证...")
+							for {
+								req = httplib.Post(addr + "/api/AutoCaptcha")
+								req.Header("content-type", "application/json")
+								data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
+								message, _ := jsonparser.GetString(data, "message")
+								success, _ := jsonparser.GetBoolean(data, "success")
+								status, _ := jsonparser.GetInt(data, "data", "status")
+								if !success {
+									//s.Reply("滑块验证失败：" + string(data))
+								}
+								if i > 5 {
+									sender.Reply("滑块验证失败,请联系管理员或者手动登录")
+									break
+								}
+								if status == 666 {
+									i++
+									sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
+									continue
+								}
+								if success {
+									pcodes[string(sender.UserID)] = msg
+									sender.Reply("请输入6位验证码：")
+									break
+								}
+								if strings.Contains(message, "上限") {
+									i = 6
+									sender.Reply(message)
+								}
+								//sender.Reply(message)
+							}
+						} else {
+							sender.Reply("滑块失败，请网页登录")
+						}
+
+					}
 				}
 			}
 		}
@@ -257,7 +260,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply("服务忙，请稍后再试。")
 						}
 					}
-
+					pcodes[string(sender.UserID)] = "true"
 					sender.Reply("若兰为您服务，请输入11位手机号：")
 
 				}
@@ -636,7 +639,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 	n := 0
 	cks := GetJdCookies()
 	for i := len(cks); i > 0; i-- {
-		if k > 126 {
+		if k > 125 {
 			return k, n, true
 		}
 		time.Sleep(time.Second * time.Duration(3))
