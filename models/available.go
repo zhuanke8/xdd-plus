@@ -339,11 +339,11 @@ func CookieOK(ck *JdCookie) bool {
 						}
 
 					} else {
-						ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
+						ck.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 						JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 					}
 				} else {
-					ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
+					ck.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 					JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 				}
 
