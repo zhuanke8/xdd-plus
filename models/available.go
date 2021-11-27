@@ -246,110 +246,18 @@ func CookieOK(ck *JdCookie) bool {
 		//	(&JdCookie{}).Push("第一个接口失效，切换到第二个接口，可能黑IP，会导致NickName获取失败，可能会自行恢复。")
 		//	Config.IFC = true
 		//}
-		b2 := av2(cookie)
-		if b2 == false {
-			if ck.Available == True {
-				ck.Update(Available, False)
-				logs.Info(ck.Available)
-				if Config.Wskey {
-					if len(ck.WsKey) > 0 {
-						var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-						msg, err := getKey(pinky)
-						if err != nil {
-							logs.Error(err)
-						}
-						//JdCookie{}.Push(fmt.Sprintf("自动转换wskey---%s", msg))
-						//缺少错误判断
-						if strings.Contains(msg, "错误") {
-							ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
-							(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
-						} else {
-							ptKey := FetchJdCookieValue("pt_key", msg)
-							ptPin := FetchJdCookieValue("pt_pin", msg)
-							logs.Info(ptPin)
-							ck := JdCookie{
-								PtKey: ptKey,
-								PtPin: ptPin,
-							}
-							if nck, err := GetJdCookie(ptPin); err == nil {
-								nck.InPool(ck.PtKey)
-								msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-								(&JdCookie{}).Push(msg)
-								logs.Info(msg)
-							} else {
-								//nck.Update(Available, False)
-								(&JdCookie{}).Push(fmt.Sprintf("转换失败，%s", nck.PtPin))
-							}
-						}
 
-					} else {
-						ck.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-						JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-					}
-				} else {
-					ck.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-					JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-				}
-
-			}
-			return false
-		} else {
-			return true
-		}
+		return av2(cookie)
 	}
 	//if Config.IFC {
 	//	(&JdCookie{}).Push("第一个接口恢复，切换回第一接口，恭喜你IP洗白白了")
 	//	Config.IFC = false
 	//}
 	switch ui.Retcode {
-	case "1001": //ck.BeanNum
-		if ui.Msg == "not login" {
-			if ck.Available == True {
-				ck.Update(Available, False)
-				logs.Info(ck.Available)
-				if Config.Wskey {
-					if len(ck.WsKey) > 0 {
-						var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-						msg, err := getKey(pinky)
-						if err != nil {
-							logs.Error(err)
-						}
-						//JdCookie{}.Push(fmt.Sprintf("自动转换wskey---%s", msg))
-						//缺少错误判断
-						if strings.Contains(msg, "错误") {
-							ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
-							(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
-						} else {
-							ptKey := FetchJdCookieValue("pt_key", msg)
-							ptPin := FetchJdCookieValue("pt_pin", msg)
-							logs.Info(ptPin)
-							ck := JdCookie{
-								PtKey: ptKey,
-								PtPin: ptPin,
-							}
-							if nck, err := GetJdCookie(ptPin); err == nil {
-								nck.InPool(ck.PtKey)
-								msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-								(&JdCookie{}).Push(msg)
-								logs.Info(msg)
-							} else {
-								//nck.Update(Available, False)
-								(&JdCookie{}).Push(fmt.Sprintf("转换失败，%s", nck.PtPin))
-							}
-						}
-
-					} else {
-						ck.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-						JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-					}
-				} else {
-					ck.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-					JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-				}
-
-			}
-			return false
-		}
+	//case "1001": //ck.BeanNum
+	//	if ui.Msg == "not login" {
+	//		return false
+	//	}
 	case "0":
 		if url.QueryEscape(ui.Data.UserInfo.BaseInfo.CurPin) != ck.PtPin {
 			return av2(cookie)
