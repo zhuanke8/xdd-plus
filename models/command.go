@@ -303,8 +303,9 @@ var codeSignals = []CodeSignal{
 	{
 		Command: []string{"开始检测"},
 		Handle: func(sender *Sender) interface{} {
+			sender.Reply("开始检测所有账号")
 			initCookie()
-			return "开始检测所有CK有效性"
+			return "检测完成"
 		},
 	},
 
