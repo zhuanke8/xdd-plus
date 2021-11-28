@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/buger/jsonparser"
 	"net/url"
 	"strings"
 	"time"
@@ -247,7 +248,7 @@ func CookieOK(ck *JdCookie) bool {
 		//	Config.IFC = true
 		//}
 
-		return av2(cookie)
+		return av2(ck)
 	}
 	//if Config.IFC {
 	//	(&JdCookie{}).Push("第一个接口恢复，切换回第一接口，恭喜你IP洗白白了")
@@ -260,7 +261,7 @@ func CookieOK(ck *JdCookie) bool {
 	//	}
 	case "0":
 		if url.QueryEscape(ui.Data.UserInfo.BaseInfo.CurPin) != ck.PtPin {
-			return av2(cookie)
+			return av2(ck)
 		}
 		if ui.Data.UserInfo.BaseInfo.Nickname != ck.Nickname || ui.Data.AssetInfo.BeanNum != ck.BeanNum || ui.Data.UserInfo.BaseInfo.UserLevel != ck.UserLevel || ui.Data.UserInfo.BaseInfo.LevelName != ck.LevelName {
 			ck.Updates(JdCookie{
@@ -278,10 +279,11 @@ func CookieOK(ck *JdCookie) bool {
 		return true
 	}
 	//(&JdCookie{}).Push("第一个接口失效，切换到第二个接口，可能黑IP")
-	return av2(cookie)
+	return av2(ck)
 }
 
-func av2(cookie string) bool {
+func av2(ck *JdCookie) bool {
+	cookie := "pt_key=" + ck.PtKey + ";pt_pin=" + ck.PtPin + ";"
 	req := httplib.Get(`https://m.jingxi.com/user/info/GetJDUserBaseInfo?_=1629334995401&sceneval=2&g_login_type=1&g_ty=ls`)
 	req.Header("User-Agent", ua)
 	req.Header("Host", "m.jingxi.com")
@@ -291,20 +293,10 @@ func av2(cookie string) bool {
 	req.Header("Accept-Encoding", "gzip, deflate, br")
 	req.Header("Referer", "https://st.jingxi.com/my/userinfo.html?&ptag=7205.12.4")
 	req.Header("Cookie", cookie)
-	data, err := req.String()
+	data, err := req.Bytes()
 	if err != nil {
 		return true
 	}
-	if strings.Contains(data, "login") {
-		return false
-	} else if strings.Contains(data, "nickname") {
-		return true
-	} else {
-		if !Config.IFC {
-			(&JdCookie{}).Push("全部接口都失效，现已无法检测，可能黑IP，会导致NickName获取失败，可能会自行恢复。")
-			Config.IFC = true
-		}
-		return true
-	}
-	return !strings.Contains(data, "login")
+	ck.Nickname, _ = jsonparser.GetString(data, "nickname")
+	return !strings.Contains(string(data), "login")
 }

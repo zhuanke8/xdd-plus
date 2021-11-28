@@ -357,7 +357,7 @@ var codeSignals = []CodeSignal{
 	{
 		Command: []string{"查询", "query"},
 		Handle: func(sender *Sender) interface{} {
-			sender.Reply("您有多个账号，将依次为您展示查询结果：")
+			sender.Reply("如果您有多个账号，将依次为您展示查询结果：")
 			if sender.IsAdmin {
 				sender.handleJdCookies(func(ck *JdCookie) {
 					time.Sleep(time.Second * time.Duration(Config.Later))
