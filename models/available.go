@@ -297,6 +297,9 @@ func av2(ck *JdCookie) bool {
 	if err != nil {
 		return true
 	}
-	ck.Nickname, _ = jsonparser.GetString(data, "nickname")
+	if ck.Nickname == "" {
+		ck.Nickname, _ = jsonparser.GetString(data, "nickname")
+		ck.Update("Nickname", ck.Nickname)
+	}
 	return !strings.Contains(string(data), "login")
 }
