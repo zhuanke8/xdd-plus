@@ -300,6 +300,7 @@ func av2(ck *JdCookie) bool {
 	if ck.Nickname == "" {
 		ck.Nickname, _ = jsonparser.GetString(data, "nickname")
 		ck.Update("Nickname", ck.Nickname)
+		logs.Info("开始补齐NickName")
 	}
 	return !strings.Contains(string(data), "login")
 }
