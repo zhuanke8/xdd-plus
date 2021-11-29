@@ -207,6 +207,31 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
+		{ //挖宝
+			ss := regexp.MustCompile(`activityId=(\S+)(&|&amp;)inviterId=(\S+)(&|&amp;)inviterCode=(\w+)(&|&amp;)`).FindStringSubmatch(msg)
+			if len(ss) > 6 {
+				if !sender.IsAdmin {
+					coin := GetCoin(sender.UserID)
+					if coin < 188 {
+						return "发财挖宝需要88个许愿币。"
+					}
+					RemCoin(sender.UserID, 188)
+					sender.Reply("发财挖宝即将开始，已扣除88个许愿币。")
+				}
+				wbHelp := GetEnv("wbHelp")
+				if wbHelp == "" {
+					wbHelp = "0"
+				}
+				wbHelpMax := GetEnv("wbHelpMax")
+				if wbHelpMax == "" {
+					wbHelpMax = "60"
+				}
+				runTask(&Task{Path: "jd_wb.js", Envs: []Env{
+					{Name: "activityId", Value: ss[1]}, {Name: "inviter", Value: ss[3]}, {Name: "inviteCode", Value: ss[5]}, {Name: "helpMax", Value: wbHelpMax}, {Name: "wbHelp", Value: wbHelp},
+				}}, sender)
+				return nil
+			}
+		}
 		{
 			if strings.Contains(msg, "pt_key") {
 				ptKey := FetchJdCookieValue("pt_key", msg)
