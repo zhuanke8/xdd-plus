@@ -21,7 +21,7 @@ func initCron() {
 		c.AddFunc("3 */1 * * *", initVersion)
 		c.AddFunc("40 */1 * * *", GitPullAll)
 	}
-	logs.Info("0 " + strconv.Itoa(rand.Intn(59)) + " 0/" + strconv.Itoa(Config.Later) + " * * ?" + "调试推送时间")
+	//logs.Info("0 " + strconv.Itoa(rand.Intn(59)) + " 0/" + strconv.Itoa(Config.Later) + " * * ?" + "调试推送时间")
 	c.AddFunc("0 "+strconv.Itoa(rand.Intn(59))+" 0/"+strconv.Itoa(Config.Later)+" * * ?", initCookie)
 
 	c.Start()
