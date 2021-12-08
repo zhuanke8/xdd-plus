@@ -10,7 +10,7 @@ require (
 	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
 	github.com/EDDYCJY/fake-useragent v0.2.0
 	github.com/Mrs4s/MiraiGo v0.0.0-20210726103104-1d68826cef0e
-	github.com/Mrs4s/go-cqhttp v1.0.0-beta8
+	github.com/Mrs4s/go-cqhttp v1.0.0-beta5
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/beego/beego/v2 v2.0.1
 	github.com/buger/jsonparser v1.1.1
