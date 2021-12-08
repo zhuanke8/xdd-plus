@@ -14,6 +14,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/beego/beego/v2 v2.0.1
 	github.com/buger/jsonparser v1.1.1
+	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
