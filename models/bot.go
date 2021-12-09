@@ -102,12 +102,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 	}
-	switch msg {
-	default:
-		{
-			regex := "^\\d{6}$"
-			reg := regexp.MustCompile(regex)
-			if Config.VIP {
+	if Config.VIP {
+		switch msg {
+		default:
+			{
+				regex := "^\\d{6}$"
+				reg := regexp.MustCompile(regex)
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
 					addr := Config.Jdcurl
@@ -181,9 +181,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					}
 				}
 			}
-		}
-		{
-			if Config.VIP {
+			{
 				ist := findMapKey3(string(sender.UserID), pcodes)
 				if strings.EqualFold(ist, "true") {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
@@ -240,10 +238,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					}
 				}
 			}
-		}
-		//识别登录
-		{
-			if Config.VIP {
+			//识别登录
+			{
 				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
 					var tabcount int64
 					addr := Config.Jdcurl
@@ -264,10 +260,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 				}
 			}
-		}
-		{
-			//发财挖宝
-			if Config.VIP {
+			{
+				//发财挖宝
 				//dyj
 				inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)inviterCode`).FindStringSubmatch(msg)
 				inviterCode := regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
@@ -287,23 +281,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					return nil
 				}
 			}
-		}
-		{ //沃邮箱
-			ss := regexp.MustCompile(`https://nyan.mail.*3D`).FindStringSubmatch(msg)
-			if len(ss) > 0 {
-				var u User
-				if db.Where("number = ?", sender.UserID).First(&u).Error != nil {
-					return 0
-				}
-				db.Model(u).Updates(map[string]interface{}{
-					"womail": ss[0],
-				})
-				sender.Reply(fmt.Sprintf("沃邮箱提交成功!"))
-				return nil
-			}
-		}
-		{
-			if Config.VIP {
+			{
 				if strings.Contains(msg, "口令") {
 					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
 					rsp.Param("url", msg)
@@ -321,6 +299,26 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						return string(body)
 					}
 				}
+			}
+
+		}
+	}
+
+	switch msg {
+	default:
+
+		{ //沃邮箱
+			ss := regexp.MustCompile(`https://nyan.mail.*3D`).FindStringSubmatch(msg)
+			if len(ss) > 0 {
+				var u User
+				if db.Where("number = ?", sender.UserID).First(&u).Error != nil {
+					return 0
+				}
+				db.Model(u).Updates(map[string]interface{}{
+					"womail": ss[0],
+				})
+				sender.Reply(fmt.Sprintf("沃邮箱提交成功!"))
+				return nil
 			}
 		}
 		{

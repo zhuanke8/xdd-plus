@@ -430,7 +430,7 @@ func Main() {
 	//		if err := h.Decode(hc); err != nil {
 	//			log.Warn("读取http配置失败 :", err)
 	//		} else {
-	//			go server.RunHTTPServerAndClients(bot, hc)
+	//			go server.WebsocketReverse{}
 	//		}
 	//	}
 	//	if s, ok := m["ws"]; ok {

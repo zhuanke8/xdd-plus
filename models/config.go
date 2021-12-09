@@ -69,6 +69,11 @@ func initConfig() {
 	if _, err := os.Stat(confDir); err != nil {
 		os.MkdirAll(confDir, os.ModePerm)
 	}
+	botDir := ExecPath + "/conf"
+	if _, err := os.Stat(botDir); err != nil {
+		os.MkdirAll(botDir, os.ModePerm)
+	}
+
 	for _, name := range []string{"app.conf", "config.yaml", "reply.php"} {
 		f, err := os.OpenFile(ExecPath+"/conf/"+name, os.O_RDWR|os.O_CREATE, 0777)
 		if err != nil {
@@ -114,9 +119,6 @@ func initConfig() {
 	}
 	if Config.Tyt == 0 {
 		Config.Tyt = 8
-	}
-	if Config.Later == 0 {
-		Config.Later = 60
 	}
 	if Config.Database == "" {
 		Config.Database = ExecPath + "/.xdd.db"
