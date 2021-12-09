@@ -93,8 +93,8 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 			}
 		}
 		if !ok {
-			sender.Reply("你尚未绑定🐶东账号，请提交wskey，提交后即可查询账户资产信息。")
-			return errors.New("你尚未绑定🐶东账号，请提交wskey，提交后即可查询账户资产信息。")
+			sender.Reply("你尚未绑定🐶东账号，请发送教程获取最新上车方法。")
+			return errors.New("你尚未绑定🐶东账号，请发送教程获取最新上车方法。")
 		}
 	} else {
 		cks = LimitJdCookie(cks, a)
@@ -459,10 +459,10 @@ var codeSignals = []CodeSignal{
 				}
 				if !sender.IsAdmin {
 					if cost > 1 {
-						return "你只能获得1互助值"
+						return "您只能获得1互助值"
 					} else {
 						AddCoin(sender.UserID)
-						return "太可怜了，给你1互助值"
+						return "获得1互助值"
 					}
 				} else {
 					AdddCoin(sender.UserID, cost)
