@@ -186,6 +186,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if strings.EqualFold(ist, "true") {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 					reg := regexp.MustCompile(regular)
+                    sender.Reply("请耐心等待...")
 					if reg.MatchString(msg) {
 						addr := Config.Jdcurl
 						req := httplib.Post(addr + "/api/SendSMS")
