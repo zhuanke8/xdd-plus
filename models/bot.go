@@ -716,7 +716,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 	n := 0
 	cks := GetJdCookies()
 	for i := len(cks); i > 0; i-- {
-		if k > 125 {
+		if k > 30 {
 			return k, n, true
 		}
 		time.Sleep(time.Second * time.Duration(3))
