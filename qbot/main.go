@@ -19,7 +19,7 @@ import (
 	"github.com/Mrs4s/go-cqhttp/coolq"
 	"github.com/Mrs4s/go-cqhttp/global"
 	//"github.com/Mrs4s/go-cqhttp/global/config"
-	"github.com/cdle/xdd/models"
+	"github.com/zhuanke8/xdd-plus/models"
 
 	"github.com/Mrs4s/MiraiGo/binary"
 	"github.com/Mrs4s/MiraiGo/client"
