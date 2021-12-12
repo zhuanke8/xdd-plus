@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
-	"github.com/zhuanke8/xdd/models"
+	"github.com/zhuanke8/xdd-plus/models"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"gopkg.in/go-playground/validator.v9"

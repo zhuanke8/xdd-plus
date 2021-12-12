@@ -11,9 +11,9 @@ import (
 	"github.com/beego/beego/v2/server/web/context"
 
 	"github.com/beego/beego/v2/server/web"
-	"github.com/zhuanke8/xdd/controllers"
-	"github.com/zhuanke8/xdd/models"
-	"github.com/zhuanke8/xdd/qbot"
+	"github.com/zhuanke8/xdd-plus/controllers"
+	"github.com/zhuanke8/xdd-plus/models"
+	"github.com/zhuanke8/xdd-plus/qbot"
 )
 
 var theme = ""

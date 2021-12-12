@@ -1,43 +1,31 @@
 package qbot
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/aes"
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/hex"
-	"flag"
-	"fmt"
-	"github.com/beego/beego/v2/core/logs"
+	"github.com/Mrs4s/go-cqhttp/modules/config"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/Mrs4s/go-cqhttp/coolq"
 	"github.com/Mrs4s/go-cqhttp/global"
-	"github.com/Mrs4s/go-cqhttp/global/config"
-	"github.com/zhuanke8/xdd/models"
-
-	// "github.com/Mrs4s/go-cqhttp/global/terminal"
-	"github.com/Mrs4s/go-cqhttp/global/update"
-	"github.com/Mrs4s/go-cqhttp/server"
+	//"github.com/Mrs4s/go-cqhttp/global/config"
+	"github.com/cdle/xdd/models"
 
 	"github.com/Mrs4s/MiraiGo/binary"
 	"github.com/Mrs4s/MiraiGo/client"
 	"github.com/Mrs4s/MiraiGo/message"
-	"github.com/guonaihong/gout"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	log "github.com/sirupsen/logrus"
-	easy "github.com/t-tomalak/logrus-easy-formatter"
-	"github.com/tidwall/gjson"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/term"
 )
@@ -76,15 +64,7 @@ func Main() {
 		switch msg.(type) {
 		case string:
 			if bot != nil {
-				if strings.Contains(msg.(string), "data:image") {
-					photo := msg.(string)
-					logs.Info(photo)
-					//b := []byte(photo)
-					//log.Error(b)
-					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&coolq.LocalImageElement{File: "./output.jpg"}}})
-				} else {
-					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
-				}
+				bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
 			}
 		case *http.Response:
 			data, _ := ioutil.ReadAll(msg.(*http.Response).Body)
@@ -126,27 +106,28 @@ func Main() {
 	// 	resetWorkDir(*wd)
 	// }
 
-	// 通过-c 参数替换 配置文件路径
-	// config.DefaultConfigFile = models.ExecPath + "/qbot"
-	// conf = config.Get()
+	//通过-c 参数替换 配置文件路径
+	//config = models.ExecPath + "/qbot/config.yml"
+	conf = config.Parse(models.ExecPath + "/qbot/config.yml")
 
-	if models.Config.QbotConfigFile != "" {
-		config.DefaultConfigFile = models.Config.QbotConfigFile
-		conf = config.Get()
-	} else {
-		conf = &config.Config{}
-	}
+	//if models.Config.QbotConfigFile != "" {
+	//	//config.DefaultConfigFile = models.Config.QbotConfigFile
+	//	//conf = config.Config{}
+	//} else {
+	//	conf = &config.Config{}
+	//}
+
 	// if *debug {
 	// 	conf.Output.Debug = true
 	// }
 	if conf.Output.Debug {
 		log.SetReportCaller(true)
 	}
-
-	logFormatter := &easy.Formatter{
-		TimestampFormat: "2006-01-02 15:04:05",
-		LogFormat:       "[%time%] [%lvl%]: %msg% \n",
-	}
+	//
+	//logFormatter := &easy.Formatter{
+	//	TimestampFormat: "2006-01-02 15:04:05",
+	//	LogFormat:       "[%time%] [%lvl%]: %msg% \n",
+	//}
 	rotateOptions := []rotatelogs.Option{
 		rotatelogs.WithRotationTime(time.Hour * 24),
 	}
@@ -158,13 +139,13 @@ func Main() {
 		rotateOptions = append(rotateOptions, rotatelogs.ForceNewFile())
 	}
 
-	w, err := rotatelogs.New(path.Join("logs", "%Y-%m-%d.log"), rotateOptions...)
-	if err != nil {
-		log.Errorf("rotatelogs init err: %v", err)
-		panic(err)
-	}
+	//w, err := rotatelogs.New(path.Join("logs", "%Y-%m-%d.log"), rotateOptions...)
+	//if err != nil {
+	//	log.Errorf("rotatelogs init err: %v", err)
+	//	panic(err)
+	//}
 
-	log.AddHook(global.NewLocalHook(w, logFormatter, global.GetLogLevel(conf.Output.LogLevel)...))
+	//log.AddHook(global.NewLocalHook(w, logFormatter, global.GetLogLevel(conf.Output.LogLevel)...))
 
 	mkCacheDir := func(path string, _type string) {
 		if !global.PathExists(path) {
@@ -184,11 +165,11 @@ func Main() {
 		for i := range arg {
 			switch arg[i] {
 			case "update":
-				if len(arg) > i+1 {
-					selfUpdate(arg[i+1])
-				} else {
-					selfUpdate("")
-				}
+				//if len(arg) > i+1 {
+				//	selfUpdate(arg[i+1])
+				//} else {
+				//	selfUpdate("")
+				//}
 			case "key":
 				if len(arg) > i+1 {
 					byteKey = []byte(arg[i+1])
@@ -303,7 +284,7 @@ func Main() {
 		return "未知"
 	}())
 	cli = newClient()
-	global.Proxy = conf.Message.ProxyRewrite
+	//global.Proxy = conf.Message.ProxyRewrite
 	isQRCodeLogin := (conf.Account.Uin == 0 || len(conf.Account.Password) == 0) && !conf.Account.Encrypt
 	isTokenLogin := false
 	saveToken := func() {
@@ -409,11 +390,12 @@ func Main() {
 	log.Infof("开始加载群列表...")
 	global.Check(cli.ReloadGroupList(), true)
 	log.Infof("共加载 %v 个群.", len(cli.GroupList))
-	if conf.Account.Status >= int32(len(allowStatus)) || conf.Account.Status < 0 {
-		conf.Account.Status = 0
-	}
+	//if conf.Account.Status >= int32(len(allowStatus)) || conf.Account.Status < 0 {
+	//	conf.Account.Status = 0
+	//}
+	conf.Account.Status = 0
 	cli.SetOnlineStatus(allowStatus[int(conf.Account.Status)])
-	bot = coolq.NewQQBot(cli, conf)
+	bot = coolq.NewQQBot(cli)
 
 	_ = bot.Client
 	if models.Config.IsAddFriend {
@@ -421,60 +403,69 @@ func Main() {
 			a.Accept()
 		})
 	}
-	if conf.Message.PostFormat != "string" && conf.Message.PostFormat != "array" {
-		log.Warnf("post-format 配置错误, 将自动使用 string")
-		coolq.SetMessageFormat("string")
-	} else {
-		coolq.SetMessageFormat(conf.Message.PostFormat)
-	}
-	coolq.IgnoreInvalidCQCode = conf.Message.IgnoreInvalidCQCode
-	coolq.SplitURL = conf.Message.FixURL
-	coolq.ForceFragmented = conf.Message.ForceFragment
-	coolq.RemoveReplyAt = conf.Message.RemoveReplyAt
-	coolq.ExtraReplyData = conf.Message.ExtraReplyData
-	coolq.SkipMimeScan = conf.Message.SkipMimeScan
-	for _, m := range conf.Servers {
-		if h, ok := m["http"]; ok {
-			hc := new(config.HTTPServer)
-			if err := h.Decode(hc); err != nil {
-				log.Warn("读取http配置失败 :", err)
-			} else {
-				go server.RunHTTPServerAndClients(bot, hc)
-			}
-		}
-		if s, ok := m["ws"]; ok {
-			sc := new(config.WebsocketServer)
-			if err := s.Decode(sc); err != nil {
-				log.Warn("读取正向Websocket配置失败 :", err)
-			} else {
-				go server.RunWebSocketServer(bot, sc)
-			}
-		}
-		if c, ok := m["ws-reverse"]; ok {
-			rc := new(config.WebsocketReverse)
-			if err := c.Decode(rc); err != nil {
-				log.Warn("读取反向Websocket配置失败 :", err)
-			} else {
-				go server.RunWebSocketClient(bot, rc)
-			}
-		}
-		if p, ok := m["pprof"]; ok {
-			pc := new(config.PprofServer)
-			if err := p.Decode(pc); err != nil {
-				log.Warn("读取pprof配置失败 :", err)
-			} else {
-				go server.RunPprofServer(pc)
-			}
-		}
-		if p, ok := m["lambda"]; ok {
-			lc := new(config.LambdaServer)
-			if err := p.Decode(lc); err != nil {
-				log.Warn("读取pprof配置失败 :", err)
-			} else {
-				go server.RunLambdaClient(bot, lc)
-			}
-		}
-	}
+
+	bot.Client.OnTempMessage(func(qqClient *client.QQClient, event *client.TempMessageEvent) {
+		models.ListenQQPrivateMessage(event.Session.Sender, event.Message.ToString())
+	})
+
+	//if conf.Message.PostFormat != "string" && conf.Message.PostFormat != "array" {
+	//	log.Warnf("post-format 配置错误, 将自动使用 string")
+	//	coolq.SetMessageFormat("string")
+	//} else {
+	//	coolq.SetMessageFormat(conf.Message.PostFormat)
+	//}
+	//coolq.MessageSourceType()
+
+	//coolq.IgnoreInvalidCQCode = conf.Message.IgnoreInvalidCQCode
+	//coolq.SplitURL = conf.Message.FixURL
+	//coolq.ForceFragmented = conf.Message.ForceFragment
+	//coolq.RemoveReplyAt = conf.Message.RemoveReplyAt
+	//coolq.ExtraReplyData = conf.Message.ExtraReplyData
+	//coolq.SkipMimeScan = conf.Message.SkipMimeScan
+	//加载WS地址
+
+	//for _, m := range conf.Servers {
+	//	if h, ok := m["http"]; ok {
+	//		hc := new(config.HTTPServer)
+	//		if err := h.Decode(hc); err != nil {
+	//			log.Warn("读取http配置失败 :", err)
+	//		} else {
+	//			go server.WebsocketReverse{}
+	//		}
+	//	}
+	//	if s, ok := m["ws"]; ok {
+	//		sc := new(config.WebsocketServer)
+	//		if err := s.Decode(sc); err != nil {
+	//			log.Warn("读取正向Websocket配置失败 :", err)
+	//		} else {
+	//			go server.RunWebSocketServer(bot, sc)
+	//		}
+	//	}
+	//	if c, ok := m["ws-reverse"]; ok {
+	//		rc := new(config.WebsocketReverse)
+	//		if err := c.Decode(rc); err != nil {
+	//			log.Warn("读取反向Websocket配置失败 :", err)
+	//		} else {
+	//			go server.RunWebSocketClient(bot, rc)
+	//		}
+	//	}
+	//	if p, ok := m["pprof"]; ok {
+	//		pc := new(config.PprofServer)
+	//		if err := p.Decode(pc); err != nil {
+	//			log.Warn("读取pprof配置失败 :", err)
+	//		} else {
+	//			go server.RunPprofServer(pc)
+	//		}
+	//	}
+	//	if p, ok := m["lambda"]; ok {
+	//		lc := new(config.LambdaServer)
+	//		if err := p.Decode(lc); err != nil {
+	//			log.Warn("读取pprof配置失败 :", err)
+	//		} else {
+	//			go server.RunLambdaClient(bot, lc)
+	//		}
+	//	}
+	//}
 	log.Info("资源初始化完成, 开始处理信息.")
 	log.Info("アトリは、高性能ですから!")
 
@@ -511,102 +502,102 @@ func PasswordHashDecrypt(encryptedPasswordHash string, key []byte) ([]byte, erro
 	return result, nil
 }
 
-func checkUpdate() {
-	log.Infof("正在检查更新.")
-	if coolq.Version == "(devel)" {
-		log.Warnf("检查更新失败: 使用的 Actions 测试版或自编译版本.")
-		return
-	}
-	var res string
-	if err := gout.GET("https://api.github.com/repos/Mrs4s/go-cqhttp/releases/latest").BindBody(&res).Do(); err != nil {
-		log.Warnf("检查更新失败: %v", err)
-		return
-	}
-	info := gjson.Parse(res)
-	if global.VersionNameCompare(coolq.Version, info.Get("tag_name").Str) {
-		log.Infof("当前有更新的 go-cqhttp 可供更新, 请前往 https://github.com/Mrs4s/go-cqhttp/releases 下载.")
-		log.Infof("当前版本: %v 最新版本: %v", coolq.Version, info.Get("tag_name").Str)
-		return
-	}
-	log.Infof("检查更新完成. 当前已运行最新版本.")
-}
+//func checkUpdate() {
+//	log.Infof("正在检查更新.")
+//	if coolq.Version == "(devel)" {
+//		log.Warnf("检查更新失败: 使用的 Actions 测试版或自编译版本.")
+//		return
+//	}
+//	var res string
+//	if err := gout.GET("https://api.github.com/repos/Mrs4s/go-cqhttp/releases/latest").BindBody(&res).Do(); err != nil {
+//		log.Warnf("检查更新失败: %v", err)
+//		return
+//	}
+//	info := gjson.Parse(res)
+//	if global.VersionNameCompare(coolq.Version, info.Get("tag_name").Str) {
+//		log.Infof("当前有更新的 go-cqhttp 可供更新, 请前往 https://github.com/Mrs4s/go-cqhttp/releases 下载.")
+//		log.Infof("当前版本: %v 最新版本: %v", coolq.Version, info.Get("tag_name").Str)
+//		return
+//	}
+//	log.Infof("检查更新完成. 当前已运行最新版本.")
+//}
 
-func selfUpdate(imageURL string) {
-	log.Infof("正在检查更新.")
-	var res, r string
-	if err := gout.GET("https://api.github.com/repos/Mrs4s/go-cqhttp/releases/latest").BindBody(&res).Do(); err != nil {
-		log.Warnf("检查更新失败: %v", err)
-		return
-	}
-	info := gjson.Parse(res)
-	version := info.Get("tag_name").Str
-	if coolq.Version == version {
-		log.Info("当前版本已经是最新版本!")
-		goto wait
-	}
-	log.Info("当前最新版本为 ", version)
-	log.Warn("是否更新(y/N): ")
-	r = strings.TrimSpace(readLine())
-	if r != "y" && r != "Y" {
-		log.Warn("已取消更新！")
-	} else {
-		log.Info("正在更新,请稍等...")
-		sumURL := fmt.Sprintf("%v/Mrs4s/go-cqhttp/releases/download/%v/go-cqhttp_checksums.txt",
-			func() string {
-				if imageURL != "" {
-					return imageURL
-				}
-				return "https://github.com"
-			}(), version)
-		closer, err := global.HTTPGetReadCloser(sumURL)
-		if err != nil {
-			log.Error("更新失败: ", err)
-			goto wait
-		}
-		rd := bufio.NewReader(closer)
-		binaryName := fmt.Sprintf("go-cqhttp_%v_%v.%v", runtime.GOOS, func() string {
-			if runtime.GOARCH == "arm" {
-				return "armv7"
-			}
-			return runtime.GOARCH
-		}(), func() string {
-			if runtime.GOOS == "windows" {
-				return "zip"
-			}
-			return "tar.gz"
-		}())
-		var sum []byte
-		for {
-			str, err := rd.ReadString('\n')
-			if err != nil {
-				break
-			}
-			str = strings.TrimSpace(str)
-			if strings.HasSuffix(str, binaryName) {
-				sum, _ = hex.DecodeString(strings.TrimSuffix(str, "  "+binaryName))
-				break
-			}
-		}
-		url := fmt.Sprintf("%v/Mrs4s/go-cqhttp/releases/download/%v/%v",
-			func() string {
-				if imageURL != "" {
-					return imageURL
-				}
-				return "https://github.com"
-			}(), version, binaryName)
-
-		err = update.Update(url, sum)
-		if err != nil {
-			log.Error("更新失败: ", err)
-		} else {
-			log.Info("更新成功!")
-		}
-	}
-wait:
-	log.Info("按 Enter 继续....")
-	readLine()
-	os.Exit(0)
-}
+//func selfUpdate(imageURL string) {
+//	log.Infof("正在检查更新.")
+//	var res, r string
+//	if err := gout.GET("https://api.github.com/repos/Mrs4s/go-cqhttp/releases/latest").BindBody(&res).Do(); err != nil {
+//		log.Warnf("检查更新失败: %v", err)
+//		return
+//	}
+//	info := gjson.Parse(res)
+//	version := info.Get("tag_name").Str
+//	if coolq.Version == version {
+//		log.Info("当前版本已经是最新版本!")
+//		goto wait
+//	}
+//	log.Info("当前最新版本为 ", version)
+//	log.Warn("是否更新(y/N): ")
+//	r = strings.TrimSpace(readLine())
+//	if r != "y" && r != "Y" {
+//		log.Warn("已取消更新！")
+//	} else {
+//		log.Info("正在更新,请稍等...")
+//		sumURL := fmt.Sprintf("%v/Mrs4s/go-cqhttp/releases/download/%v/go-cqhttp_checksums.txt",
+//			func() string {
+//				if imageURL != "" {
+//					return imageURL
+//				}
+//				return "https://github.com"
+//			}(), version)
+//		closer, err := global.HTTPGetReadCloser(sumURL)
+//		if err != nil {
+//			log.Error("更新失败: ", err)
+//			goto wait
+//		}
+//		rd := bufio.NewReader(closer)
+//		binaryName := fmt.Sprintf("go-cqhttp_%v_%v.%v", runtime.GOOS, func() string {
+//			if runtime.GOARCH == "arm" {
+//				return "armv7"
+//			}
+//			return runtime.GOARCH
+//		}(), func() string {
+//			if runtime.GOOS == "windows" {
+//				return "zip"
+//			}
+//			return "tar.gz"
+//		}())
+//		var sum []byte
+//		for {
+//			str, err := rd.ReadString('\n')
+//			if err != nil {
+//				break
+//			}
+//			str = strings.TrimSpace(str)
+//			if strings.HasSuffix(str, binaryName) {
+//				sum, _ = hex.DecodeString(strings.TrimSuffix(str, "  "+binaryName))
+//				break
+//			}
+//		}
+//		url := fmt.Sprintf("%v/Mrs4s/go-cqhttp/releases/download/%v/%v",
+//			func() string {
+//				if imageURL != "" {
+//					return imageURL
+//				}
+//				return "https://github.com"
+//			}(), version, binaryName)
+//
+//		err = update.Update(url, sum)
+//		if err != nil {
+//			log.Error("更新失败: ", err)
+//		} else {
+//			log.Info("更新成功!")
+//		}
+//	}
+//wait:
+//	log.Info("按 Enter 继续....")
+//	readLine()
+//	os.Exit(0)
+//}
 
 /*
 func restart(args []string) {
@@ -642,20 +633,20 @@ func restart(args []string) {
 */
 
 // help cli命令行-h的帮助提示
-func help() {
-	fmt.Printf(`go-cqhttp service
-version: %s
-
-Usage:
-
-server [OPTIONS]
-
-Options:
-`, coolq.Version)
-
-	flag.PrintDefaults()
-	os.Exit(0)
-}
+//func help() {
+//	fmt.Printf(`go-cqhttp service
+//version: %s
+//
+//Usage:
+//
+//server [OPTIONS]
+//
+//Options:
+//`, coolq.Version)
+//
+//	flag.PrintDefaults()
+//	os.Exit(0)
+//}
 
 func resetWorkDir(wd string) {
 	args := make([]string, 0, len(os.Args))

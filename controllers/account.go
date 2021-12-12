@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/zhuanke8/xdd/models"
+	"github.com/zhuanke8/xdd-plus/models"
 )
 
 type AccountController struct {
