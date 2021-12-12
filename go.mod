@@ -1,4 +1,4 @@
-module github.com/cdle/xdd
+module github.com/zhuanke8/xdd-plus
 
 go 1.17
 
