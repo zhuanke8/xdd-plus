@@ -94,7 +94,11 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 		}
 		if !ok {
 			sender.Reply("你的QQ尚未绑定🐶东账号,请加机器人为好友，把正确格式的ck发机器人后即可查询，并且你可以在群里@Q群管家获得帮助、教程和注意事项。")
+<<<<<<< HEAD
 			return errors.New("你的QQ尚未绑定🐶东账号,请加机器人好友，把正确格式的ck发机器人后即可查询。并且你可以在群里@Q群管家获得帮助、教程和注意事项")
+=======
+			return errors.New("你的QQ尚未绑定🐶东账号,请加机器人为好友，把正确格式的ck发机器人后即可查询，并且你可以在群里@Q群管家获得帮助、教程和注意事项。")
+>>>>>>> d38a907 (同步上游)
 		}
 	} else {
 		cks = LimitJdCookie(cks, a)
@@ -269,6 +273,18 @@ var codeSignals = []CodeSignal{
 		Command: []string{"coin", "许愿币", "余额", "yu", "yue"},
 		Handle: func(sender *Sender) interface{} {
 			return fmt.Sprintf("许愿币余额%d", GetCoin(sender.UserID))
+<<<<<<< HEAD
+=======
+		},
+	},
+
+	{
+		Command: []string{"开始检测"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			initCookie()
+			return "检测完成"
+>>>>>>> d38a907 (同步上游)
 		},
 	},
 
@@ -443,6 +459,7 @@ var codeSignals = []CodeSignal{
 				cost = 1
 			}
 
+<<<<<<< HEAD
 			if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
 					return "许愿币不足，先去打卡吧。"
 			} else {
@@ -465,6 +482,32 @@ var codeSignals = []CodeSignal{
 				} else {
 						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
 					time.Sleep(time.Second * 10)
+=======
+				if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
+					return "许愿币不足，先去打卡吧。"
+				} else {
+					sender.Reply(fmt.Sprintf("你使用%d枚许愿币。", cost))
+				}
+				baga := 0
+				if u.Coin > 100000 {
+					baga = u.Coin
+					cost = u.Coin
+				}
+				r := time.Now().Nanosecond() % 10
+				if r < 7 || baga > 0 {
+					sender.Reply(fmt.Sprintf("很遗憾你失去了%d枚许愿币。", cost))
+					cost = -cost
+				} else {
+					if r == 9 {
+						cost *= 4
+						sender.Reply(fmt.Sprintf("恭喜你4倍暴击获得%d枚许愿币，20秒后自动转入余额。", cost))
+						time.Sleep(time.Second * 20)
+					} else {
+						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
+						time.Sleep(time.Second * 10)
+					}
+					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
+>>>>>>> d38a907 (同步上游)
 				}
 					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
 			}
@@ -494,6 +537,7 @@ var codeSignals = []CodeSignal{
 	{
 			Command: []string{"翻翻乐"},
 		Handle: func(sender *Sender) interface{} {
+<<<<<<< HEAD
 
 			cost := Int(sender.JoinContens())
 			if cost <= 0 || cost > 10000 {
@@ -520,6 +564,36 @@ var codeSignals = []CodeSignal{
 				} else {
 						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
 					time.Sleep(time.Second * 10)
+=======
+			if Config.GAMEOPEN {
+				cost := Int(sender.JoinContens())
+				if cost <= 0 || cost > 10000 {
+					cost = 1
+				}
+				u := &User{}
+				if err := db.Where("number = ?", sender.UserID).First(u).Error; err != nil || u.Coin < cost {
+					return "许愿币不足，先去打卡吧。"
+				}
+				baga := 0
+				if u.Coin > 100000 {
+					baga = u.Coin
+					cost = u.Coin
+				}
+				r := time.Now().Nanosecond() % 10
+				if r < 6 || baga > 0 {
+					sender.Reply(fmt.Sprintf("很遗憾你失去了%d枚许愿币。", cost))
+					cost = -cost
+				} else {
+					if r == 9 {
+						cost *= 2
+						sender.Reply(fmt.Sprintf("恭喜你幸运暴击获得%d枚许愿币，20秒后自动转入余额。", cost))
+						time.Sleep(time.Second * 20)
+					} else {
+						sender.Reply(fmt.Sprintf("很幸运你获得%d枚许愿币，10秒后自动转入余额。", cost))
+						time.Sleep(time.Second * 10)
+					}
+					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
+>>>>>>> d38a907 (同步上游)
 				}
 					sender.Reply(fmt.Sprintf("%d枚许愿币已到账。", cost))
 			}
