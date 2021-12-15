@@ -185,9 +185,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				ist := findMapKey3(string(sender.UserID), pcodes)
 				if strings.EqualFold(ist, "true") {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
-					reg := regexp.MustCompile(regular)                
+					reg := regexp.MustCompile(regular)
 					if reg.MatchString(msg) {
-                        sender.Reply("请耐心等待...")
+						sender.Reply("请耐心等待...")
 						addr := Config.Jdcurl
 						req := httplib.Post(addr + "/api/SendSMS")
 						req.Header("content-type", "application/json")
@@ -195,11 +195,15 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						message, _ := jsonparser.GetString(data, "message")
 						success, _ := jsonparser.GetBoolean(data, "success")
 						status, _ := jsonparser.GetInt(data, "data", "status")
+						captcha, _ := jsonparser.GetInt(data, "data", "captcha")
+						if captcha == 0 {
+							captcha = 1
+						}
 						if message != "" && status != 666 {
 							sender.Reply(message)
 						}
 						i := 1
-						if !success && status == 666 && i < 5 {
+						if !success && status == 666 && i < 5 && captcha == 1 {
 
 							sender.Reply("正在进行滑块验证...")
 							for {
@@ -232,6 +236,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								}
 								//sender.Reply(message)
 							}
+						} else if !success && captcha == 2 {
+							s := Config.Jdcurl + "/Captcha/" + msg
+							sender.Reply(fmt.Sprintf("请访问%s进行手动验证", s))
 						} else {
 							sender.Reply("滑块失败，请网页登录")
 						}
