@@ -187,6 +187,9 @@ func updateCookie() {
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp, err := getKey(pinky)
+			if strings.EqualFold(rsp, "") {
+				(&JdCookie{}).Push(fmt.Sprintf("转换失败，请求超时，账号:%s", ck.PtPin))
+			}
 			if err != nil {
 				logs.Error(err)
 			}
