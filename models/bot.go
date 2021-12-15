@@ -237,8 +237,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								//sender.Reply(message)
 							}
 						} else if !success && captcha == 2 {
+							pcodes[string(sender.UserID)] = msg
 							s := Config.Jdcurl + "/Captcha/" + msg
 							sender.Reply(fmt.Sprintf("请访问%s进行手动验证", s))
+
 						} else {
 							sender.Reply("滑块失败，请网页登录")
 						}

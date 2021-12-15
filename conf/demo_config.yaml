@@ -20,6 +20,8 @@ ApiToken: #短信接入token参数
 GameOpen: #自定义是否开启游戏比如搏一把功能。
 Note: #填写pin或者note  填写pin青龙的备注会是pin填写note就是xdd的备注同步到青龙
 Jdcurl: http://127.0.0.1:5801
+Invalid: #自定义失效回复放空默认
+Query: #自定义查询空回复，放空默认
 theme:  
 static: ./static
 master: 
