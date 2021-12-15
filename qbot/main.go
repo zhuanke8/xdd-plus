@@ -18,11 +18,13 @@ import (
 
 	"github.com/Mrs4s/go-cqhttp/coolq"
 	"github.com/Mrs4s/go-cqhttp/global"
+
 	//"github.com/Mrs4s/go-cqhttp/global/config"
 	"github.com/cdle/xdd/models"
 
 	"github.com/Mrs4s/MiraiGo/binary"
 	"github.com/Mrs4s/MiraiGo/client"
+
 	"github.com/Mrs4s/MiraiGo/message"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	log "github.com/sirupsen/logrus"
@@ -336,7 +338,7 @@ func Main() {
 			}
 		}
 	}
-	var times uint = 1 // 重试次数
+	var times uint = 3 // 重试次数
 	var reLoginLock sync.Mutex
 	cli.OnDisconnected(func(q *client.QQClient, e *client.ClientDisconnectedEvent) {
 		reLoginLock.Lock()
@@ -394,7 +396,7 @@ func Main() {
 	//	conf.Account.Status = 0
 	//}
 	conf.Account.Status = 0
-	cli.SetOnlineStatus(allowStatus[int(conf.Account.Status)])
+	cli.SetOnlineStatus(allowStatus[conf.Account.Status])
 	bot = coolq.NewQQBot(cli)
 
 	_ = bot.Client
@@ -426,46 +428,50 @@ func Main() {
 
 	//for _, m := range conf.Servers {
 	//	if h, ok := m["http"]; ok {
-	//		hc := new(config.HTTPServer)
+	//		hc := new(config.Server)
+	//
 	//		if err := h.Decode(hc); err != nil {
 	//			log.Warn("读取http配置失败 :", err)
 	//		} else {
-	//			go server.WebsocketReverse{}
+	//			config.AddServer(hc)
 	//		}
 	//	}
-	//	if s, ok := m["ws"]; ok {
-	//		sc := new(config.WebsocketServer)
-	//		if err := s.Decode(sc); err != nil {
-	//			log.Warn("读取正向Websocket配置失败 :", err)
-	//		} else {
-	//			go server.RunWebSocketServer(bot, sc)
-	//		}
-	//	}
-	//	if c, ok := m["ws-reverse"]; ok {
-	//		rc := new(config.WebsocketReverse)
-	//		if err := c.Decode(rc); err != nil {
-	//			log.Warn("读取反向Websocket配置失败 :", err)
-	//		} else {
-	//			go server.RunWebSocketClient(bot, rc)
-	//		}
-	//	}
-	//	if p, ok := m["pprof"]; ok {
-	//		pc := new(config.PprofServer)
-	//		if err := p.Decode(pc); err != nil {
-	//			log.Warn("读取pprof配置失败 :", err)
-	//		} else {
-	//			go server.RunPprofServer(pc)
-	//		}
-	//	}
-	//	if p, ok := m["lambda"]; ok {
-	//		lc := new(config.LambdaServer)
-	//		if err := p.Decode(lc); err != nil {
-	//			log.Warn("读取pprof配置失败 :", err)
-	//		} else {
-	//			go server.RunLambdaClient(bot, lc)
-	//		}
+	//if s, ok := m["ws"]; ok {
+	//	sc := new()
+	//	if err := s.Decode(sc); err != nil {
+	//		log.Warn("读取正向Websocket配置失败 :", err)
+	//	} else {
+	//
+	//		config.AddServer(sc)
+	//		go server.RunWebSocketServer(bot, sc)
 	//	}
 	//}
+	//if c, ok := m["ws-reverse"]; ok {
+	//	rc := new(config.WebsocketReverse)
+	//	if err := c.Decode(rc); err != nil {
+	//		log.Warn("读取反向Websocket配置失败 :", err)
+	//	} else {
+	//		go server.RunWebSocketClient(bot, rc)
+	//	}
+	//}
+	//if p, ok := m["pprof"]; ok {
+	//	pc := new(config.PprofServer)
+	//	if err := p.Decode(pc); err != nil {
+	//		log.Warn("读取pprof配置失败 :", err)
+	//	} else {
+	//		go server.RunPprofServer(pc)
+	//	}
+	//}
+	//if p, ok := m["lambda"]; ok {
+	//	lc := new(config.LambdaServer)
+	//	if err := p.Decode(lc); err != nil {
+	//		log.Warn("读取pprof配置失败 :", err)
+	//	} else {
+	//		go server.RunLambdaClient(bot, lc)
+	//	}
+	//}
+	//}
+
 	log.Info("资源初始化完成, 开始处理信息.")
 	log.Info("アトリは、高性能ですから!")
 
