@@ -25,6 +25,7 @@ func initHandle() {
 			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
 				return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
 			})
+
 			logs.Info(fmt.Sprintf("总共%d个号", len(cks)))
 			tmp := []JdCookie{}
 			for _, ck := range cks {
