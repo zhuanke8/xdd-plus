@@ -6,12 +6,9 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
-
-	"github.com/beego/beego/v2/client/httplib"
-	"github.com/beego/beego/v2/core/logs"
 )
 
-var version = "20211104"
+var version = "v1.9"
 var describe = "最终稳定版"
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
@@ -20,28 +17,29 @@ func initVersion() {
 	if Config.Version != "" {
 		version = Config.Version
 	}
-	logs.Info("检查更新" + version)
-	value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/764763903a/xdd-plus/main/models/version.go").String()
-	if err != nil {
-		logs.Info("更新版本的失败")
-	} else {
-		// name := AppName + "_" + runtime.GOOS + "_" + runtime.GOARCH
-		if match := regexp.MustCompile(`var version = "(\d{10})"`).FindStringSubmatch(value); len(match) != 0 {
-			des := regexp.MustCompile(`var describe = "([^"]+)"`).FindStringSubmatch(value)
-			if len(des) != 0 {
-				describe = des[1]
-			}
-			if match[1] > version {
-				err := Update(&Sender{})
-				if err != nil {
-					logs.Warn("更新失败,", err)
-					return
-				}
-				(&JdCookie{}).Push("小滴滴更新：" + describe)
-				Daemon()
-			}
-		}
-	}
+	(&JdCookie{}).Push("小滴滴版本：" + version)
+	//logs.Info("检查更新" + version)
+	//value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/764763903a/xdd-plus/main/models/version.go").String()
+	//if err != nil {
+	//	logs.Info("更新版本的失败")
+	//} else {
+	//	// name := AppName + "_" + runtime.GOOS + "_" + runtime.GOARCH
+	//	if match := regexp.MustCompile(`var version = "(\d{10})"`).FindStringSubmatch(value); len(match) != 0 {
+	//		des := regexp.MustCompile(`var describe = "([^"]+)"`).FindStringSubmatch(value)
+	//		if len(des) != 0 {
+	//			describe = des[1]
+	//		}
+	//		if match[1] > version {
+	//			err := Update(&Sender{})
+	//			if err != nil {
+	//				logs.Warn("更新失败,", err)
+	//				return
+	//			}
+	//			(&JdCookie{}).Push("小滴滴更新：" + describe)
+	//			Daemon()
+	//		}
+	//	}
+	//}
 }
 
 func Update(sender *Sender) error {
