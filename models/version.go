@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"github.com/beego/beego/v2/core/logs"
 	"os"
 	"os/exec"
 	"regexp"
@@ -17,6 +18,7 @@ func initVersion() {
 	if Config.Version != "" {
 		version = Config.Version
 	}
+	logs.Info("小滴滴版本：" + version)
 	(&JdCookie{}).Push("小滴滴版本：" + version)
 	//logs.Info("检查更新" + version)
 	//value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/764763903a/xdd-plus/main/models/version.go").String()
