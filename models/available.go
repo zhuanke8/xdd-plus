@@ -175,8 +175,6 @@ func cleanWck() {
 
 func updateCookie() {
 	cks := GetJdCookies()
-	l := len(cks)
-	logs.Info(l)
 	xx := 0
 	yy := 0
 	(&JdCookie{}).Push("开始定时更新转换Wskey")
@@ -194,14 +192,14 @@ func updateCookie() {
 			} else {
 				ptKey := FetchJdCookieValue("pt_key", rsp)
 				ptPin := FetchJdCookieValue("pt_pin", rsp)
-				ck := JdCookie{
+				ck1 := JdCookie{
 					PtKey: ptKey,
 					PtPin: ptPin,
 				}
 				if ptPin != "" || ptKey != "" {
-					if nck, err := GetJdCookie(ck.PtPin); err == nil {
+					if nck, err := GetJdCookie(ck1.PtPin); err == nil {
 						xx++
-						nck.InPool(ck.PtKey)
+						nck.InPool(ck1.PtKey)
 						nck.Update(Available, True)
 						//msg := fmt.Sprintf("定时更新账号，%s", ck.PtPin)
 						////不再发送成功提醒
@@ -209,10 +207,11 @@ func updateCookie() {
 						//logs.Info(msg)
 					} else {
 						yy++
-						ck.Update(Available, False)
+						ck1.Update(Available, False)
 						(&JdCookie{}).Push(fmt.Sprintf("查无匹配得ptpin，%s", ck.PtPin))
 					}
 				} else {
+					yy++
 					logs.Info(rsp)
 					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请求超时，账号:%s", ck.PtPin))
 				}
