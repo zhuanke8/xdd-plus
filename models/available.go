@@ -186,13 +186,7 @@ func updateCookie() {
 			ck := cks[i]
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-			rsp, err := getKey(pinky)
-			if strings.EqualFold(rsp, "") {
-				(&JdCookie{}).Push(fmt.Sprintf("转换失败，请求超时，账号:%s", ck.PtPin))
-			}
-			if err != nil {
-				logs.Error(err)
-			}
+			rsp, _ := getKey(pinky)
 			if strings.Contains(rsp, "fake") {
 				yy++
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
@@ -218,6 +212,9 @@ func updateCookie() {
 						ck.Update(Available, False)
 						(&JdCookie{}).Push(fmt.Sprintf("查无匹配得ptpin，%s", ck.PtPin))
 					}
+				} else {
+					logs.Info(rsp)
+					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请求超时，账号:%s", ck.PtPin))
 				}
 				go func() {
 					Save <- &JdCookie{}
