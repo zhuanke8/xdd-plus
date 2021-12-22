@@ -20,95 +20,95 @@ let tools = []
         return;
     }
     if(!pins){
-         console.log("请设置环境变量dyjHelpPins")
+        console.log("请设置环境变量dyjHelpPins")
     }
     for (let i = 0; i < cookiesArr.length; i++) {
-          cookie = cookiesArr[i];
-          pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
-          if(pins && pins.indexOf(pin)!=-1){
-               data = await openRedEnvelopeInteract({}, cookie)
-               if(data?.code==16020)continue
-               data = await redEnvelopeInteractHome()
-               redEnvelopeId = data?.data?.redEnvelopeId
-               markedPin = data?.data?.markedPin
-               amount = data?.data?.amount
-               helps.push({id: i, redEnvelopeId: redEnvelopeId, markedPin: markedPin})
-          }
-          tools.push({id: i, cookie: cookie})
+        cookie = cookiesArr[i];
+        pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
+        if(pins && pins.indexOf(pin)!=-1){
+            data = await openRedEnvelopeInteract({}, cookie)
+            if(data?.code==16020)continue
+            data = await redEnvelopeInteractHome()
+            redEnvelopeId = data?.data?.redEnvelopeId
+            markedPin = data?.data?.markedPin
+            amount = data?.data?.amount
+            helps.push({id: i, redEnvelopeId: redEnvelopeId, markedPin: markedPin})
+        }
+        tools.push({id: i, cookie: cookie})
     }
     while (helps.length && tools.length) {
-          tool = tools.pop()
-          cookie = tool.cookie
-          data = await openRedEnvelopeInteract({redEnvelopeId: helps[0].redEnvelopeId,inviter: helps[0].markedPin, helpType:"1"})
-          errMsg = data?.data?.helpResult?.errMsg
-          if(errMsg){
-                // console.log(`${tool.id}->${helps[0].id} ${errMsg}`)
-                if(errMsg.indexOf("成功提现")!=-1){
-                    console.log(errMsg)
-                    helps.shift()
-                    tools.unshift(tool)
-               }
-          }
+        tool = tools.pop()
+        cookie = tool.cookie
+        data = await openRedEnvelopeInteract({redEnvelopeId: helps[0].redEnvelopeId,inviter: helps[0].markedPin, helpType:"2"})
+        errMsg = data?.data?.helpResult?.errMsg
+        if(errMsg){
+            console.log(`${tool.id}->${helps[0].id} ${errMsg}`)
+            if(errMsg.indexOf("成功提现")!=-1){
+                console.log(errMsg)
+                helps.shift()
+                tools.unshift(tool)
+            }
+        }
     }
 })()
 function openRedEnvelopeInteract(body = {}) {
-     body.linkId = "yMVR-_QKRd2Mq27xguJG-w"
-     return new Promise(resolve => {
-         $.get({
-             url: "https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body="+JSON.stringify(body)+"&t=" + Date.now() + "&appid=activities_platform&clientVersion=3.5.6",
-             headers: {
-                 'Cookie': cookie,
-                 'Accept': '*/*',
-                 'Connection': 'keep-alive',
-                 'Accept-Encoding': 'gzip, deflate, br',
-                 'User-Agent': ua,
-                 'Accept-Language': 'zh-Hans-CN;q=1',
-                 'Host': 'api.m.jd.com',
-                 'Origin': 'https://wbbny.m.jd.com'
-             },
-         }, (err, resp, data) => {
-             try {
-                 data = JSON.parse(data)
-             } catch (e) {
-                 $.logErr('Error: ', e, resp)
-             } finally {
-                 resolve(data)
-             }
-         })
-     })
- }
+    body.linkId = "PFbUR7wtwUcQ860Sn8WRfw"
+    return new Promise(resolve => {
+        $.get({
+            url: "https://api.m.jd.com/?functionId=openRedEnvelopeInteract&body="+JSON.stringify(body)+"&t=" + Date.now() + "&appid=activities_platform&clientVersion=3.5.6",
+            headers: {
+                'Cookie': cookie,
+                'Accept': '*/*',
+                'Connection': 'keep-alive',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'User-Agent': ua,
+                'Accept-Language': 'zh-Hans-CN;q=1',
+                'Host': 'api.m.jd.com',
+                'Origin': 'https://wbbny.m.jd.com'
+            },
+        }, (err, resp, data) => {
+            try {
+                data = JSON.parse(data)
+            } catch (e) {
+                $.logErr('Error: ', e, resp)
+            } finally {
+                resolve(data)
+            }
+        })
+    })
+}
 
- function redEnvelopeInteractHome() {
-     return new Promise(resolve => {
-         $.get({
-             url: "https://api.m.jd.com/?functionId=redEnvelopeInteractHome&body={%22linkId%22:%22yMVR-_QKRd2Mq27xguJG-w%22,%22redEnvelopeId%22:%22%22,%22inviter%22:%22%22,%22helpType%22:%22%22}&t=" + Date.now() + "&appid=activities_platform&clientVersion=3.5.6",
-             headers: {
-                 'Cookie': cookie,
-                 'Accept': '*/*',
-                 'Connection': 'keep-alive',
-                 'Accept-Encoding': 'gzip, deflate, br',
-                 'User-Agent': ua,
-                 'Accept-Language': 'zh-Hans-CN;q=1',
-                 'Host': 'api.m.jd.com',
-                 'Origin': 'https://wbbny.m.jd.com'
-             },
-         }, (err, resp, data) => {
-             try {
-                 data = JSON.parse(data)
-                 if(data.data){
-                      console.log(data.data.bizMsg)
-                 }
-                 if(data.errorMessage){
+function redEnvelopeInteractHome() {
+    return new Promise(resolve => {
+        $.get({
+            url: "https://api.m.jd.com/?functionId=redEnvelopeInteractHome&body={%22linkId%22:%22PFbUR7wtwUcQ860Sn8WRfw%22,%22redEnvelopeId%22:%22%22,%22inviter%22:%22%22,%22helpType%22:%22%22}&t=" + Date.now() + "&appid=activities_platform&clientVersion=3.5.6",
+            headers: {
+                'Cookie': cookie,
+                'Accept': '*/*',
+                'Connection': 'keep-alive',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'User-Agent': ua,
+                'Accept-Language': 'zh-Hans-CN;q=1',
+                'Host': 'api.m.jd.com',
+                'Origin': 'https://wbbny.m.jd.com'
+            },
+        }, (err, resp, data) => {
+            try {
+                data = JSON.parse(data)
+                if(data.data){
+                    console.log(data.data.bizMsg)
+                }
+                if(data.errorMessage){
                     console.log(data.errorMessage)
-               }
-             } catch (e) {
-                 $.logErr('Error: ', e, resp)
-             } finally {
-                 resolve(data)
-             }
-         })
-     })
- }
+                }
+            } catch (e) {
+                $.logErr('Error: ', e, resp)
+            } finally {
+                resolve(data)
+            }
+        })
+    })
+}
 
 function requireConfig() {
     return new Promise(resolve => {

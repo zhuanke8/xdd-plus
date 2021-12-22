@@ -8,9 +8,9 @@ import (
 
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/context"
 
-	"github.com/beego/beego/v2/server/web"
 	"github.com/zhuanke8/xdd-plus/controllers"
 	"github.com/zhuanke8/xdd-plus/models"
 	"github.com/zhuanke8/xdd-plus/qbot"
@@ -58,6 +58,7 @@ func main() {
 	web.Router("/api/login/cookie", &controllers.LoginController{}, "get:Cookie")
 	web.Router("/api/login/admin", &controllers.LoginController{}, "post:IsAdmin")
 	web.Router("/api/login/cklogin", &controllers.LoginController{}, "post:CkLogin")
+	web.Router("/api/login/webcklogin", &controllers.LoginController{}, "post:WebCkLogin")
 	web.Router("/api/login/smslogin", &controllers.LoginController{}, "post:SMSLogin")
 	web.Router("/api/getUserInfo", &controllers.LoginController{}, "post:GetUserInfo")
 	web.Router("/api/getUserInfo", &controllers.LoginController{}, "get:GetUserInfo")

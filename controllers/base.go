@@ -2,23 +2,25 @@ package controllers
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
-	"github.com/zhuanke8/xdd-plus/models"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"gopkg.in/go-playground/validator.v9"
 	zh_translations "gopkg.in/go-playground/validator.v9/translations/zh"
-	"net/http"
-	"strconv"
-	"strings"
+
+	"github.com/zhuanke8/xdd-plus/models"
 )
 
 var validate *validator.Validate
 var trans ut.Translator
 
 func init() {
-	//验证器注册翻译器
+	// 验证器注册翻译器
 	var zhCh = zh.New()
 	validate = validator.New()
 	var uni = ut.New(zhCh)
@@ -26,19 +28,19 @@ func init() {
 	zh_translations.RegisterDefaultTranslations(validate, trans)
 }
 
-//BaseController 基础控制器
+// BaseController 基础控制器
 type BaseController struct {
 	beego.Controller
 	PtPin  string
 	Master bool
 }
 
-//NextPrepare 下一个准备
+// NextPrepare 下一个准备
 type NextPrepare interface {
 	NextPrepare()
 }
 
-//Prepare 准备
+// Prepare 准备
 func (c *BaseController) Prepare() {
 	// c.Ctx.ResponseWriter.Header().Add("Master-IP-Address", models.GetMasteraddr())
 	if app, ok := c.AppController.(NextPrepare); ok {
@@ -46,14 +48,14 @@ func (c *BaseController) Prepare() {
 	}
 }
 
-//Response 响应
-func (c *BaseController) Response(ps ...interface{}) { //数据、信息、状态码
+// Response 响应
+func (c *BaseController) Response(ps ...interface{}) { // 数据、信息、状态码
 	rsp := struct {
-		//状态码
+		// 状态码
 		Code int `json:"code"` // 0 成功 1 失败
-		//数据
+		// 数据
 		Data interface{} `json:"data"`
-		//描述信息
+		// 描述信息
 		Msg string `json:"msg"`
 	}{}
 	switch len(ps) {
@@ -76,7 +78,7 @@ func (c *BaseController) Response(ps ...interface{}) { //数据、信息、状�
 	c.StopRun()
 }
 
-//ResponseError 响应错误
+// ResponseError 响应错误
 func (c *BaseController) ResponseError(ps ...interface{}) *BaseController {
 	if ps[0] == nil {
 		return c
@@ -86,13 +88,13 @@ func (c *BaseController) ResponseError(ps ...interface{}) *BaseController {
 
 	for _, p := range ps {
 		switch t := p.(type) {
-		case int: //状态码
+		case int: // 状态码
 			// status = t
 			break
-		case error: //错误
+		case error: // 错误
 			text = t.Error()
 			break
-		case string: //字符描述
+		case string: // 字符描述
 			text = t
 			break
 		}
@@ -106,7 +108,7 @@ func (c *BaseController) ResponseError(ps ...interface{}) *BaseController {
 	return nil
 }
 
-//Logined 登录
+// Logined 登录
 func (c *BaseController) Logined() *BaseController {
 	if v := c.GetSession("pin"); v == nil {
 		c.Ctx.Redirect(302, "/")
@@ -122,7 +124,7 @@ func (c *BaseController) Logined() *BaseController {
 	return c
 }
 
-//Validate 表单验证
+// Validate 表单验证
 func (c *BaseController) Validate(ps interface{}) *BaseController {
 	c.ResponseError(json.Unmarshal(c.Ctx.Input.CopyBody(10000000), ps), http.StatusBadRequest)
 	if err := validate.Struct(ps); err != nil {
@@ -133,7 +135,7 @@ func (c *BaseController) Validate(ps interface{}) *BaseController {
 	return c
 }
 
-//GetPathInt64
+// GetPathInt64
 func (c *BaseController) GetPathInt64(v string) int64 {
 	r := c.Ctx.Input.Param(":" + v)
 	if r == "" {
@@ -144,7 +146,7 @@ func (c *BaseController) GetPathInt64(v string) int64 {
 	return int64(i)
 }
 
-//GetPathInt
+// GetPathInt
 func (c *BaseController) GetPathInt(v string) int {
 	r := c.Ctx.Input.Param(":" + v)
 	if r == "" {
@@ -155,7 +157,7 @@ func (c *BaseController) GetPathInt(v string) int {
 	return i
 }
 
-//GetPathInt32
+// GetPathInt32
 func (c *BaseController) GetPathInt32(v string) int32 {
 	r := c.Ctx.Input.Param(":" + v)
 	if r == "" {
@@ -166,7 +168,7 @@ func (c *BaseController) GetPathInt32(v string) int32 {
 	return int32(i)
 }
 
-//GetQueryInt64
+// GetQueryInt64
 func (c *BaseController) GetQueryInt64(v string) int64 {
 	r := c.GetString(v)
 	if r == "" {
@@ -177,7 +179,7 @@ func (c *BaseController) GetQueryInt64(v string) int64 {
 	return int64(i)
 }
 
-//GetQueryInt
+// GetQueryInt
 func (c *BaseController) GetQueryInt(v string) int {
 	r := c.GetString(v)
 	if r == "" {
@@ -188,7 +190,7 @@ func (c *BaseController) GetQueryInt(v string) int {
 	return i
 }
 
-//GetQueryInt32
+// GetQueryInt32
 func (c *BaseController) GetQueryInt32(v string) int32 {
 	r := c.GetString(v)
 	if r == "" {

@@ -81,7 +81,7 @@ func initContainer() {
 			} else {
 				rd := bufio.NewReader(f)
 				for {
-					line, err := rd.ReadString('\n') //以'\n'为结束符读入一行
+					line, err := rd.ReadString('\n') // 以'\n'为结束符读入一行
 					if err != nil || io.EOF == err {
 						break
 					}
@@ -124,7 +124,11 @@ func (c *Container) write(cks []JdCookie) error {
 			if len(cks) != 0 {
 				for _, ck := range cks {
 					if ck.Available == True {
-						hh = append(hh, fmt.Sprintf(`{"name":"JD_COOKIE","value":"pt_key=%s;pt_pin=%s;","remarks":"%s"}`, ck.PtKey, ck.PtPin, ck.Nickname))
+						if Config.Note == "pin" {
+							hh = append(hh, fmt.Sprintf(`{"name":"JD_COOKIE","value":"pt_key=%s;pt_pin=%s;","remarks":"%s"}`, ck.PtKey, ck.PtPin, ck.Nickname))
+						} else {
+							hh = append(hh, fmt.Sprintf(`{"name":"JD_COOKIE","value":"pt_key=%s;pt_pin=%s;","remarks":"%s"}`, ck.PtKey, ck.PtPin, ck.Note))
+						}
 					}
 				}
 				c.request("/api/envs", POST, fmt.Sprintf(`[%s]`, strings.Join(hh, ",")))
@@ -200,14 +204,14 @@ func (c *Container) write(cks []JdCookie) error {
 		})
 	case "li":
 		config := ""
-		f, err := os.OpenFile(c.Path, os.O_RDWR|os.O_CREATE, 0777) //打开文件 |os.O_RDWR
+		f, err := os.OpenFile(c.Path, os.O_RDWR|os.O_CREATE, 0777) // 打开文件 |os.O_RDWR
 		if err != nil {
 			return err
 		}
 		defer f.Close()
 		rd := bufio.NewReader(f)
 		for {
-			line, err := rd.ReadString('\n') //以'\n'为结束符读入一行
+			line, err := rd.ReadString('\n') // 以'\n'为结束符读入一行
 			if err != nil || io.EOF == err {
 				break
 			}
@@ -305,7 +309,7 @@ func (c *Container) read() error {
 		return c.getConfig(func(rd *bufio.Reader) string {
 			config := ""
 			for {
-				line, err := rd.ReadString('\n') //以'\n'为结束符读入一行
+				line, err := rd.ReadString('\n') // 以'\n'为结束符读入一行
 				if err != nil || io.EOF == err {
 					config += line
 					break
@@ -331,7 +335,7 @@ func (c *Container) read() error {
 			return config
 		})
 	case "li":
-		f, err := os.OpenFile(c.Path, os.O_RDWR|os.O_CREATE, 0777) //打开文件 |os.O_RDWR
+		f, err := os.OpenFile(c.Path, os.O_RDWR|os.O_CREATE, 0777) // 打开文件 |os.O_RDWR
 		if err != nil {
 			c.Available = false
 			return err
@@ -339,7 +343,7 @@ func (c *Container) read() error {
 		defer f.Close()
 		rd := bufio.NewReader(f)
 		for {
-			line, err := rd.ReadString('\n') //以'\n'为结束符读入一行
+			line, err := rd.ReadString('\n') // 以'\n'为结束符读入一行
 			if err != nil || io.EOF == err {
 				break
 			}
@@ -353,8 +357,7 @@ func (c *Container) read() error {
 }
 
 func (c *Container) getToken() error {
-	version, err := GetQlVersion(c.Address)
-	logs.Debug(err)
+	version, _ := GetQlVersion(c.Address)
 	if version == "openapi" {
 		token := &Token{}
 		err, b2 := getT(c, token)
@@ -383,7 +386,6 @@ func (c *Container) getToken() error {
 }
 
 func getT(c *Container, token *Token) (error, bool) {
-	logs.Info("获取token")
 	req := httplib.Get(c.Address + fmt.Sprintf(`/open/auth/token?client_id=%s&client_secret=%s`, c.Cid, c.Secret))
 	req.Header("Content-Type", "application/json;charset=UTF-8")
 	if rsp, err := req.Response(); err == nil {
@@ -396,7 +398,6 @@ func getT(c *Container, token *Token) (error, bool) {
 		zero, _ := time.ParseInLocation("2006-01-02", time.Now().Local().Format("2006-01-02"), time.Local)
 		token.Expiration = zero
 		token.Address = c.Address
-		logs.Info(c.Token + token.Expiration.String())
 	} else {
 		return err, true
 	}
@@ -467,7 +468,7 @@ func GetQlVersion(address string) (string, error) {
 		return "", err
 	}
 	v := ""
-	//logs.Info(data)
+	// logs.Info(data)
 	if strings.Contains(data, "v2.2") {
 		v = "api"
 	} else {
@@ -485,7 +486,7 @@ const (
 
 func (c *Container) getConfig(handle func(*bufio.Reader) string) error {
 	if c.Address == "" {
-		f, err := os.OpenFile(c.Path, os.O_RDWR|os.O_CREATE, 0777) //打开文件 |os.O_RDWR
+		f, err := os.OpenFile(c.Path, os.O_RDWR|os.O_CREATE, 0777) // 打开文件 |os.O_RDWR
 		if err != nil {
 			return err
 		}

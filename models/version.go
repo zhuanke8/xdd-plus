@@ -11,13 +11,8 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
-<<<<<<< HEAD
-var version = "20211213"
-var describe = "重大更新"
-=======
-var version = "20211214"
-var describe = "同步上游"
->>>>>>> d38a907 (同步上游)
+var version = "20211220"
+var describe = "支持多群"
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
 
@@ -26,7 +21,7 @@ func initVersion() {
 		version = Config.Version
 	}
 	logs.Info("检查更新" + version)
-	value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/764763903a/xdd-plus/main/models/version.go").String()
+	value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/zhuanke8/xdd-plus/main/models/version.go").String()
 	if err != nil {
 		logs.Info("更新版本的失败")
 	} else {

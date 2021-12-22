@@ -3,8 +3,6 @@ package models
 import (
 	"github.com/beego/beego/v2/adapter/logs"
 	"github.com/robfig/cron/v3"
-	"math/rand"
-	"strconv"
 )
 
 var c *cron.Cron
@@ -20,8 +18,9 @@ func initCron() {
 		}
 		c.AddFunc("3 */1 * * *", initVersion)
 		c.AddFunc("40 */1 * * *", GitPullAll)
-		c.AddFunc("0 "+strconv.Itoa(rand.Intn(59))+" "+Config.CTime+"/12 * * ?", initCookie)
-
 	}
+	// logs.Info("0 " + strconv.Itoa(rand.Intn(59)) + " 0/" + strconv.Itoa(Config.Later) + " * * ?" + "调试推送时间")
+	c.AddFunc("0 8/8 * * ?", initCookie)
+
 	c.Start()
 }

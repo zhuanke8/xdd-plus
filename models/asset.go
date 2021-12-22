@@ -69,7 +69,7 @@ func (ck *JdCookie) Query1() string {
 	name := "jd_bean_change_new.js"
 	envs := []Env{{Name: "pins", Value: "&" + ck.PtPin}}
 	msg := runTask(&Task{Path: name, Envs: envs}, &Sender{})
-	//log.Info(msg)
+	// log.Info(msg)
 	if !strings.Contains(msg, "cookies") {
 		msg = regexp.MustCompile(`^(.+\s+){3}|\s*.+\s*$|.*东东工厂.*\s*`).ReplaceAllString(msg, "")
 		msg = fmt.Sprintf("账号昵称：%s\n绑定QQ: %v\n用户等级：%v\n等级名称：%v\n优先级: %v\n%s", ck.Nickname, ck.QQ, ck.UserLevel, ck.LevelName, ck.Priority, msg)
@@ -90,9 +90,9 @@ func (ck *JdCookie) Query() string {
 	}
 	asset := Asset{}
 	if CookieOK(ck) {
-		//msgs = append(msgs, fmt.Sprintf("优先级：%v", ck.Priority))
-		msgs = append(msgs, fmt.Sprintf("用户等级：%v", ck.UserLevel))
-		msgs = append(msgs, fmt.Sprintf("等级名称：%v", ck.LevelName))
+		// msgs = append(msgs, fmt.Sprintf("优先级：%v", ck.Priority))
+		// msgs = append(msgs, fmt.Sprintf("用户等级：%v", ck.UserLevel))
+		// msgs = append(msgs, fmt.Sprintf("等级名称：%v", ck.LevelName))
 		cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
 		var rpc = make(chan []RedList)
 		var fruit = make(chan string)
@@ -118,9 +118,9 @@ func (ck *JdCookie) Query() string {
 			if end {
 				msgs = append(msgs, []string{
 					fmt.Sprintf("昨日收入：%d京豆", asset.Bean.YestodayIn),
-					fmt.Sprintf("昨日支出：%d京豆", asset.Bean.YestodayOut),
+					// fmt.Sprintf("昨日支出：%d京豆", asset.Bean.YestodayOut),
 					fmt.Sprintf("今日收入：%d京豆", asset.Bean.TodayIn),
-					fmt.Sprintf("今日支出：%d京豆", asset.Bean.TodayOut),
+					// fmt.Sprintf("今日支出：%d京豆", asset.Bean.TodayOut),
 				}...)
 				break
 			}
@@ -193,8 +193,8 @@ func (ck *JdCookie) Query() string {
 			msgs = append(msgs, []string{
 				fmt.Sprintf("所有红包：%.2f%s元🧧", asset.RedPacket.Total, e(asset.RedPacket.ToExpire)),
 				fmt.Sprintf("京喜红包：%.2f%s元", asset.RedPacket.Jx, e(asset.RedPacket.ToExpireJx)),
-				fmt.Sprintf("极速红包：%.2f%s元", asset.RedPacket.Js, e(asset.RedPacket.ToExpireJs)),
-				fmt.Sprintf("健康红包：%.2f%s元", asset.RedPacket.Jk, e(asset.RedPacket.ToExpireJk)),
+				// fmt.Sprintf("极速红包：%.2f%s元", asset.RedPacket.Js, e(asset.RedPacket.ToExpireJs)),
+				// fmt.Sprintf("健康红包：%.2f%s元", asset.RedPacket.Jk, e(asset.RedPacket.ToExpireJk)),
 				fmt.Sprintf("京东红包：%.2f%s元", asset.RedPacket.Jd, e(asset.RedPacket.ToExpireJd)),
 			}...)
 		} else {
@@ -216,12 +216,11 @@ func (ck *JdCookie) Query() string {
 		} else {
 			msgs = append(msgs, fmt.Sprintf("京东秒杀：暂无数据"))
 		}
-		msgs = append(msgs, fmt.Sprintf("推一推券：%s", <-tyt))
+		// msgs = append(msgs, fmt.Sprintf("推一推券：%s", <-tyt))
 		msgs = append(msgs, fmt.Sprintf("惊喜牧场：%d枚鸡蛋🥚", <-egg))
-
 	} else {
 		msgs = append(msgs, []string{
-			"提醒：该账号CK已过期，请重新提交CK",
+			"提醒：该账号已过期，请重新登录；QQ发送ck请添加机器人为好友，更新成功有提示。务必看到提示，如没有提示，请删除机器人好友重新加。",
 		}...)
 	}
 	ck.PtPin, _ = url.QueryUnescape(ck.PtPin)

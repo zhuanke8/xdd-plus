@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/beego/beego/v2/core/logs"
 	"time"
+
+	"github.com/beego/beego/v2/core/logs"
 )
 
 type Limit struct {

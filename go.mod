@@ -1,6 +1,6 @@
 module github.com/zhuanke8/xdd-plus
 
-go 1.17
+go 1.16
 
 replace github.com/willf/bitset v1.2.0 => github.com/bits-and-blooms/bitset v1.2.0
 

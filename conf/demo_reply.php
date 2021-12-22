@@ -1,12 +1,8 @@
 return reply(
      [
           `早上好`=>`good morning`
-<<<<<<< HEAD
-          `你好`=> `好个牛子`
-=======
           `扫码` => `发送pt_key=;pt_pin=; 这种格式给我，记得要;这个符号，提示很棒/重复/更新，即为成功。提示无效请重新抓取，到期失效会发消息提醒。`
           `你好`=> `我还行`
->>>>>>> d38a907 (同步上游)
           `美腿` => `https://api.iyk0.com/mtt`
           `毒鸡汤`=>`https://www.hlapi.cn/api/djt?charset=utf-8&encode=text`
           `笑话`=>`https://www.hlapi.cn/api/gxdz`
@@ -21,31 +17,22 @@ return reply(
           `壁纸` => `https://laosepi.org/gqpic.php`
           `小清新` => `http://api.btstu.cn/sjbz/?lx=meizi`
           `.*美女` => `https://api.lyiqk.cn/purelady`
-          `二次元图` => `https://acg.toubiec.cn/random.php`
-          `.*换一个` => `http://api.btstu.cn/sjbz/?lx=m_dongman`
-          `动漫头像` => `http://shengapi.cn/api/image/acgtx.php`
-          `舔狗日记` => `http://shengapi.cn/api/tgrj.php`
-          `.*骚话.*`=>`https://api.vvhan.com/api/sao`
-          `文明` => `http://api.btstu.cn/sjbz/zsy.php`
+         `二次元图` => `https://acg.toubiec.cn/random.php`
+         `.*换一个` => `http://api.btstu.cn/sjbz/?lx=m_dongman`
+         `动漫头像` => `http://shengapi.cn/api/image/acgtx.php`
+         `舔狗日记` => `http://shengapi.cn/api/tgrj.php`
+         `.*骚话.*`=>`https://api.vvhan.com/api/sao`
+         `文明` => `http://api.btstu.cn/sjbz/zsy.php`
           `富强` => `http://api.btstu.cn/sjbz/?m_lx=suiji`
           `和谐` => `https://api.btstu.cn/sjbz/api.php`
           `民主` => `https://cdn.seovx.com/?mom=302`
           `语录` => `https://api.ixiaowai.cn/ylapi/index.php`
           `舔狗` => `https://api.ixiaowai.cn/tgrj/index.php`
-<<<<<<< HEAD
-          `.*一言.*`=>`https://api.ixiaowai.cn/ylapi/index.php`
-          `扫码` => `发送pt_key=;pt_pin=; 这种格式给我，记得要;这个符号，提示很棒/重复/更新，即为成功。提示无效请重新抓取，到期失效会发消息提醒。`
-          `说明`=>`https://ghproxy.com/https://raw.githubusercontent.com/U188/JDC/master/sm.jpg`
-          `公告` => `加robot为好友，发送抓到的CK绑定QQ后输入"查询"`
-          `教程` => `手机端Alook浏览器获取Cookie教程“https://docs.qq.com/doc/DTFhQUGlhSVlZckRV” PC端获取Cookie教程“https://shimo.im/docs/YcdghjYdKY9yPDK6”`
-          `菜单` => `
-=======
 	  `.*一言.*`=>`https://api.ixiaowai.cn/ylapi/index.php`
           `说明`=>`https://ghproxy.com/https://raw.githubusercontent.com/U188/JDC/master/sm.jpg`
           `公告` => `加robot为好友，发送抓到的CK绑定QQ后输入"查询"`
           `教程` => `手机端Alook浏览器获取Cookie教程“https://docs.qq.com/doc/DTFhQUGlhSVlZckRV” PC端获取Cookie教程“https://shimo.im/docs/YcdghjYdKY9yPDK6”`
         `菜单` => `
->>>>>>> d38a907 (同步上游)
                 小滴滴菜单
        ———————————
             教程  丨  查询

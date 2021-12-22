@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Mrs4s/MiraiGo/utils"
 	"io"
 	"io/ioutil"
 	"os"
@@ -26,7 +25,9 @@ type Yaml struct {
 	TelegramBotToken    string `yaml:"telegram_bot_token"`
 	TelegramUserID      int    `yaml:"telegram_user_id"`
 	QQID                int64  `yaml:"qquid"`
+	QQVID               int64  `yaml:"qqvid"`
 	QQGroupID           int64  `yaml:"qqgid"`
+	QQGroupIDS          string `yaml:"qqgids"`
 	DefaultPriority     int    `yaml:"default_priority"`
 	NoGhproxy           bool   `yaml:"no_ghproxy"`
 	QbotPublicMode      bool   `yaml:"qbot_public_mode"`
@@ -44,6 +45,10 @@ type Yaml struct {
 	Tyt                 int    `yaml:"Tyt"`
 	IFC                 bool   `yaml:"IFC"`
 	Later               int    `yaml:"Later"`
+	Jdcurl              string `yaml:"Jdcurl"`
+	GAMEOPEN            bool   `yaml:"GameOpen"`
+	Note                string `yaml:"Note"`
+	VIP                 bool
 	Node                string
 	Npm                 string
 	Python              string
@@ -66,6 +71,11 @@ func initConfig() {
 	if _, err := os.Stat(confDir); err != nil {
 		os.MkdirAll(confDir, os.ModePerm)
 	}
+	botDir := ExecPath + "/conf"
+	if _, err := os.Stat(botDir); err != nil {
+		os.MkdirAll(botDir, os.ModePerm)
+	}
+
 	for _, name := range []string{"app.conf", "config.yaml", "reply.php"} {
 		f, err := os.OpenFile(ExecPath+"/conf/"+name, os.O_RDWR|os.O_CREATE, 0777)
 		if err != nil {
@@ -91,6 +101,9 @@ func initConfig() {
 	if ExecPath == "/Users/cdle/Desktop/xdd" || Config.NoAdmin {
 		Cdle = true
 	}
+	if Config.Note == "" {
+		Config.Note = "pin"
+	}
 	if Config.Master == "" {
 		Config.Master = "xxxx"
 	}
@@ -109,9 +122,6 @@ func initConfig() {
 	if Config.Tyt == 0 {
 		Config.Tyt = 8
 	}
-	if Config.Later == 0 {
-		Config.Later = 60
-	}
 	if Config.Database == "" {
 		Config.Database = ExecPath + "/.xdd.db"
 	}
@@ -119,7 +129,8 @@ func initConfig() {
 		Config.Npm = "npm"
 	}
 	if Config.ApiToken == "" {
-		Config.ApiToken = utils.RandomString(17)
+		Config.ApiToken = ""
+		// Config.ApiToken = utils.RandomString(17)
 	}
 	if Config.Node == "" {
 		Config.Node = "node"
