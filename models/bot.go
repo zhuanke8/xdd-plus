@@ -126,17 +126,17 @@ var handleMessage2 = func(msgs ...interface{}) interface{} {
 						}
 						if CookieOK(&ck) {
 
-							if sender.IsQQ() {
-								ck.QQ = sender.UserID
-							} else if sender.IsTG() {
-								ck.Telegram = sender.UserID
-							}
+							// if sender.IsQQ() {
+							// 	ck.QQ = sender.UserID
+							// } else if sender.IsTG() {
+							// 	ck.Telegram = sender.UserID
+							// }
 							if nck, err := GetJdCookie(ck.PtPin); err == nil {
 								nck.InPool(ck.PtKey)
 								if nck.WsKey == "" || len(nck.WsKey) == 0 {
-									if sender.IsQQ() {
-										ck.Update(QQ, ck.QQ)
-									}
+									// if sender.IsQQ() {
+									// 	ck.Update(QQ, ck.QQ)
+									// }
 									nck.Update(WsKey, ck.WsKey)
 									msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
 									// sender.Reply(fmt.Sprintf(msg))
@@ -164,9 +164,9 @@ var handleMessage2 = func(msgs ...interface{}) interface{} {
 
 								msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
 
-								if sender.IsQQ() {
-									ck.Update(QQ, ck.QQ)
-								}
+								// if sender.IsQQ() {
+								// 	ck.Update(QQ, ck.QQ)
+								// }
 
 								// sender.Reply(fmt.Sprintf(msg))
 								// sender.Reply(ck.Query())
@@ -192,20 +192,20 @@ var handleMessage2 = func(msgs ...interface{}) interface{} {
 						PtPin: ptPin,
 					}
 					if CookieOK(&ck) {
-						if sender.IsQQ() {
-							ck.QQ = sender.UserID
-						} else if sender.IsTG() {
-							ck.Telegram = sender.UserID
-						}
+						// if sender.IsQQ() {
+						// 	ck.QQ = sender.UserID
+						// } else if sender.IsTG() {
+						// 	ck.Telegram = sender.UserID
+						// }
 						if HasKey(ck.PtKey) {
 							// sender.Reply(fmt.Sprintf("重复提交"))
 						} else {
 							if nck, err := GetJdCookie(ck.PtPin); err == nil {
 								nck.InPool(ck.PtKey)
 								msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-								if sender.IsQQ() {
-									ck.Update(QQ, ck.QQ)
-								}
+								// if sender.IsQQ() {
+								// 	ck.Update(QQ, ck.QQ)
+								// }
 								// sender.Reply(fmt.Sprintf(msg))
 								(&JdCookie{}).Push(msg)
 								logs.Info(msg)
@@ -215,9 +215,9 @@ var handleMessage2 = func(msgs ...interface{}) interface{} {
 								}
 								NewJdCookie(&ck)
 								msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-								if sender.IsQQ() {
-									ck.Update(QQ, ck.QQ)
-								}
+								// if sender.IsQQ() {
+								// 	ck.Update(QQ, ck.QQ)
+								// }
 								// sender.Reply(fmt.Sprintf(msg))
 								// sender.Reply(ck.Query())
 								(&JdCookie{}).Push(msg)
