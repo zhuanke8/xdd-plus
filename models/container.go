@@ -70,6 +70,7 @@ func initContainer() {
 				if err := Config.Containers[i].getSession(); err == nil {
 					logs.Info("v系登录成功")
 				} else {
+					(&JdCookie{}).Push("容器出现错误连接" + Config.Containers[i].Address)
 					logs.Info("v系登录失败")
 				}
 				Config.Containers[i].Type = "v4"

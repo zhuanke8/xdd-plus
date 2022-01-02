@@ -275,6 +275,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//dyj
 				inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)inviterCode`).FindStringSubmatch(msg)
 				inviterCode := regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
+				//t := regexp.MustCompile(`t=(\S+)(&|&amp;)appid`).FindStringSubmatch(msg)
+
 				if len(inviterCode) == 0 {
 					inviterCode = regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_source`).FindStringSubmatch(msg)
 				}
