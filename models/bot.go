@@ -259,6 +259,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					logs.Info(addr + "/api/Config")
 					if addr != "" {
 						data, _ := httplib.Get(addr + "/api/Config").Bytes()
+						logs.Info(string(data) + "返回数据")
 						tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
 						if tabcount != 0 {
 							pcodes[string(sender.UserID)] = "true"

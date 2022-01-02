@@ -46,6 +46,7 @@ func initNolan() {
 
 	s, _ := httplib.Get(fmt.Sprintf("http://auth.smxy.xyz/user/auth?qqNum=%s", strconv.FormatInt(Config.QQID, 10))).String()
 	contains := strings.Contains(s, "true")
+	logs.Info(s)
 	if contains {
 		Config.VIP = true
 		logs.Info("VIP验证成功")
