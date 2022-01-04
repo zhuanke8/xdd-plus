@@ -16,7 +16,7 @@ func initCron() {
 		} else {
 			logs.Info("资产推送任务就绪")
 		}
-		c.AddFunc("3 */1 * * *", initVersion)
+		//c.AddFunc("3 */1 * * *", initVersion)
 		c.AddFunc("40 */1 * * *", GitPullAll)
 	}
 	//logs.Info("0 " + strconv.Itoa(rand.Intn(59)) + " 0/" + strconv.Itoa(Config.Later) + " * * ?" + "调试推送时间")
