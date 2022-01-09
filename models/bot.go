@@ -5,6 +5,7 @@ import (
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"regexp"
 	"strconv"
@@ -313,7 +314,29 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					}
 				}
 			}
+			{
+				if strings.Contains(msg, "年兽") {
+					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+					rsp.Param("url", msg)
+					rsp.Param("type", "hy")
+					//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
+					data, err := rsp.Response()
 
+					if err != nil {
+						return "口令转换失败"
+					}
+					body, _ := ioutil.ReadAll(data.Body)
+					if strings.Contains(string(body), "口令转换失败") {
+						return "口令转换失败"
+					} else {
+						if strings.Contains(string(body), "shareType=taskHelp") {
+
+						}
+
+						return string(body)
+					}
+				}
+			}
 		}
 	}
 
@@ -764,6 +787,76 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 	}
 
 	return k, n, true
+}
+
+func nianhelp(invited string) {
+	logs.Info("开始年兽助力")
+	k := 0
+	cks := GetJdCookies()
+	for i := len(cks); i > 0; i-- {
+		if k > 1 {
+			//todo 结束
+		}
+		time.Sleep(time.Second * time.Duration(3))
+		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
+
+		sc := getScKey(cookie)
+		if sc != "" {
+			url := "https://api.m.jd.com/client.action?functionId=tigernian_collectScore"
+			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
+
+			req := httplib.Post(url)
+			random := browser.Random()
+			req.Param("clientVersion", "1.0.0")
+			req.Param("client", "wh5")
+			req.Param("functionId", "tigernian_collectScore")
+			req.Param("body", body)
+			req.Header("User-Agent", random)
+			//req.Header("Host", "api.m.jd.com")
+			req.Header("Accept", "application/json, text/plain, */*")
+			req.Header("Connection", "keep-alive")
+			req.Header("Accept-Language", "zh-cn")
+			req.Header("Accept-Encoding", "gzip, deflate, br")
+			req.Header("Origin", "https://api.m.jd.com")
+			req.Header("Cookie", cookie)
+			s, _ := req.String()
+			logs.Info(s)
+			if strings.Contains(s, "\"bizCode\": 0,") {
+				k++
+				logs.Info("助力成功")
+			} else {
+				logs.Info("火爆了")
+			}
+		}
+		logs.Info("年兽助力结束")
+
+	}
+}
+
+func getScKey(ck string) (key string) {
+	url := "https://api.m.jd.com/client.action?functionId=tigernian_getHomeData"
+	req := httplib.Get(url)
+	random := browser.Random()
+	req.Param("clientVersion", "1.0.0")
+	req.Param("client", "wh5")
+	req.Param("functionId", "tigernian_getHomeData")
+	req.Header("User-Agent", random)
+	req.Header("Host", "api.m.jd.com")
+	req.Header("Accept", "application/json, text/plain, */*")
+	req.Header("Connection", "keep-alive")
+	req.Header("Accept-Language", "zh-cn")
+	req.Header("Accept-Encoding", "gzip, deflate, br")
+	req.Header("Origin", "https://api.m.jd.com")
+	req.Header("Cookie", ck)
+	data, _ := req.String()
+	if strings.Contains(data, "secretp") {
+		index := strings.Index(data, "\"secretp\":") + 10
+		i := strings.Index(data, ",\n\t\t\t\t\"shareMiniprogramSwitch") - 1
+		s := data[index:i]
+		logs.Info(s + "密钥")
+		return s
+	}
+	return ""
 }
 
 func FetchJdCookieValue(key string, cookies string) string {
