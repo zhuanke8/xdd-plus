@@ -334,7 +334,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							nianhelp(inviterCode[1])
 						}
 
-						return string(body)
+						//return string(body)
 					}
 				}
 			}
