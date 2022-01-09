@@ -852,7 +852,7 @@ func getScKey(ck string) (key string) {
 	data, _ := req.String()
 	if strings.Contains(data, "secretp") {
 		index := strings.Index(data, "\"secretp\":") + 10
-		i := strings.Index(data, ",\n\t\t\t\t\"shareMiniprogramSwitch") - 1
+		i := strings.Index(data, "shareMiniprogramSwitch") - 1
 		s := data[index:i]
 		logs.Info(s + "密钥")
 		return s
