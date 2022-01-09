@@ -805,7 +805,7 @@ func nianhelp(invited string) {
 		if sc != "" {
 			url := "https://api.m.jd.com/client.action?functionId=tigernian_collectScore"
 			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
-
+			logs.Info(body)
 			req := httplib.Post(url)
 			random := browser.Random()
 			req.Param("clientVersion", "1.0.0")
@@ -853,7 +853,7 @@ func getScKey(ck string) (key string) {
 	data, _ := req.String()
 	if strings.Contains(data, "secretp") {
 		index := strings.Index(data, "\"secretp\":") + 11
-		i := strings.Index(data, "shareMiniprogramSwitch") - 2
+		i := strings.Index(data, "shareMiniprogramSwitch") - 3
 		s := data[index:i]
 		logs.Info(s)
 		return s
