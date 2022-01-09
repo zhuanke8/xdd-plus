@@ -795,7 +795,7 @@ func nianhelp(invited string) {
 	k := 0
 	cks := GetJdCookies()
 	for i := len(cks); i > 0; i-- {
-		if k > 1 {
+		if k > 8 {
 			//todo 结束
 		}
 		time.Sleep(time.Second * time.Duration(3))
@@ -822,7 +822,8 @@ func nianhelp(invited string) {
 			req.Header("Cookie", cookie)
 			s, _ := req.String()
 			logs.Info(s)
-			if strings.Contains(s, "\"bizCode\": 0,") {
+			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
+			if bizCode == 0 {
 				k++
 				logs.Info("助力成功")
 			} else {
