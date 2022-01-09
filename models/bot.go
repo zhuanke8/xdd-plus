@@ -827,8 +827,12 @@ func nianhelp(invited string) {
 			if bizCode == 0 {
 				k++
 				logs.Info("助力成功")
+
 			} else {
 				logs.Info("火爆了")
+				if strings.Contains(s, "好友人气爆棚不需要助力啦") {
+					return
+				}
 			}
 		}
 
