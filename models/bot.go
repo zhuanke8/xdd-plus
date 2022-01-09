@@ -829,8 +829,9 @@ func nianhelp(invited string) {
 				logs.Info("火爆了")
 			}
 		}
-		logs.Info("年兽助力结束")
 
+		logs.Info("年兽助力结束")
+		return
 	}
 }
 
@@ -851,8 +852,8 @@ func getScKey(ck string) (key string) {
 	req.Header("Cookie", ck)
 	data, _ := req.String()
 	if strings.Contains(data, "secretp") {
-		index := strings.Index(data, "\"secretp\":") + 10
-		i := strings.Index(data, "shareMiniprogramSwitch") - 1
+		index := strings.Index(data, "\"secretp\":")
+		i := strings.Index(data, "shareMiniprogramSwitch") - 3
 		s := data[index:i]
 		logs.Info(s + "密钥")
 		return s
