@@ -330,7 +330,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						return "口令转换失败"
 					} else {
 						if strings.Contains(string(body), "shareType=taskHelp") {
-
+							inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+							nianhelp(inviterCode[1])
 						}
 
 						return string(body)
