@@ -797,6 +797,7 @@ func nianhelp(invited string) {
 	for i := len(cks); i > 0; i-- {
 		if k > 8 {
 			//todo 结束
+			return
 		}
 		time.Sleep(time.Second * time.Duration(3))
 		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
@@ -832,7 +833,6 @@ func nianhelp(invited string) {
 		}
 
 		logs.Info("年兽助力结束")
-		return
 	}
 }
 
