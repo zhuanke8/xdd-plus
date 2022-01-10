@@ -814,7 +814,6 @@ func nianhelp(invited string) {
 			req.Param("functionId", "tigernian_collectScore")
 			req.Param("body", body)
 			req.Header("User-Agent", random)
-			//req.Header("Host", "api.m.jd.com")
 			req.Header("Accept", "application/json, text/plain, */*")
 			req.Header("Connection", "keep-alive")
 			req.Header("Accept-Language", "zh-cn")
@@ -822,21 +821,18 @@ func nianhelp(invited string) {
 			req.Header("Origin", "https://api.m.jd.com")
 			req.Header("Cookie", cookie)
 			s, _ := req.String()
-			logs.Info(s)
 			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
 			if bizCode == 0 {
 				k++
 				logs.Info("助力成功")
 
 			} else {
-				logs.Info("火爆了")
+				logs.Info("助力失败")
 				if strings.Contains(s, "好友人气爆棚不需要助力啦") {
 					return
 				}
 			}
 		}
-
-		logs.Info("年兽助力结束")
 	}
 }
 
@@ -860,7 +856,6 @@ func getScKey(ck string) (key string) {
 		index := strings.Index(data, "\"secretp\":") + 11
 		i := strings.Index(data, "shareMiniprogramSwitch") - 3
 		s := data[index:i]
-		logs.Info(s)
 		return s
 	}
 	return ""
