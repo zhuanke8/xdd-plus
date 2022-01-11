@@ -315,56 +315,90 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 			{
-				if strings.Contains(msg, "膨胀") {
-					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
-					rsp.Param("url", msg)
-					rsp.Param("type", "hy")
-					data, err := rsp.Response()
+				if sender.IsAdmin {
+					if strings.Contains(msg, "膨胀") {
+						rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+						rsp.Param("url", msg)
+						rsp.Param("type", "hy")
+						data, err := rsp.Response()
 
-					if err != nil {
-						return "口令转换失败"
+						if err != nil {
+							return "口令转换失败"
+						}
+						body, _ := ioutil.ReadAll(data.Body)
+						if strings.Contains(string(body), "口令转换失败") {
+							return "口令转换失败"
+						} else {
+							if strings.Contains(string(body), "shareType=expandHelp") {
+								inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+								k, flag := startpz(inviterCode[1])
+								if flag {
+									return fmt.Sprintf("助力完成，一共助力%d账号", k)
+								} else {
+									return fmt.Sprintf("助力失败，一共助力%d账号", k)
+								}
+							}
+						}
 					}
-					body, _ := ioutil.ReadAll(data.Body)
-					if strings.Contains(string(body), "口令转换失败") {
-						return "口令转换失败"
-					} else {
-						if strings.Contains(string(body), "shareType=expandHelp") {
-							inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
-							k, flag := startpz(inviterCode[1])
-							if flag {
-								return fmt.Sprintf("助力完成，一共助力%d账号", k)
-							} else {
-								return fmt.Sprintf("助力失败，一共助力%d账号", k)
+				}
+
+			}
+			{
+				if sender.IsAdmin {
+					if strings.Contains(msg, "天降") {
+						rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+						rsp.Param("url", msg)
+						rsp.Param("type", "hy")
+						data, err := rsp.Response()
+
+						if err != nil {
+							return "口令转换失败"
+						}
+						body, _ := ioutil.ReadAll(data.Body)
+						if strings.Contains(string(body), "口令转换失败") {
+							return "口令转换失败"
+						} else {
+							if strings.Contains(string(body), "shareType=fallingRedbagHelp") {
+								inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+								k, flag := starttj(inviterCode[1])
+								if flag {
+									return fmt.Sprintf("助力完成，一共助力%d账号", k)
+								} else {
+									return fmt.Sprintf("助力失败，一共助力%d账号", k)
+								}
 							}
 						}
 					}
 				}
 			}
 			{
-				if strings.Contains(msg, "天降") {
-					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
-					rsp.Param("url", msg)
-					rsp.Param("type", "hy")
-					data, err := rsp.Response()
+				if sender.IsAdmin {
+					if strings.Contains(msg, "年兽") {
+						rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+						rsp.Param("url", msg)
+						rsp.Param("type", "hy")
+						data, err := rsp.Response()
 
-					if err != nil {
-						return "口令转换失败"
-					}
-					body, _ := ioutil.ReadAll(data.Body)
-					if strings.Contains(string(body), "口令转换失败") {
-						return "口令转换失败"
-					} else {
-						if strings.Contains(string(body), "shareType=fallingRedbagHelp") {
-							inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
-							k, flag := starttj(inviterCode[1])
-							if flag {
-								return fmt.Sprintf("助力完成，一共助力%d账号", k)
-							} else {
-								return fmt.Sprintf("助力失败，一共助力%d账号", k)
+						if err != nil {
+							return "口令转换失败"
+						}
+						body, _ := ioutil.ReadAll(data.Body)
+						if strings.Contains(string(body), "口令转换失败") {
+							return "口令转换失败"
+						} else {
+							if strings.Contains(string(body), "shareType=taskHelp") {
+								inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+								flag := nianhelp(inviterCode[1])
+								if flag {
+									return "助力完成"
+								} else {
+									return "助力失败"
+								}
 							}
 						}
 					}
 				}
+
 			}
 		}
 	}
@@ -710,32 +744,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return "导入互助码成功"
 			}
 		}
-		{
-			if strings.Contains(msg, "年兽") {
-				rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
-				rsp.Param("url", msg)
-				rsp.Param("type", "hy")
-				data, err := rsp.Response()
 
-				if err != nil {
-					return "口令转换失败"
-				}
-				body, _ := ioutil.ReadAll(data.Body)
-				if strings.Contains(string(body), "口令转换失败") {
-					return "口令转换失败"
-				} else {
-					if strings.Contains(string(body), "shareType=taskHelp") {
-						inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
-						flag := nianhelp(inviterCode[1])
-						if flag {
-							return "助力完成"
-						} else {
-							return "助力失败"
-						}
-					}
-				}
-			}
-		}
 		for k, v := range replies {
 			if regexp.MustCompile(k).FindString(msg) != "" {
 				if strings.Contains(msg, "妹") && time.Now().Unix()%10 == 0 {
@@ -897,7 +906,6 @@ func nianhelp(invited string) (flag bool) {
 		if sc != "" {
 			url := "https://api.m.jd.com/client.action?functionId=tigernian_collectScore"
 			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
-			logs.Info(body)
 			req := httplib.Post(url)
 			random := browser.Random()
 			req.Param("clientVersion", "1.0.0")
@@ -919,6 +927,7 @@ func nianhelp(invited string) (flag bool) {
 
 			} else {
 				logs.Info("助力失败")
+				logs.Info(s)
 				if strings.Contains(s, "好友人气爆棚不需要助力啦") {
 					return true
 				}
@@ -1009,7 +1018,6 @@ func starttj(invited string) (num int, flag bool) {
 		if sc != "" {
 			url := "https://api.m.jd.com/client.action?functionId=tigernian_doDropTask"
 			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
-			logs.Info(body)
 			req := httplib.Post(url)
 			random := browser.Random()
 			req.Param("clientVersion", "1.0.0")
@@ -1032,7 +1040,7 @@ func starttj(invited string) (num int, flag bool) {
 
 			} else {
 				logs.Info("助力失败")
-
+				logs.Info(s)
 				if strings.Contains(bizMsg, "好友人气爆棚") {
 					return k, true
 				}
