@@ -315,32 +315,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 			{
-				if strings.Contains(msg, "年兽") {
-					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
-					rsp.Param("url", msg)
-					rsp.Param("type", "hy")
-					data, err := rsp.Response()
-
-					if err != nil {
-						return "口令转换失败"
-					}
-					body, _ := ioutil.ReadAll(data.Body)
-					if strings.Contains(string(body), "口令转换失败") {
-						return "口令转换失败"
-					} else {
-						if strings.Contains(string(body), "shareType=taskHelp") {
-							inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
-							flag := nianhelp(inviterCode[1])
-							if flag {
-								return "助力完成"
-							} else {
-								return "助力失败"
-							}
-						}
-					}
-				}
-			}
-			{
 				if strings.Contains(msg, "膨胀") {
 					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
 					rsp.Param("url", msg)
@@ -734,6 +708,32 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			o := findShareCode(msg)
 			if o != "" {
 				return "导入互助码成功"
+			}
+		}
+		{
+			if strings.Contains(msg, "年兽") {
+				rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+				rsp.Param("url", msg)
+				rsp.Param("type", "hy")
+				data, err := rsp.Response()
+
+				if err != nil {
+					return "口令转换失败"
+				}
+				body, _ := ioutil.ReadAll(data.Body)
+				if strings.Contains(string(body), "口令转换失败") {
+					return "口令转换失败"
+				} else {
+					if strings.Contains(string(body), "shareType=taskHelp") {
+						inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+						flag := nianhelp(inviterCode[1])
+						if flag {
+							return "助力完成"
+						} else {
+							return "助力失败"
+						}
+					}
+				}
 			}
 		}
 		for k, v := range replies {
