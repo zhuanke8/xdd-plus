@@ -800,8 +800,8 @@ func starttyt(red string) (num int, f bool) {
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(5))
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
-		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641888102212&body={"actId":"d5a8c7198ee54de093d2adb04089d3ec","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}`, red)
-		logs.Info(sprintf)
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641888102212&body={"actId":"d5a8c7198ee54de093d2adb04089d3ec","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}&_ste=1`, red)
+
 		req := httplib.Get(sprintf)
 		random := browser.Random()
 		req.Header("User-Agent", random)
