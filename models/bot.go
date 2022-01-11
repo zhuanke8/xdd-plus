@@ -964,7 +964,6 @@ func startpz(invited string) (num int, flag bool) {
 		if sc != "" {
 			url := "https://api.m.jd.com/client.action?functionId=tigernian_pk_collectPkExpandScore"
 			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
-			logs.Info(body)
 			req := httplib.Post(url)
 			random := browser.Random()
 			req.Param("clientVersion", "1.0.0")
@@ -981,13 +980,14 @@ func startpz(invited string) (num int, flag bool) {
 			s, _ := req.String()
 			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
 			bizMsg, _ := jsonparser.GetString([]byte(s), "data", "bizMsg")
+
 			if bizCode == 0 {
 				k++
 				logs.Info("助力成功")
 
 			} else {
 				logs.Info("助力失败")
-
+				logs.Info(s)
 				if strings.Contains(bizMsg, "好友人气爆棚") {
 					return k, true
 				}
