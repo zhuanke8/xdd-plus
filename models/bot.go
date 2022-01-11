@@ -617,10 +617,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				} else {
 					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个互助值，管理员通道", Config.Tyt))
 				}
-
-				runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-					{Name: "tytpacketId", Value: ss[1]},
-				}}, sender)
+				//
+				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+				//	{Name: "tytpacketId", Value: ss[1]},
+				//}}, sender)
+				starttyt(ss[1])
 				return nil
 			}
 		}
@@ -790,6 +791,41 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 	}
 
 	return k, n, true
+}
+
+func starttyt(red string) (num int, f bool) {
+	k := 0
+	//n := 0
+	cks := GetJdCookies()
+	for i := range cks {
+		time.Sleep(time.Second * time.Duration(5))
+		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1623120183787&body={"actId":"d5a8c7198ee54de093d2adb04089d3ec","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}`, red)
+		req := httplib.Get(sprintf)
+		random := browser.Random()
+		req.Header("User-Agent", random)
+		req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Connection", "keep-alive")
+		req.Header("Accept-Language", "zh-cn")
+		req.Header("Accept-Encoding", "gzip, deflate, br")
+		req.Header("Origin", "https://api.m.jd.com")
+		req.Header("Cookie", cookie)
+		data, _ := req.String()
+		code, _ := jsonparser.GetInt([]byte(data), "code")
+		if code == 0 {
+			k++
+			logs.Info(jsonparser.GetFloat([]byte(data), "data", "amount"))
+		} else {
+			if strings.Contains(data, "完成") {
+				return k, true
+			} else {
+				logs.Info("助力失败，火爆了")
+				logs.Info(data)
+			}
+		}
+	}
+	return k, false
 }
 
 func nianhelp(invited string) (flag bool) {
