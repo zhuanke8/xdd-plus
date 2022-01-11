@@ -319,7 +319,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
 					rsp.Param("url", msg)
 					rsp.Param("type", "hy")
-					//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
 					data, err := rsp.Response()
 
 					if err != nil {
@@ -331,10 +330,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					} else {
 						if strings.Contains(string(body), "shareType=taskHelp") {
 							inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
-							nianhelp(inviterCode[1])
+							flag := nianhelp(inviterCode[1])
+							if flag {
+								return "助力完成"
+							} else {
+								return "助力失败"
+							}
 						}
-
-						//return string(body)
 					}
 				}
 			}
@@ -790,14 +792,14 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 	return k, n, true
 }
 
-func nianhelp(invited string) {
+func nianhelp(invited string) (flag bool) {
 	logs.Info("开始年兽助力")
 	k := 0
 	cks := GetJdCookies()
 	for i := len(cks); i > 0; i-- {
 		if k > 8 {
 			//todo 结束
-			return
+			return true
 		}
 		time.Sleep(time.Second * time.Duration(3))
 		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
@@ -834,6 +836,7 @@ func nianhelp(invited string) {
 			}
 		}
 	}
+	return false
 }
 
 func getScKey(ck string) (key string) {
