@@ -366,6 +366,32 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					}
 				}
 			}
+			{
+				if strings.Contains(msg, "天降") {
+					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+					rsp.Param("url", msg)
+					rsp.Param("type", "hy")
+					data, err := rsp.Response()
+
+					if err != nil {
+						return "口令转换失败"
+					}
+					body, _ := ioutil.ReadAll(data.Body)
+					if strings.Contains(string(body), "口令转换失败") {
+						return "口令转换失败"
+					} else {
+						if strings.Contains(string(body), "shareType=fallingRedbagHelp") {
+							inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+							k, flag := starttj(inviterCode[1])
+							if flag {
+								return fmt.Sprintf("助力完成，一共助力%d账号", k)
+							} else {
+								return fmt.Sprintf("助力失败，一共助力%d账号", k)
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -894,7 +920,7 @@ func nianhelp(invited string) (flag bool) {
 			} else {
 				logs.Info("助力失败")
 				if strings.Contains(s, "好友人气爆棚不需要助力啦") {
-					return
+					return true
 				}
 			}
 		}
@@ -944,6 +970,51 @@ func startpz(invited string) (num int, flag bool) {
 			req.Param("clientVersion", "1.0.0")
 			req.Param("client", "wh5")
 			req.Param("functionId", "tigernian_pk_collectPkExpandScore")
+			req.Param("body", body)
+			req.Header("User-Agent", random)
+			req.Header("Accept", "application/json, text/plain, */*")
+			req.Header("Connection", "keep-alive")
+			req.Header("Accept-Language", "zh-cn")
+			req.Header("Accept-Encoding", "gzip, deflate, br")
+			req.Header("Origin", "https://wbbny.m.jd.com")
+			req.Header("Cookie", cookie)
+			s, _ := req.String()
+			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
+			bizMsg, _ := jsonparser.GetString([]byte(s), "data", "bizMsg")
+			if bizCode == 0 {
+				k++
+				logs.Info("助力成功")
+
+			} else {
+				logs.Info("助力失败")
+
+				if strings.Contains(bizMsg, "好友人气爆棚") {
+					return k, true
+				}
+			}
+		}
+	}
+	return k, false
+
+}
+
+func starttj(invited string) (num int, flag bool) {
+	logs.Info("开始天降助力")
+	k := 0
+	cks := GetJdCookies()
+	for i := len(cks); i > 0; i-- {
+		time.Sleep(time.Second * time.Duration(3))
+		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
+		sc := getScKey(cookie)
+		if sc != "" {
+			url := "https://api.m.jd.com/client.action?functionId=tigernian_doDropTask"
+			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
+			logs.Info(body)
+			req := httplib.Post(url)
+			random := browser.Random()
+			req.Param("clientVersion", "1.0.0")
+			req.Param("client", "wh5")
+			req.Param("functionId", "tigernian_doDropTask")
 			req.Param("body", body)
 			req.Header("User-Agent", random)
 			req.Header("Accept", "application/json, text/plain, */*")
