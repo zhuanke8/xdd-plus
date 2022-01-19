@@ -7,6 +7,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"github.com/Mrs4s/go-cqhttp/modules/config"
+	"github.com/Mrs4s/go-cqhttp/modules/servers"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -18,7 +19,6 @@ import (
 
 	"github.com/Mrs4s/go-cqhttp/coolq"
 	"github.com/Mrs4s/go-cqhttp/global"
-
 	//"github.com/Mrs4s/go-cqhttp/global/config"
 	"github.com/cdle/xdd/models"
 
@@ -286,6 +286,7 @@ func Main() {
 		return "未知"
 	}())
 	cli = newClient()
+
 	//global.Proxy = conf.Message.ProxyRewrite
 	isQRCodeLogin := (conf.Account.Uin == 0 || len(conf.Account.Password) == 0) && !conf.Account.Encrypt
 	isTokenLogin := false
@@ -471,6 +472,8 @@ func Main() {
 	//	}
 	//}
 	//}
+
+	servers.Run(coolq.NewQQBot(cli))
 
 	log.Info("资源初始化完成, 开始处理信息.")
 	log.Info("アトリは、高性能ですから!")
