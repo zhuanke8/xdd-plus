@@ -7,7 +7,6 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"github.com/Mrs4s/go-cqhttp/modules/config"
-	"github.com/Mrs4s/go-cqhttp/modules/servers"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -427,53 +426,54 @@ func Main() {
 	//coolq.SkipMimeScan = conf.Message.SkipMimeScan
 	//加载WS地址
 
-	//for _, m := range conf.Servers {
-	//	if h, ok := m["http"]; ok {
-	//		hc := new(config.Server)
-	//
-	//		if err := h.Decode(hc); err != nil {
-	//			log.Warn("读取http配置失败 :", err)
-	//		} else {
-	//			config.AddServer(hc)
-	//		}
-	//	}
-	//if s, ok := m["ws"]; ok {
-	//	sc := new()
-	//	if err := s.Decode(sc); err != nil {
-	//		log.Warn("读取正向Websocket配置失败 :", err)
-	//	} else {
-	//
-	//		config.AddServer(sc)
-	//		go server.RunWebSocketServer(bot, sc)
-	//	}
-	//}
-	//if c, ok := m["ws-reverse"]; ok {
-	//	rc := new(config.WebsocketReverse)
-	//	if err := c.Decode(rc); err != nil {
-	//		log.Warn("读取反向Websocket配置失败 :", err)
-	//	} else {
-	//		go server.RunWebSocketClient(bot, rc)
-	//	}
-	//}
-	//if p, ok := m["pprof"]; ok {
-	//	pc := new(config.PprofServer)
-	//	if err := p.Decode(pc); err != nil {
-	//		log.Warn("读取pprof配置失败 :", err)
-	//	} else {
-	//		go server.RunPprofServer(pc)
-	//	}
-	//}
-	//if p, ok := m["lambda"]; ok {
-	//	lc := new(config.LambdaServer)
-	//	if err := p.Decode(lc); err != nil {
-	//		log.Warn("读取pprof配置失败 :", err)
-	//	} else {
-	//		go server.RunLambdaClient(bot, lc)
-	//	}
-	//}
-	//}
+	for _, m := range conf.Servers {
+		//if h, ok := m["http"]; ok {
+		//	hc := new(config.Server)
+		//
+		//	if err := h.Decode(hc); err != nil {
+		//		log.Warn("读取http配置失败 :", err)
+		//	} else {
+		//		go runHTTP(bot, m)
+		//	}
+		//}
+		if s, ok := m["ws"]; ok {
+			sc := new(WebsocketServer)
+			if err := s.Decode(sc); err != nil {
+				log.Warn("读取正向Websocket配置失败 :", err)
+			} else {
 
-	servers.Run(coolq.NewQQBot(cli))
+				//config.AddServer(sc)
+				go runWSServer(bot, s)
+			}
+		}
+		if c, ok := m["ws-reverse"]; ok {
+			rc := new(WebsocketReverse)
+			if err := c.Decode(rc); err != nil {
+				log.Warn("读取反向Websocket配置失败 :", err)
+			} else {
+				go runWSClient(bot, c)
+			}
+		}
+		//if p, ok := m["pprof"]; ok {
+		//	pc := new(config.PprofServer)
+		//	if err := p.Decode(pc); err != nil {
+		//		log.Warn("读取pprof配置失败 :", err)
+		//	} else {
+		//		go server.RunPprofServer(pc)
+		//	}
+		//}
+		//if p, ok := m["lambda"]; ok {
+		//	lc := new(config.LambdaServer)
+		//	if err := p.Decode(lc); err != nil {
+		//		log.Warn("读取pprof配置失败 :", err)
+		//	} else {
+		//		go server.RunLambdaClient(bot, lc)
+		//	}
+		//}
+	}
+
+	//config.Server{}
+	//servers.Run(coolq.NewQQBot(cli))
 
 	log.Info("资源初始化完成, 开始处理信息.")
 	log.Info("アトリは、高性能ですから!")
