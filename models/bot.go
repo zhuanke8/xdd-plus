@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
@@ -23,6 +24,16 @@ var SendQQGroup = func(a int64, b int64, c interface{}) {
 
 }
 
+type ArkResData struct {
+	Status uint `json:"status"`
+}
+
+type ArkRes struct {
+	Success bool       `json:"success"`
+	Message string     `json:"message"`
+	Data    ArkResData `json:"data"`
+}
+
 var ListenQQPrivateMessage = func(uid int64, msg string) {
 	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
 }
@@ -39,6 +50,7 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 
 var pcodes = make(map[string]string)
 var replies = map[string]string{}
+var riskcodes = make(map[string]string)
 
 func InitReplies() {
 	f, err := os.Open(ExecPath + "/conf/reply.php")
@@ -113,70 +125,96 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					logs.Info("进入验证码阶段")
 					addr := Config.Jdcurl
 					phone := findMapKey3(string(sender.UserID), pcodes)
-					if phone != "" {
-						req := httplib.Post(addr + "/api/VerifyCode")
-						req.Header("content-type", "application/json")
-						data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
-						message, _ := jsonparser.GetString(data, "message")
-						if strings.Contains(string(data), "pt_pin=") {
-							sender.Reply("登录成功。可以继续登录下一个账号")
-							if strings.Contains(msg, "pt_key") {
-								ptKey := FetchJdCookieValue("pt_key", msg)
-								ptPin := FetchJdCookieValue("pt_pin", msg)
-								if len(ptPin) > 0 && len(ptKey) > 0 {
-									ck := JdCookie{
-										PtKey: ptKey,
-										PtPin: ptPin,
-									}
-									if CookieOK(&ck) {
-										if sender.IsQQ() {
-											ck.QQ = sender.UserID
-										} else if sender.IsTG() {
-											ck.Telegram = sender.UserID
-										}
-										if HasKey(ck.PtKey) {
-											sender.Reply(fmt.Sprintf("重复提交"))
-										} else {
-											if nck, err := GetJdCookie(ck.PtPin); err == nil {
-												nck.InPool(ck.PtKey)
-												msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-												if sender.IsQQ() {
-													ck.Update(QQ, ck.QQ)
-												}
-												sender.Reply(fmt.Sprintf(msg))
-												(&JdCookie{}).Push(msg)
-												logs.Info(msg)
-											} else {
-												if Cdle {
-													ck.Hack = True
-												}
-												NewJdCookie(&ck)
-												msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-												if sender.IsQQ() {
-													ck.Update(QQ, ck.QQ)
-												}
-												sender.Reply(fmt.Sprintf(msg))
-												sender.Reply(ck.Query())
-												(&JdCookie{}).Push(msg)
-												logs.Info(msg)
-											}
-										}
-									} else {
-										sender.Reply(fmt.Sprintf("无效"))
-									}
-								}
-								go func() {
-									Save <- &JdCookie{}
-								}()
-								return nil
+					risk := riskcodes[string(sender.UserID)]
+
+					if strings.EqualFold(risk, "true") {
+						logs.Info("进入风险验证阶段")
+						if phone != "" {
+							req := httplib.Post(addr + "/api/VerifyCardCode")
+							req.Header("content-type", "application/json")
+							data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+							var arkRes ArkRes
+							json.Unmarshal(data, &arkRes)
+							if arkRes.Success || strings.Contains(arkRes.Message, "添加xdd成功") {
+								sender.Reply("登录成功。可以继续登录下一个账号")
+							} else if !arkRes.Success {
+								sender.Reply("验证失败,可能填写错误")
 							}
-						} else if strings.Contains(message, "添加xdd成功") {
-							sender.Reply("登录成功。可以继续登录下一个账号")
-						} else {
-							if message != "" {
-								sender.Reply(message)
+						}
+						riskcodes[string(sender.UserID)] = "false"
+					} else {
+						logs.Info("进入验证码阶段")
+						if phone != "" {
+							req := httplib.Post(addr + "/api/VerifyCode")
+							req.Header("content-type", "application/json")
+							data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+							var arkRes ArkRes
+							json.Unmarshal(data, &arkRes)
+							if strings.Contains(string(data), "pt_pin=") {
+								sender.Reply("登录成功。可以继续登录下一个账号")
+								if strings.Contains(msg, "pt_key") {
+									ptKey := FetchJdCookieValue("pt_key", msg)
+									ptPin := FetchJdCookieValue("pt_pin", msg)
+									if len(ptPin) > 0 && len(ptKey) > 0 {
+										ck := JdCookie{
+											PtKey: ptKey,
+											PtPin: ptPin,
+										}
+										if CookieOK(&ck) {
+											if sender.IsQQ() {
+												ck.QQ = sender.UserID
+											} else if sender.IsTG() {
+												ck.Telegram = sender.UserID
+											}
+											if HasKey(ck.PtKey) {
+												sender.Reply(fmt.Sprintf("重复提交"))
+											} else {
+												if nck, err := GetJdCookie(ck.PtPin); err == nil {
+													nck.InPool(ck.PtKey)
+													msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+													if sender.IsQQ() {
+														ck.Update(QQ, ck.QQ)
+													}
+													sender.Reply(fmt.Sprintf(msg))
+													(&JdCookie{}).Push(msg)
+													logs.Info(msg)
+												} else {
+													if Cdle {
+														ck.Hack = True
+													}
+													NewJdCookie(&ck)
+													msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+													if sender.IsQQ() {
+														ck.Update(QQ, ck.QQ)
+													}
+													sender.Reply(fmt.Sprintf(msg))
+													sender.Reply(ck.Query())
+													(&JdCookie{}).Push(msg)
+													logs.Info(msg)
+												}
+											}
+										} else {
+											sender.Reply(fmt.Sprintf("无效"))
+										}
+									}
+									go func() {
+										Save <- &JdCookie{}
+									}()
+									return nil
+								}
+							} else if !arkRes.Success && arkRes.Data.Status == 555 {
+								//验证
+								sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
+								//做个标记
+								riskcodes[string(sender.UserID)] = "true"
+							} else if strings.Contains(arkRes.Message, "添加xdd成功") {
+								sender.Reply("登录成功。可以继续登录下一个账号")
 							} else {
-								sender.Reply("登录失败。请重新登录")
+								if arkRes.Message != "" {
+									sender.Reply(arkRes.Message)
+								} else {
+									sender.Reply("登录失败。请重新登录")
+								}
 							}
 						}
 					}
