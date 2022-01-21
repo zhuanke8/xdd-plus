@@ -38,6 +38,11 @@ var ListenQQPrivateMessage = func(uid int64, msg string) {
 	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
 }
 
+var ListenQQTempPrivateMessage = func(uid int64, msg string) {
+	time.Sleep(time.Second * time.Duration(rand.Intn(5)))
+	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
+}
+
 var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 	if gid == Config.QQGroupID {
 		if Config.QbotPublicMode {
@@ -124,7 +129,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
 					addr := Config.Jdcurl
-					phone := findMapKey3(string(sender.UserID), pcodes)
+					phone := findMapKey3(strconv.Itoa(sender.UserID), pcodes)
 					risk := riskcodes[string(sender.UserID)]
 
 					if strings.EqualFold(risk, "true") {
