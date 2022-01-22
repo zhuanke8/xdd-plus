@@ -39,7 +39,6 @@ var ListenQQPrivateMessage = func(uid int64, msg string) {
 }
 
 var ListenQQTempPrivateMessage = func(uid int64, msg string) {
-	time.Sleep(time.Second * time.Duration(rand.Intn(5)))
 	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
 }
 
@@ -83,6 +82,7 @@ func findMapKey3(str string, m map[string]string) string {
 }
 
 var handleMessage = func(msgs ...interface{}) interface{} {
+	time.Sleep(time.Second * time.Duration(rand.Intn(5)))
 	msg := msgs[0].(string)
 	args := strings.Split(msg, " ")
 	head := args[0]
