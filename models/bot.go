@@ -721,10 +721,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个互助值，管理员通道", Config.Tyt))
 				}
 
-				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-				//	{Name: "tytpacketId", Value: ss[1]},
-				//}}, sender)
-				starttyt(ss[1])
+				runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+					{Name: "tytpacketId", Value: ss[1]},
+				}}, sender)
+				//starttyt(ss[1])
 				return nil
 			}
 		}
