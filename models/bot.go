@@ -129,7 +129,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
 					addr := Config.Jdcurl
-					phone := findMapKey3(strconv.Itoa(sender.UserID), pcodes)
+					phone := findMapKey3(string(sender.UserID), pcodes)
 					risk := riskcodes[string(sender.UserID)]
 
 					if strings.EqualFold(risk, "true") {
