@@ -148,6 +148,8 @@ var Save chan *JdCookie
 var ExecPath string
 var Telegram = "Telegram"
 var Hack = "Hack"
+var Tyt = "Tyt"
+var Dig = "Dig"
 
 const (
 	Fruit        = "Fruit"
@@ -175,6 +177,16 @@ func GetJdCookies(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {
 		tb = sb(tb)
 	}
 	tb.Order("priority desc").Find(&cks)
+	return cks
+}
+
+func GetJdCookiesTyt(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {
+	cks := []JdCookie{}
+	tb := db
+	for _, sb := range sbs {
+		tb = sb(tb)
+	}
+	tb.Where(Tyt+" != ?", "false").Order("priority desc").Find(&cks)
 	return cks
 }
 

@@ -905,7 +905,7 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 func starttyt(red string) (num int, f bool) {
 	k := 0
 	//n := 0
-	cks := GetJdCookies()
+	cks := GetJdCookiesTyt()
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(rand.Intn(15)))
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
