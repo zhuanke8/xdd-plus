@@ -937,7 +937,7 @@ func starttyt(red string) (num int, f bool) {
 				return k, true
 			} else if strings.Contains(data, "帮砍机会已用完") {
 
-			} else if strings.Contains(data, "火爆了") {
+			} else if strings.Contains(data, "火爆") {
 				cks[i].Tyt = "false"
 				cks[i].Updates(cks[i])
 			} else {
