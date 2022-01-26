@@ -186,7 +186,7 @@ func GetJdCookiesTyt(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {
 	for _, sb := range sbs {
 		tb = sb(tb)
 	}
-	tb.Where(Tyt+" != ?", "false").Order("priority desc").Find(&cks)
+	tb.Where(Tyt+" != ?", "false").Find(&cks)
 	return cks
 }
 
