@@ -180,16 +180,6 @@ func GetJdCookies(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {
 	return cks
 }
 
-func GetJdCookiesTyt(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {
-	cks := []JdCookie{}
-	tb := db
-	for _, sb := range sbs {
-		tb = sb(tb)
-	}
-	tb.Where(Tyt+" != ?", "false").Find(&cks)
-	return cks
-}
-
 func GetJdCookie(pin string) (*JdCookie, error) {
 	ck := &JdCookie{}
 	return ck, db.Where(PtPin+" = ?", pin).First(ck).Error

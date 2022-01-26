@@ -5,6 +5,7 @@ import (
 	"fmt"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
+	"gorm.io/gorm"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -905,7 +906,11 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 func starttyt(red string) (num int, f bool) {
 	k := 0
 	//n := 0
-	cks := GetJdCookiesTyt()
+	//cks := GetJdCookiesTyt()
+
+	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+		return sb.Where(fmt.Sprintf("%s != ? and %s = ?", Tyt, Available), False, True)
+	})
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(rand.Intn(15)))
 		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
