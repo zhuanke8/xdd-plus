@@ -2,14 +2,13 @@ package models
 
 import (
 	"errors"
-	"github.com/beego/beego/v2/core/logs"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 )
 
-var version = "v2.2"
+var version = "v2.3"
 var describe = "最终稳定版"
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
@@ -18,8 +17,6 @@ func initVersion() {
 	if Config.Version != "" {
 		version = Config.Version
 	}
-	logs.Info("小滴滴版本：" + version)
-	(&JdCookie{}).Push("小滴滴版本：" + version)
 	//logs.Info("检查更新" + version)
 	//value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/764763903a/xdd-plus/main/models/version.go").String()
 	//if err != nil {

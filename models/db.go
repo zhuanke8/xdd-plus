@@ -45,6 +45,7 @@ func initDB() {
 		&Token{},
 		&UserAdmin{},
 		&Limit{},
+		&Cache{},
 	)
 	keys = make(map[string]bool)
 	pins = make(map[string]bool)
@@ -105,6 +106,8 @@ type JdCookie struct {
 	Sgmh         string `gorm:"column:Sgmh"`
 	Cfd          string `gorm:"column:Cfd"`
 	Cash         string `gorm:"column:Cash"`
+	Tyt          string `gorm:"column:Tyt;default:true" validate:"oneof=true false"`
+	Dig          string `gorm:"column:Dig;default:true" validate:"oneof=true false"`
 	Help         string `gorm:"column:Help;default:false" validate:"oneof=true false"`
 	Pool         string `gorm:"-"`
 	Hack         string `gorm:"column:Hack"  validate:"oneof=true false"`
