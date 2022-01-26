@@ -724,8 +724,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 				//	{Name: "tytpacketId", Value: ss[1]},
 				//}}, sender)
-				starttyt(ss[1])
-				return nil
+				num, f := starttyt(ss[1])
+				if f {
+					return fmt.Sprintf("推一推结束共用:%d个账号", num)
+				} else {
+					return "推一推失败"
+				}
+				return "推一推已结束"
 			}
 		}
 		{
@@ -903,9 +908,8 @@ func starttyt(red string) (num int, f bool) {
 	cks := GetJdCookies()
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(rand.Intn(15)))
-		cookie := "pt_key=" + cks[i+60].PtKey + ";pt_pin=" + cks[i+60].PtPin + ";"
+		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
 		sprintf := fmt.Sprintf(`{"actId":"d5a8c7198ee54de093d2adb04089d3ec","channel":"coin_dozer","antiToken":"mmkajtm9eqonssy6xoi1623119406463ic84~NmZeSyVEbFNSd3V+dVNdA3pxAABkRHpTBiUjb35DFm5vLUROOBEzLUF7G28iAAFBKBgVFA1EPwIVKDclGENXbm8iVlQiAwpTTx1lKSsTCG5vfmsaDUR6LUEnG29+PU9ReSdSWTNTNxICI3V0dlYOV3p0Bwg3UW9IVnd+KSdUC1E3KQFkc0oKUwoyKhFmWzEQOTZCXQ1Eei1BKTQ5GENXbm80Qks5ATkdB28tKWoCAl8RZhtkcxY4LUF7G29rPU8eEWZHTA1EbC1BKTM5NBJXbm9oaxohDwpTWR1lf3RNWR56aAcUYUpnQFcdZTBmTU9XKSBEX3NcdEEFMDdvaEMOQW9+FV82CDAUAXhzfTEDXV07I0VUZx49F1MucyosBwIHeTFSDycPIlNPYyRvfkMDQCwiBFo1VWFHBzsuPnVZB185dQEKYlZkRFR3cnVxUAFFf3QVFHMCJR9Be2U3MwkVQC8nWBp9RD8CQXtlfGZNT1gkJxUCc19vSFpjOg==|~1623120183785~1~20201218~eyJ2aXdlIjoiMCIsImJhaW4iOnt9fQ==~2~281~1pl4|5563f-70,aa,,;751e-,,,;359-70,aa,40,u;b512-70,aa,40,u;058-70,aa,40,u;doei:,1,0,0,0,0,1000,-1000,1000,-1000;dmei:,1,0,0,1000,-1000,1000,-1000,1000,-1000;emc:,5:1;emmm:;emcf:,5:1;ivli:;iivl:;ivcvj:;scvje:;ewhi:,5:197-49;1623120175774,1623120183784,0,1,5,5,0,1,0,0,0;u5ge","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}`, red)
-
 		req := httplib.Post("https://api.m.jd.com/?t=1623066557140")
 		req.Param("functionId", "helpCoinDozer")
 		req.Param("appid", "station-soa-h5")
@@ -928,10 +932,16 @@ func starttyt(red string) (num int, f bool) {
 			k++
 			logs.Info(jsonparser.GetFloat([]byte(data), "data", "amount"))
 		} else {
+
 			if strings.Contains(data, "完成") {
 				return k, true
+			} else if strings.Contains(data, "帮砍机会已用完") {
+
+			} else if strings.Contains(data, "火爆了") {
+				cks[i].Tyt = "false"
+				cks[i].Updates(cks[i])
 			} else {
-				logs.Info("助力失败，火爆了")
+				logs.Info("额为异常")
 				logs.Info(data)
 			}
 		}
