@@ -583,6 +583,7 @@ func (c *LoginController) SMSLogin() {
 		(&models.JdCookie{}).Push(msg)
 		c.Ctx.WriteString(string(jsons))
 	}
+
 }
 
 func (c *LoginController) Cookie() {

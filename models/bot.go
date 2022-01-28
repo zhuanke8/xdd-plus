@@ -296,24 +296,24 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			//识别登录
 			{
 				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
-					var tabcount int64
-					addr := Config.Jdcurl
-					if addr == "" {
-						return "若兰很忙，请稍后再试。"
-					}
-					logs.Info(addr + "/api/Config")
-					if addr != "" {
-						data, _ := httplib.Get(addr + "/api/Config").Bytes()
-						logs.Info(string(data) + "返回数据")
-						tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
-						if tabcount != 0 {
-							pcodes[string(sender.UserID)] = "true"
-							sender.Reply("若兰为您服务，请输入11位手机号：")
-						} else {
-							sender.Reply("服务忙，请稍后再试。")
-						}
-					}
-
+					//var tabcount int64
+					//addr := Config.Jdcurl
+					//if addr == "" {
+					//	return "若兰很忙，请稍后再试。"
+					//}
+					//logs.Info(addr + "/api/Config")
+					//if addr != "" {
+					//	data, _ := httplib.Get(addr + "/api/Config").Bytes()
+					//	logs.Info(string(data) + "返回数据")
+					//	tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
+					//	if tabcount != 0 {
+					//		pcodes[string(sender.UserID)] = "true"
+					//		sender.Reply("若兰为您服务，请输入11位手机号：")
+					//	} else {
+					//		sender.Reply("服务忙，请稍后再试。")
+					//	}
+					//}
+					sender.Reply("服务升级中，目前登录请私聊群主谢谢")
 				}
 			}
 			{
