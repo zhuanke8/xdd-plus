@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/beego/beego/v2/core/logs"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -151,6 +152,7 @@ func (ck *JdCookie) Query() string {
 			}
 			page++
 		}
+		logs.Info(ck.BeanNum)
 		msgs = append(msgs, fmt.Sprintf("当前京豆：%v京豆", ck.BeanNum))
 		ysd := int(time.Now().Add(24 * time.Hour).Unix())
 		if rps := <-rpc; len(rps) != 0 {
