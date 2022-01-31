@@ -153,7 +153,7 @@ func (ck *JdCookie) Query() string {
 			page++
 		}
 		logs.Info(ck.BeanNum)
-		msgs = append(msgs, fmt.Sprintf("当前京豆：%v京豆", ck.BeanNum))
+		msgs = append(msgs, fmt.Sprintf("当前京豆：%s京豆", ck.BeanNum))
 		ysd := int(time.Now().Add(24 * time.Hour).Unix())
 		if rps := <-rpc; len(rps) != 0 {
 			for _, rp := range rps {
