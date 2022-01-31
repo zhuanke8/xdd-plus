@@ -296,24 +296,24 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			//识别登录
 			{
 				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
-					//var tabcount int64
-					//addr := Config.Jdcurl
-					//if addr == "" {
-					//	return "若兰很忙，请稍后再试。"
-					//}
-					//logs.Info(addr + "/api/Config")
-					//if addr != "" {
-					//	data, _ := httplib.Get(addr + "/api/Config").Bytes()
-					//	logs.Info(string(data) + "返回数据")
-					//	tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
-					//	if tabcount != 0 {
-					//		pcodes[string(sender.UserID)] = "true"
-					//		sender.Reply("若兰为您服务，请输入11位手机号：")
-					//	} else {
-					//		sender.Reply("服务忙，请稍后再试。")
-					//	}
-					//}
-					sender.Reply("服务升级中，目前登录请私聊群主谢谢")
+					var tabcount int64
+					addr := Config.Jdcurl
+					if addr == "" {
+						return "若兰很忙，请稍后再试。"
+					}
+					logs.Info(addr + "/api/Config")
+					if addr != "" {
+						data, _ := httplib.Get(addr + "/api/Config").Bytes()
+						logs.Info(string(data) + "返回数据")
+						tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
+						if tabcount != 0 {
+							pcodes[string(sender.UserID)] = "true"
+							sender.Reply("若兰为您服务，请输入11位手机号：")
+						} else {
+							sender.Reply("服务忙，请稍后再试。")
+						}
+					}
+					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
 				}
 			}
 			{
@@ -905,19 +905,28 @@ func startfcwb(ine string, red string) (num int, num1 int, f bool) {
 
 func starttyt(red string) (num int, f bool) {
 	k := 0
-	//n := 0
-	//cks := GetJdCookiesTyt()
+	n := 0
 
 	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
 		return sb.Where(fmt.Sprintf("%s != ? and %s = ?", Tyt, Available), False, True)
 	})
+	cache := getCache("tyt")
+	if cache != "" {
+		n, _ = strconv.Atoi(cache)
+	}
+
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(rand.Intn(15)))
-		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
+		if n >= len(cks) {
+			n = 0
+		} else {
+			n++
+		}
+		cookie := "pt_key=" + cks[n].PtKey + ";pt_pin=" + cks[n].PtPin + ";"
 		sprintf := fmt.Sprintf(`{"actId":"d5a8c7198ee54de093d2adb04089d3ec","channel":"coin_dozer","antiToken":"mmkajtm9eqonssy6xoi1623119406463ic84~NmZeSyVEbFNSd3V+dVNdA3pxAABkRHpTBiUjb35DFm5vLUROOBEzLUF7G28iAAFBKBgVFA1EPwIVKDclGENXbm8iVlQiAwpTTx1lKSsTCG5vfmsaDUR6LUEnG29+PU9ReSdSWTNTNxICI3V0dlYOV3p0Bwg3UW9IVnd+KSdUC1E3KQFkc0oKUwoyKhFmWzEQOTZCXQ1Eei1BKTQ5GENXbm80Qks5ATkdB28tKWoCAl8RZhtkcxY4LUF7G29rPU8eEWZHTA1EbC1BKTM5NBJXbm9oaxohDwpTWR1lf3RNWR56aAcUYUpnQFcdZTBmTU9XKSBEX3NcdEEFMDdvaEMOQW9+FV82CDAUAXhzfTEDXV07I0VUZx49F1MucyosBwIHeTFSDycPIlNPYyRvfkMDQCwiBFo1VWFHBzsuPnVZB185dQEKYlZkRFR3cnVxUAFFf3QVFHMCJR9Be2U3MwkVQC8nWBp9RD8CQXtlfGZNT1gkJxUCc19vSFpjOg==|~1623120183785~1~20201218~eyJ2aXdlIjoiMCIsImJhaW4iOnt9fQ==~2~281~1pl4|5563f-70,aa,,;751e-,,,;359-70,aa,40,u;b512-70,aa,40,u;058-70,aa,40,u;doei:,1,0,0,0,0,1000,-1000,1000,-1000;dmei:,1,0,0,1000,-1000,1000,-1000,1000,-1000;emc:,5:1;emmm:;emcf:,5:1;ivli:;iivl:;ivcvj:;scvje:;ewhi:,5:197-49;1623120175774,1623120183784,0,1,5,5,0,1,0,0,0;u5ge","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}`, red)
 		req := httplib.Post("https://api.m.jd.com/?t=1623066557140")
 		req.Param("functionId", "helpCoinDozer")
-		req.Param("appid", "station-soa-h5")
+		req.Param("appid", "station-sgoa-h5")
 		req.Param("client", "H5")
 		req.Param("clientVersion", "1.0.0")
 		req.Param("t", "1623120183787")
@@ -943,14 +952,18 @@ func starttyt(red string) (num int, f bool) {
 			} else if strings.Contains(data, "帮砍机会已用完") {
 
 			} else if strings.Contains(data, "火爆") {
-				cks[i].Tyt = "false"
-				cks[i].Updates(cks[i])
+				cks[n].Tyt = "false"
+				cks[n].Updates(cks[i])
+			} else if strings.Contains(data, "need verify") {
+				cks[n].Tyt = "false"
+				cks[n].Updates(cks[i])
 			} else {
 				logs.Info("额为异常")
 				logs.Info(data)
 			}
 		}
 	}
+
 	return k, false
 }
 
