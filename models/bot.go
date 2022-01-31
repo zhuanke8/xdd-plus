@@ -248,6 +248,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply(message)
 						}
 						i := 1
+
+						if success {
+							pcodes[string(sender.UserID)] = msg
+							sender.Reply("请输入6位验证码：")
+							break
+						}
+						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
 						if !success && status == 666 && i < 5 && captcha == 1 {
 
 							sender.Reply("正在进行滑块验证...")
@@ -270,11 +277,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
 									continue
 								}
-								if success {
-									pcodes[string(sender.UserID)] = msg
-									sender.Reply("请输入6位验证码：")
-									break
-								}
 								if strings.Contains(message, "上限") {
 									i = 6
 									sender.Reply(message)
@@ -289,7 +291,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						} else {
 							sender.Reply("滑块失败，请网页登录")
 						}
-
+						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
 					}
 				}
 			}
