@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/beego/beego/v2/client/httplib"
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/buger/jsonparser"
 	"math/rand"
 	"net/http"
@@ -74,6 +75,7 @@ func getKey(WSCK string) (string, error) {
 	ptKey, _ := appjmp(tokenKey)
 	var count = 0
 	for {
+		logs.Info(ptKey)
 		count++
 		if strings.Contains(ptKey, "app_open") {
 			return ptKey, nil
