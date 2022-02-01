@@ -6,6 +6,7 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/buger/jsonparser"
+	"gorm.io/gorm"
 	"net/url"
 	"strings"
 	"time"
@@ -174,13 +175,16 @@ func cleanWck() {
 }
 
 func updateCookie() {
-	cks := GetJdCookies()
+	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+		return sb.Where(fmt.Sprintf("%s != ?", WsKey), "")
+	})
+	logs.Info(fmt.Sprintf("一共%d个", len(cks)))
 	xx := 0
 	yy := 0
 	(&JdCookie{}).Push("开始定时更新转换Wskey")
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
-			time.Sleep(10 * time.Second)
+			time.Sleep(20 * time.Second)
 			ck := cks[i]
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
