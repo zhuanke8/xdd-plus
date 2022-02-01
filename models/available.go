@@ -188,6 +188,7 @@ func updateCookie() {
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp, _ := getKey(pinky)
+
 			if strings.Contains(rsp, "fake") {
 				yy++
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
