@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/buger/jsonparser"
@@ -57,9 +58,10 @@ func getKey(WSCK string) (string, error) {
 	v.Add("st", s.St)
 	v.Add("sign", s.Sign)
 	v.Add("sv", s.Sv)
+	random := browser.Random()
 	req := httplib.Post(`https://api.m.jd.com/client.action?` + v.Encode())
 	req.Header("cookie", WSCK)
-	req.Header("User-Agent", ua2)
+	req.Header("User-Agent", random)
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
 	req.Header("charset", `UTF-8`)
 	req.Header("accept-encoding", `br,gzip,deflate`)
@@ -85,7 +87,8 @@ func appjmp(tokenKey string) (string, error) {
 	v.Add("appid", "879")
 	v.Add("appup_type", "1")
 	req := httplib.Get(`https://un.m.jd.com/cgi-bin/app/appjmp?` + v.Encode())
-	req.Header("User-Agent", ua2)
+	random := browser.Random()
+	req.Header("User-Agent", random)
 	req.Header("accept", `text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3`)
 	req.SetCheckRedirect(func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
