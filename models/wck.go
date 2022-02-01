@@ -81,6 +81,7 @@ func getKey(WSCK string) (string, error) {
 			return ptKey, nil
 		} else {
 			time.Sleep(time.Second * time.Duration(rand.Intn(10)))
+			logs.Info(tokenKey)
 			ptKey, _ = appjmp(tokenKey)
 		}
 		if count == 4 {
