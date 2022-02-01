@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/beego/beego/v2/client/httplib"
-	"github.com/beego/beego/v2/core/logs"
 	"github.com/buger/jsonparser"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -71,10 +71,19 @@ func getKey(WSCK string) (string, error) {
 		return "", err
 	}
 	tokenKey, _ := jsonparser.GetString(data, "tokenKey")
-	ptKey, err := appjmp(tokenKey)
-	logs.Info(ptKey)
-	if err != nil {
-		return "", err
+	ptKey, _ := appjmp(tokenKey)
+	var count = 0
+	for {
+		count++
+		if strings.Contains(ptKey, "app_open") {
+			return ptKey, nil
+		} else {
+			time.Sleep(time.Second * time.Duration(rand.Intn(10)))
+			ptKey, _ = appjmp(tokenKey)
+		}
+		if count == 4 {
+			return "转换失败", nil
+		}
 	}
 	return ptKey, nil
 }
