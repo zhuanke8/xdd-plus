@@ -68,6 +68,7 @@ func getKey(WSCK string) (string, error) {
 	req.Header("accept-encoding", `br,gzip,deflate`)
 	req.Body(`body=%7B%22action%22%3A%22to%22%2C%22to%22%3A%22https%253A%252F%252Fplogin.m.jd.com%252Fcgi-bin%252Fm%252Fthirdapp_auth_page%253Ftoken%253DAAEAIEijIw6wxF2s3bNKF0bmGsI8xfw6hkQT6Ui2QVP7z1Xg%2526client_type%253Dandroid%2526appid%253D879%2526appup_type%253D1%22%7D&`)
 	data, err := req.Bytes()
+	req.String()
 	if err != nil {
 		return "", err
 	}
@@ -75,13 +76,12 @@ func getKey(WSCK string) (string, error) {
 	ptKey, _ := appjmp(tokenKey)
 	var count = 0
 	for {
-		logs.Info(ptKey)
 		count++
 		if strings.Contains(ptKey, "app_open") {
 			return ptKey, nil
 		} else {
 			time.Sleep(time.Second * time.Duration(rand.Intn(10)))
-			logs.Info(data)
+			logs.Info(string(data))
 			ptKey, _ = appjmp(tokenKey)
 		}
 		if count == 4 {
