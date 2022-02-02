@@ -31,6 +31,7 @@ func saveCache(key string, value string) (flag bool) {
 			})
 			return true
 		} else {
+			u.ActiveAt = Date()
 			u.key = key
 			u.value = value
 			begin := db.Begin()
