@@ -210,10 +210,10 @@ func updateCookie() {
 						xx++
 						nck.InPool(ck1.PtKey)
 						nck.Update(Available, True)
-						//msg := fmt.Sprintf("定时更新账号，%s", ck.PtPin)
+						msg := fmt.Sprintf("定时更新账号，%s", ck.PtPin)
 						////不再发送成功提醒
 						//(&JdCookie{}).Push(msg)
-						//logs.Info(msg)
+						logs.Info(msg)
 					} else {
 						yy++
 						ck1.Update(Available, False)
