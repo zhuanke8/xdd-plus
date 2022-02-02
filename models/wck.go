@@ -81,7 +81,7 @@ func getOKKey(WSCK string) (string, error) {
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
 	req.Header("charset", `UTF-8`)
 	req.Header("accept-encoding", `br,gzip,deflate`)
-	req.Body(`body=%7B%22action%22%3A%22to%22%2C%22to%22%3A%22https%253A%252F%252Fplogin.m.jd.com%252Fcgi-bin%252Fm%252Fthirdapp_auth_page%253Ftoken%253DAAEAIEijIw6wxF2s3bNKF0bmGsI8xfw6hkQT6Ui2QVP7z1Xg%2526client_type%253Dandroid%2526appid%253D879%2526appup_type%253D1%22%7D&`)
+	req.Body(`body=%7B%22to%22%3A%22https%253a%252f%252fplogin.m.jd.com%252fjd-mlogin%252fstatic%252fhtml%252fappjmp_blank.html%22%7D&`)
 	data, err := req.Bytes()
 	if err != nil {
 		return "", err
@@ -92,16 +92,18 @@ func getOKKey(WSCK string) (string, error) {
 }
 
 func appjmp(tokenKey string) (string, error) {
+
 	v := url.Values{}
 	v.Add("tokenKey", tokenKey)
-	v.Add("to", ``)
-	v.Add("client_type", "android")
-	v.Add("appid", "879")
-	v.Add("appup_type", "1")
+	v.Add("to", `https://plogin.m.jd.com/jd-mlogin/static/html/appjmp_blank.html`)
+	//v.Add("client_type", "android")
+	//v.Add("appid", "879")
+	//v.Add("appup_type", "1")
 	req := httplib.Get(`https://un.m.jd.com/cgi-bin/app/appjmp?` + v.Encode())
 	random := browser.Random()
 	req.Header("User-Agent", random)
-	req.Header("accept", `text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3`)
+	req.Header("accept", `accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9`)
+	req.Header("x-requested-with", "com.jingdong.app.mall")
 	req.SetCheckRedirect(func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	})
