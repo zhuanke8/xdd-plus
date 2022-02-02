@@ -55,7 +55,7 @@ func getKey(WSCK string) (string, error) {
 		if strings.Contains(ptKey, "app_open") {
 			return ptKey, nil
 		} else {
-			time.Sleep(time.Second * 10)
+			time.Sleep(time.Second * 20)
 			ptKey, _ = getOKKey(WSCK)
 		}
 		if count == 4 {
