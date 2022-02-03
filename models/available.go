@@ -181,19 +181,13 @@ func updateCookie() {
 	xx := 0
 	yy := 0
 	(&JdCookie{}).Push("开始定时更新转换Wskey")
-	var sign = getSign()
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			time.Sleep(10 * time.Second)
 			ck := cks[i]
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-			if i == 0 {
-				sign, _ = getOKsign(pinky)
-			}
-
-			rsp, _ := getKey1(pinky, sign)
-
+			rsp, _ := getKey(pinky)
 			if strings.Contains(rsp, "fake") {
 				yy++
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
