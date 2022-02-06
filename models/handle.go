@@ -91,24 +91,27 @@ module.exports = cookies`, cookies))
 				for i := range Config.Containers {
 					(&Config.Containers[i]).read()
 					if Config.Containers[i].Available {
-						if Config.Containers[i].Mode == Parallel {
-							(&Config.Containers[i]).write(cks)
-						} else {
+						if Config.Containers[i].Mode != Parallel {
 							cl++
 						}
 					}
 				}
 
-				for i := range cks {
-					j := i % cl
-					Config.Containers[j].cks = append(Config.Containers[j].cks, cks[i])
+				if cl != 0 {
+					for i := range cks {
+						j := i % cl
+						Config.Containers[j].cks = append(Config.Containers[j].cks, cks[i])
+					}
 				}
 
 				for i := range Config.Containers {
-					if Config.Containers[i].Mode != Parallel {
-						(&Config.Containers[i]).write(Config.Containers[i].cks)
+					if Config.Containers[i].Available {
+						if Config.Containers[i].Mode != Parallel {
+							(&Config.Containers[i]).write(Config.Containers[i].cks)
+						} else {
+							(&Config.Containers[i]).write(cks)
+						}
 					}
-
 				}
 			} else {
 				resident := []JdCookie{}
