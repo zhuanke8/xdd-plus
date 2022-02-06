@@ -42,6 +42,7 @@ type Container struct {
 	Reader    *bufio.Reader
 	Config    string
 	Limit     int
+	cks       []JdCookie
 }
 
 func initContainer() {

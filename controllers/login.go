@@ -493,7 +493,7 @@ func (c *LoginController) SMSLogin() {
 	qq := c.GetString("qq")
 	token := c.GetString("token")
 	logs.Info(cookie)
-	(&models.JdCookie{}).Push(cookie)
+
 	if token == models.Config.ApiToken || models.Config.ApiToken == "" {
 		ptKey := FetchJdCookieValue("pt_key", cookie)
 		ptPin := FetchJdCookieValue("pt_pin", cookie)
@@ -508,6 +508,7 @@ func (c *LoginController) SMSLogin() {
 		}
 		if ptKey != "" && ptPin != "" {
 			if models.CookieOK(ck) {
+				(&models.JdCookie{}).Push(cookie)
 				if nck, err := models.GetJdCookie(ck.PtPin); err == nil {
 					nck.InPool(ptKey)
 					if qq != "" && len(qq) > 6 {

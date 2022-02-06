@@ -23,17 +23,17 @@ func initHandle() {
 				continue
 			}
 			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
-				return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
+				return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True).Order(Priority)
 			})
 
 			logs.Info(fmt.Sprintf("总共%d个号", len(cks)))
-			tmp := []JdCookie{}
-			for _, ck := range cks {
-				if ck.Priority >= 0 && ck.Hack != True {
-					tmp = append(tmp, ck)
-				}
-			}
-			cks = tmp
+			//tmp := []JdCookie{}
+			//for _, ck := range cks {
+			//	if ck.Priority >= 0 && ck.Hack != True {
+			//		tmp = append(tmp, ck)
+			//	}
+			//}
+			//cks = tmp
 			cookies := "{"
 			hh := []string{}
 			for i, ck := range cks {
@@ -83,6 +83,32 @@ module.exports = cookies`, cookies))
 				}
 				for i := range Config.Containers {
 					(&Config.Containers[i]).write(cks)
+				}
+			} else if Config.Mode == Vip {
+
+				cl := 0
+
+				for i := range Config.Containers {
+					(&Config.Containers[i]).read()
+					if Config.Containers[i].Available {
+						if Config.Containers[i].Mode == Parallel {
+							(&Config.Containers[i]).write(cks)
+						} else {
+							cl++
+						}
+					}
+				}
+
+				for i := range cks {
+					j := i % cl
+					Config.Containers[j].cks = append(Config.Containers[j].cks, cks[i])
+				}
+
+				for i := range Config.Containers {
+					if Config.Containers[i].Mode != Parallel {
+						(&Config.Containers[i]).write(Config.Containers[i].cks)
+					}
+
 				}
 			} else {
 				resident := []JdCookie{}

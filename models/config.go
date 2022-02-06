@@ -61,6 +61,7 @@ type Yaml struct {
 
 var Balance = "balance"
 var Parallel = "parallel"
+var Vip = "vip"
 var GhProxy = "https://ghproxy.com/"
 var Cdle = false
 
