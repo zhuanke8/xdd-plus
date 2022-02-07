@@ -168,6 +168,7 @@ func getOKKey(WSCK string) (string, error) {
 	//s := getSign()
 	s := sign
 	logs.Info(s.Sign)
+	logs.Info("获取sign成功")
 	v.Add("functionId", s.FunctionID)
 	v.Add("clientVersion", s.ClientVersion)
 	v.Add("client", s.Client)
