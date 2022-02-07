@@ -167,6 +167,7 @@ func getOKKey(WSCK string) (string, error) {
 	v := url.Values{}
 	//s := getSign()
 	s := sign
+	logs.Info(s.Sign)
 	v.Add("functionId", s.FunctionID)
 	v.Add("clientVersion", s.ClientVersion)
 	v.Add("client", s.Client)
