@@ -58,7 +58,7 @@ func getKey(WSCK string) (string, error) {
 	var count = 0
 	for {
 		count++
-		if strings.Contains(ptKey, "app_open") {
+		if strings.Contains(ptKey, "app_open") || strings.Contains(ptKey, "fake") {
 			return ptKey, nil
 		} else {
 			time.Sleep(time.Second * 20)
@@ -102,6 +102,8 @@ func getOKKey(WSCK string) (string, error) {
 		if tokenKey == "" {
 			logs.Info("token为空")
 			sign = getSign()
+		} else {
+			TKey = tokenKey
 		}
 		logs.Info(tokenKey)
 		ptKey, _ := appjmp(tokenKey)
