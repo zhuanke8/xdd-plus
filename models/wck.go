@@ -6,6 +6,7 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/buger/jsonparser"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -61,7 +62,7 @@ func getKey(WSCK string) (string, error) {
 		if strings.Contains(ptKey, "app_open") || strings.Contains(ptKey, "fake") {
 			return ptKey, nil
 		} else {
-			time.Sleep(time.Second * 20)
+			time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
 			TKey = ""
 			ptKey, _ = getOKKey(WSCK)
 		}
