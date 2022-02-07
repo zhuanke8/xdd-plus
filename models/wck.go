@@ -99,7 +99,7 @@ func getOKKey(WSCK string) (string, error) {
 			return "", err
 		}
 		tokenKey, _ := jsonparser.GetString(data, "tokenKey")
-		if tokenKey == "" {
+		if tokenKey == "xxx" {
 			logs.Info("token为空")
 			sign = getSign()
 		} else {
