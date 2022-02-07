@@ -189,6 +189,7 @@ func getOKKey(WSCK string) (string, error) {
 		return "", err
 	}
 	tokenKey, _ := jsonparser.GetString(data, "tokenKey")
+	logs.Info(tokenKey)
 	ptKey, _ := appjmp(tokenKey)
 	return ptKey, nil
 }
@@ -236,5 +237,6 @@ func appjmp(tokenKey string) (string, error) {
 	}
 	cookies := strings.Join(rsp.Header.Values("Set-Cookie"), " ")
 	//ptKey := FetchJdCookieValue("pt_key", cookies)
+	logs.Info(cookies)
 	return cookies, nil
 }
