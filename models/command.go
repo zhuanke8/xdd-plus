@@ -880,6 +880,9 @@ var codeSignals = []CodeSignal{
 						logs.Error(err)
 					}
 					if len(rsp) > 0 {
+						if strings.Contains(rsp, "fake") {
+							sender.Reply(fmt.Sprintf("Wskey失效，%s", ck.Nickname))
+						}
 						ptKey := FetchJdCookieValue("pt_key", rsp)
 						ptPin := FetchJdCookieValue("pt_pin", rsp)
 						ck := JdCookie{
@@ -895,7 +898,8 @@ var codeSignals = []CodeSignal{
 							sender.Reply("转换失败")
 						}
 					} else {
-						sender.Reply(fmt.Sprintf("Wskey失效，%s", ck.Nickname))
+						sender.Reply("转换失败")
+						//sender.Reply(fmt.Sprintf("Wskey失效，%s", ck.Nickname))
 					}
 				} else {
 					sender.Reply(fmt.Sprintf("Wskey为空，%s", ck.Nickname))
