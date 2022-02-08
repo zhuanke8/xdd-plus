@@ -59,7 +59,7 @@ func getKey(WSCK string) (string, error) {
 	var count = 0
 	for {
 		count++
-		if strings.Contains(ptKey, "app_open") || strings.Contains(ptKey, "fake") {
+		if strings.Contains(ptKey, "app_open") {
 			return ptKey, nil
 		} else {
 			time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
@@ -67,7 +67,7 @@ func getKey(WSCK string) (string, error) {
 			ptKey, _ = getOKKey(WSCK)
 		}
 		if count == 4 {
-			return "转换失败", nil
+			return ptKey, nil
 		}
 	}
 }
@@ -139,7 +139,7 @@ func appjmp(tokenKey string) (string, error) {
 	}
 	cookies := strings.Join(rsp.Header.Values("Set-Cookie"), " ")
 	//ptKey := FetchJdCookieValue("pt_key", cookies)
-	logs.Info(cookies)
+	//logs.Info(cookies)
 	return cookies, nil
 }
 
