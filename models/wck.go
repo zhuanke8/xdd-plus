@@ -83,7 +83,7 @@ func getOKKey(WSCK string) (string, error) {
 	v.Add("sv", s.Sv)
 	random := browser.Random()
 	req := httplib.Post(`https://api.m.jd.com/client.action?` + v.Encode())
-	//req.Header("cookie", WSCK)
+	req.Header("cookie", WSCK)
 	req.Header("User-Agent", random)
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
 	req.Header("charset", `UTF-8`)
