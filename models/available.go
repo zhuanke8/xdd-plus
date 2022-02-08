@@ -183,6 +183,9 @@ func updateCookie() {
 	yy := 0
 	(&JdCookie{}).Push("开始定时更新转换Wskey")
 	for i := range cks {
+		if i == len(cks)/2 {
+			(&JdCookie{}).Push("Wskey已更新二分一")
+		}
 		if len(cks[i].WsKey) > 0 {
 			time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
 			ck := cks[i]
