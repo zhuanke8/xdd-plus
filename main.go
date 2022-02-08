@@ -80,7 +80,7 @@ func main() {
 	web.BConfig.WebConfig.Session.SessionName = models.AppName
 	go func() {
 		time.Sleep(time.Second * 4)
-		(&models.JdCookie{}).Push("小滴滴已启动，版本号:v2.3")
+		(&models.JdCookie{}).Push("小滴滴已启动，版本号:v2.4")
 
 	}()
 	if models.Config.QQID != 0 || models.Config.QQGroupID != 0 {
