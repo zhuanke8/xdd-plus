@@ -56,13 +56,14 @@ func getKey(WSCK string) (string, error) {
 	var count = 0
 	for {
 		count++
-		if strings.Contains(ptKey, "app_open") {
+		if strings.Contains(ptKey, "app_open") || strings.Contains(ptKey, "fake") {
 			return ptKey, nil
 		} else {
 			time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
+			sign = getSign()
 			ptKey, _ = getOKKey(WSCK)
 		}
-		if count == 4 {
+		if count == 20 {
 			return ptKey, nil
 		}
 	}
@@ -72,8 +73,6 @@ func getOKKey(WSCK string) (string, error) {
 	v := url.Values{}
 	//s := getSign()
 	s := sign
-	logs.Info(s.Sign)
-	logs.Info("获取sign成功")
 	v.Add("functionId", s.FunctionID)
 	v.Add("clientVersion", s.ClientVersion)
 	v.Add("client", s.Client)
