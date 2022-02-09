@@ -130,8 +130,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if strings.Contains(msg, "https://kpl.m.jd.com/product") {
 					ss := regexp.MustCompile(`wareId=(\S+)(&|&amp;)utm_source`).FindStringSubmatch(msg)
 					url := fmt.Sprintf("https://wqdeal.jd.com/deal/confirmorder/main?commlist=%s,,1,%s,1,0,0", ss[1], ss[1])
-					logs.Info(url)
 					data, _ := qrcode.Encode(url, qrcode.Medium, 256)
+					err2 := ioutil.WriteFile("./output.jpg", data, 0666)
+					if err2 != nil {
+						logs.Error(err2)
+					}
 					return "data:image/png;base64," + base64.StdEncoding.EncodeToString(data)
 				}
 			}
