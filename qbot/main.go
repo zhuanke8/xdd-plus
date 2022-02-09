@@ -7,6 +7,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"github.com/Mrs4s/go-cqhttp/modules/config"
+	"github.com/beego/beego/v2/core/logs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -67,6 +68,7 @@ func Main() {
 			if bot != nil {
 				if strings.Contains(msg.(string), "data:image") {
 					photo := msg.(string)
+					logs.Info(photo)
 					b := []byte(photo)
 					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&coolq.LocalImageElement{Stream: bytes.NewReader(b)}}})
 				} else {
