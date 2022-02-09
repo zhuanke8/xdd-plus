@@ -46,6 +46,7 @@ type Container struct {
 }
 
 func initContainer() {
+	var ql = 0
 	for i := range Config.Containers {
 		if Config.Containers[i].Weigth == 0 {
 			Config.Containers[i].Weigth = 1
@@ -62,6 +63,7 @@ func initContainer() {
 			if err == nil {
 				if Config.Containers[i].getToken() == nil {
 					logs.Info("青龙" + version + "通道登录成功")
+					ql++
 				} else {
 					logs.Warn("青龙" + version + "通道登录失败")
 				}
@@ -113,6 +115,7 @@ func initContainer() {
 		}
 	}
 
+	(&JdCookie{}).Push(fmt.Sprintf("容器加载完毕，共%d个", ql))
 }
 
 func (c *Container) write(cks []JdCookie) error {
