@@ -4,6 +4,7 @@ import (
 	"fmt"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
+	"github.com/skip2/go-qrcode"
 	"gorm.io/gorm"
 	"io/ioutil"
 	"math/rand"
@@ -123,6 +124,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	if Config.VIP {
 		switch msg {
 		default:
+			//转码
+			{
+				if strings.Contains(msg, "https://kpl.m.jd.com/product") {
+					ss := regexp.MustCompile(`wareId=(\S+)(&|&amp;)utm_source`).FindStringSubmatch(msg)
+					url := fmt.Sprintf("https://wqdeal.jd.com/deal/confirmorder/main?commlist=%s,,1,%s,1,0,0", ss[1], ss[1])
+					logs.Info(url)
+					data, _ := qrcode.Encode(url, qrcode.Medium, 256)
+					return data
+				}
+			}
 			//{
 			//	regex := "^\\d{6}$"
 			//	reg := regexp.MustCompile(regex)
