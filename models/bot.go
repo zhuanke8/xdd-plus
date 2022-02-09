@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/base64"
 	"fmt"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
@@ -131,7 +132,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					url := fmt.Sprintf("https://wqdeal.jd.com/deal/confirmorder/main?commlist=%s,,1,%s,1,0,0", ss[1], ss[1])
 					logs.Info(url)
 					data, _ := qrcode.Encode(url, qrcode.Medium, 256)
-					return data
+					return base64.StdEncoding.EncodeToString(data)
 				}
 			}
 			//{
