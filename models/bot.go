@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/base64"
 	"fmt"
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
@@ -132,7 +133,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					logs.Info(url)
 					data, _ := qrcode.Encode(url, qrcode.Medium, 256)
 					logs.Info(data)
-					return data
+					return base64.StdEncoding.EncodeToString(data)
 				}
 			}
 			//{
