@@ -137,10 +137,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					}
 					return "data:image/png;base64," + base64.StdEncoding.EncodeToString(data)
 				} else if strings.Contains(msg, "item.m.jd.com/product") {
-					//ss := regexp.MustCompile(`product/(\S+)(&|&amp;)utm_source`).FindStringSubmatch(msg)
-					index := strings.Index(msg, "product/")
-					i := strings.Index(msg, ".html?")
-					var s = msg[index:i]
+					var s = msg[strings.Index(msg, "product/")+8 : strings.Index(msg, ".html?")]
 					logs.Info(s)
 					url := fmt.Sprintf("https://wqdeal.jd.com/deal/confirmorder/main?commlist=%s,,1,%s,1,0,0", s, s)
 					data, _ := qrcode.Encode(url, qrcode.Medium, 256)
