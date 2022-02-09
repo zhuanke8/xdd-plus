@@ -65,7 +65,13 @@ func Main() {
 		switch msg.(type) {
 		case string:
 			if bot != nil {
-				bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
+				if strings.Contains(msg.(string), "data:image") {
+					photo := msg.(string)
+					b := []byte(photo)
+					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&coolq.LocalImageElement{Stream: bytes.NewReader(b)}}})
+				} else {
+					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
+				}
 			}
 		case *http.Response:
 			data, _ := ioutil.ReadAll(msg.(*http.Response).Body)
