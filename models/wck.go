@@ -137,7 +137,7 @@ func appjmp(tokenKey string) (string, error) {
 }
 
 func getOKKey1(WSCK string) (string, error) {
-	s := genToken()
+	s := getToken()
 	random := browser.Random()
 	req := httplib.Post(`https://api.m.jd.com/client.action?` + s + "&functionId=genToken")
 	req.Header("cookie", WSCK)
