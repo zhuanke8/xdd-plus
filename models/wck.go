@@ -115,12 +115,11 @@ func appjmp(tokenKey string) (string, error) {
 	v.Add("tokenKey", tokenKey)
 	v.Add("to", `https://plogin.m.jd.com/jd-mlogin/static/html/appjmp_blank.html`)
 	//v.Add("client_type", "android")
-	//v.Add("appid", "879")
+	v.Add("appid", "879")
 	//v.Add("appup_type", "1")
 	req := httplib.Get(`https://un.m.jd.com/cgi-bin/app/appjmp?` + v.Encode())
 	random := browser.Random()
 	req.Header("User-Agent", random)
-
 	req.Header("accept", `accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9`)
 	req.Header("x-requested-with", "com.jingdong.app.mall")
 	req.SetCheckRedirect(func(req *http.Request, via []*http.Request) error {
