@@ -70,7 +70,7 @@ func getKey(WSCK string) (string, error) {
 			return ptKey, nil
 		} else {
 			time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
-			sign = getSign()
+			//sign = getSign()
 			ptKey, _ = getOKKey1(WSCK)
 		}
 		if count == 20 {
@@ -115,7 +115,7 @@ func appjmp(tokenKey string) (string, error) {
 	v.Add("tokenKey", tokenKey)
 	v.Add("to", `https://plogin.m.jd.com/jd-mlogin/static/html/appjmp_blank.html`)
 	//v.Add("client_type", "android")
-	v.Add("appid", "879")
+	//v.Add("appid", "879")
 	//v.Add("appup_type", "1")
 	req := httplib.Get(`https://un.m.jd.com/cgi-bin/app/appjmp?` + v.Encode())
 	random := browser.Random()
@@ -138,7 +138,7 @@ func appjmp(tokenKey string) (string, error) {
 func getOKKey1(WSCK string) (string, error) {
 	s := getToken()
 	random := browser.Random()
-	req := httplib.Post(`https://api.m.jd.com/client.action?` + s + "&functionId=genToken")
+	req := httplib.Post(`https://api.m.jd.com/client.action?` + s + "&appid=879&functionId=genToken")
 	req.Header("cookie", WSCK)
 	req.Header("User-Agent", random)
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
