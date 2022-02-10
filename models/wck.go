@@ -114,9 +114,9 @@ func appjmp(tokenKey string) (string, error) {
 	v := url.Values{}
 	v.Add("tokenKey", tokenKey)
 	v.Add("to", `https://plogin.m.jd.com/jd-mlogin/static/html/appjmp_blank.html`)
-	v.Add("client_type", "android")
-	v.Add("appid", "879")
-	v.Add("appup_type", "1")
+	//v.Add("client_type", "android")
+	//v.Add("appid", "879")
+	//v.Add("appup_type", "1")
 	req := httplib.Get(`https://un.m.jd.com/cgi-bin/app/appjmp?` + v.Encode())
 	random := browser.Random()
 	req.Header("User-Agent", random)
