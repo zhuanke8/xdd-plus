@@ -12,7 +12,7 @@ import (
 )
 
 var version = "20220212"
-var describe = "支持多群，同步最新wskey转换脚本"
+var describe = "同步最新wskey转换脚本"
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
 
