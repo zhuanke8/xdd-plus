@@ -308,13 +308,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								}
 								//sender.Reply(message)
 							}
-						} else if !success && captcha == 2 {
+							//} else if !success && captcha == 2 {
+							//	pcodes[string(sender.UserID)] = msg
+							//	s := Config.Jdcurl + "/Captcha/" + msg
+							//	sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+
+						} else {
 							pcodes[string(sender.UserID)] = msg
 							s := Config.Jdcurl + "/Captcha/" + msg
 							sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
-
-						} else {
-							sender.Reply("滑块失败，请网页登录")
+							//sender.Reply("滑块失败，请网页登录")
 						}
 						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
 					}
