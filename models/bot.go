@@ -280,9 +280,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							break
 						}
 						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
-						if !success && status == 666 && i < 5 && captcha == 1 {
+						if !success && status == 666 && i < 5 && captcha == 2 {
 
-							sender.Reply("正在进行滑块验证...")
+							sender.Reply("正在进行验证...")
 							for {
 								req = httplib.Post(addr + "/api/AutoCaptcha")
 								req.Header("content-type", "application/json")
@@ -294,7 +294,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									//s.Reply("滑块验证失败：" + string(data))
 								}
 								if i > 5 {
-									sender.Reply("滑块验证失败,请联系管理员或者手动登录")
+									pcodes[string(sender.UserID)] = msg
+									s := Config.Jdcurl + "/Captcha/" + msg
+									sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+									//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
 									break
 								}
 								if status == 666 {
@@ -314,10 +317,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							//	sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
 
 						} else {
-							pcodes[string(sender.UserID)] = msg
-							s := Config.Jdcurl + "/Captcha/" + msg
-							sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
-							//sender.Reply("滑块失败，请网页登录")
+
+							sender.Reply("滑块失败，请网页登录")
 						}
 						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
 					}
