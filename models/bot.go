@@ -293,6 +293,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								if !success {
 									//s.Reply("滑块验证失败：" + string(data))
 								}
+								if success {
+									pcodes[string(sender.UserID)] = msg
+									sender.Reply("请输入6位验证码：")
+									break
+								}
 								if i > 5 {
 									pcodes[string(sender.UserID)] = msg
 									s := Config.Jdcurl + "/Captcha/" + msg
