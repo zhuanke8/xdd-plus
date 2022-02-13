@@ -23,7 +23,7 @@ func initHandle() {
 				continue
 			}
 			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
-				return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ? Order By %s desc,ID desc", Priority, Hack, Available, Priority), 0, True, True)
+				return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
 			})
 
 			logs.Info(fmt.Sprintf("总共%d个号", len(cks)))
