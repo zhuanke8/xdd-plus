@@ -978,6 +978,7 @@ func starttyt(red string) (num int, f bool) {
 		req.Header("Cookie", cookie)
 		data, _ := req.String()
 		code, _ := jsonparser.GetInt([]byte(data), "code")
+		logs.Info(data)
 		if code == 0 {
 			k++
 			logs.Info(jsonparser.GetFloat([]byte(data), "data", "amount"))
