@@ -983,7 +983,7 @@ func starttyt(red string) (num int, f bool) {
 		logs.Info(data)
 		if code == 0 {
 			k++
-			logs.Info(jsonparser.GetFloat([]byte(data), "data", "amount"))
+			logs.Info(jsonparser.GetString([]byte(data), "data", "amount"))
 		} else {
 
 			if strings.Contains(data, "完成") {
@@ -993,16 +993,12 @@ func starttyt(red string) (num int, f bool) {
 			} else if strings.Contains(data, "火爆") {
 				cks[n].Tyt = "false"
 				cks[n].Updates(cks[i])
-			} else if strings.Contains(data, "need verify") {
-				cks[n].Tyt = "false"
-				cks[n].Updates(cks[i])
 			} else {
 				logs.Info("额为异常")
 				logs.Info(data)
 			}
 		}
 	}
-
 	return k, false
 }
 

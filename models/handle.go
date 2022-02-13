@@ -87,6 +87,7 @@ module.exports = cookies`, cookies))
 			} else if Config.Mode == Vip {
 
 				cl := 0
+				logs.Info("进入VIP模式")
 
 				for i := range Config.Containers {
 					(&Config.Containers[i]).read()
