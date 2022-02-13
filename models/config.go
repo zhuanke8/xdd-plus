@@ -111,7 +111,7 @@ func initConfig() {
 	if Config.CTime == "" {
 		Config.CTime = "10"
 	}
-	if Config.Mode != Parallel {
+	if Config.Mode != Parallel || Config.Mode != Vip {
 		Config.Mode = Balance
 	}
 	if Config.Qrcode != "" {
