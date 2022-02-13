@@ -77,6 +77,7 @@ module.exports = cookies`, cookies))
 			// 	}
 			// }
 			// cks = tmp
+			logs.Info(Config.Mode)
 			if Config.Mode == Parallel {
 				for i := range Config.Containers {
 					(&Config.Containers[i]).read()
