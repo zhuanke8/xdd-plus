@@ -176,7 +176,7 @@ func GetJdCookies(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {
 	for _, sb := range sbs {
 		tb = sb(tb)
 	}
-	tb.Order("priority desc,ID desc").Find(&cks)
+	tb.Order("priority desc,ID asc").Find(&cks)
 	return cks
 }
 
