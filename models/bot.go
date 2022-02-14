@@ -761,13 +761,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 				//	{Name: "tytpacketId", Value: ss[1]},
 				//}}, sender)
-				num, f := starttyt(ss[1])
-				if f {
-					return fmt.Sprintf("推一推结束共用:%d个账号", num)
-				} else {
-					return "推一推失败"
-				}
-				return "推一推已结束"
+				//num, f := starttyt(ss[1])
+				//if f {
+				//	return fmt.Sprintf("推一推结束共用:%d个账号", num)
+				//} else {
+				//	return "推一推失败"
+				//}
+				//return "推一推已结束"
 			}
 		}
 		{
