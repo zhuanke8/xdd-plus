@@ -68,7 +68,7 @@ if(pins){
 }
 module.exports = cookies`, cookies))
 			f.Close()
-			WriteHelpJS(cks)
+			//WriteHelpJS(cks)
 			go CopyConfigAll()
 			// tmp = []JdCookie{}
 			// for _, ck := range cks {
