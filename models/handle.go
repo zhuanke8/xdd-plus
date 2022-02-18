@@ -19,7 +19,7 @@ func initHandle() {
 		for {
 			get := <-Save
 			if get.Pool == "s" {
-				initCookie()
+				//initCookie()
 				continue
 			}
 			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
