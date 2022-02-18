@@ -1,6 +1,7 @@
 package models
 
 import (
+	"crypto/md5"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -257,75 +258,108 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 					reg := regexp.MustCompile(regular)
 					if reg.MatchString(msg) {
-						sender.Reply("请耐心等待...")
-						addr := Config.Jdcurl
-						req := httplib.Post(addr + "/api/SendSMS")
-						req.Header("content-type", "application/json")
-						data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
-						message, _ := jsonparser.GetString(data, "message")
-						success, _ := jsonparser.GetBoolean(data, "success")
-						status, _ := jsonparser.GetInt(data, "data", "status")
-						captcha, _ := jsonparser.GetInt(data, "data", "captcha")
-						if captcha == 0 {
-							captcha = 1
-						}
-						if message != "" && status != 666 {
-							sender.Reply(message)
-						}
-						i := 1
+						if len(Config.Jdcurl) > 0 {
 
-						if success {
-							pcodes[string(sender.UserID)] = msg
-							sender.Reply("请输入6位验证码：")
-							break
-						}
-						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
-						if !success && status == 666 && i < 5 && captcha == 2 {
-
-							sender.Reply("正在进行验证...")
-							for {
-								req = httplib.Post(addr + "/api/AutoCaptcha")
-								req.Header("content-type", "application/json")
-								data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
-								message, _ := jsonparser.GetString(data, "message")
-								success, _ := jsonparser.GetBoolean(data, "success")
-								status, _ := jsonparser.GetInt(data, "data", "status")
-								if !success {
-									//s.Reply("滑块验证失败：" + string(data))
-								}
-								if success {
-									pcodes[string(sender.UserID)] = msg
-									sender.Reply("请输入6位验证码：")
-									break
-								}
-								if i > 5 {
-									pcodes[string(sender.UserID)] = msg
-									s := Config.Jdcurl + "/Captcha/" + msg
-									sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
-									//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
-									break
-								}
-								if status == 666 {
-									i++
-									sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
-									continue
-								}
-								if strings.Contains(message, "上限") {
-									i = 6
-									sender.Reply(message)
-								}
-								//sender.Reply(message)
+							sender.Reply("请耐心等待...")
+							addr := Config.Jdcurl
+							req := httplib.Post(addr + "/api/SendSMS")
+							req.Header("content-type", "application/json")
+							data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+							message, _ := jsonparser.GetString(data, "message")
+							success, _ := jsonparser.GetBoolean(data, "success")
+							status, _ := jsonparser.GetInt(data, "data", "status")
+							captcha, _ := jsonparser.GetInt(data, "data", "captcha")
+							if captcha == 0 {
+								captcha = 1
 							}
-							//} else if !success && captcha == 2 {
-							//	pcodes[string(sender.UserID)] = msg
-							//	s := Config.Jdcurl + "/Captcha/" + msg
-							//	sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+							if message != "" && status != 666 {
+								sender.Reply(message)
+							}
+							i := 1
 
-						} else {
+							if success {
+								pcodes[string(sender.UserID)] = msg
+								sender.Reply("请输入6位验证码：")
+								break
+							}
+							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
+							if !success && status == 666 && i < 5 && captcha == 2 {
 
-							sender.Reply("滑块失败，请网页登录")
+								sender.Reply("正在进行验证...")
+								for {
+									req = httplib.Post(addr + "/api/AutoCaptcha")
+									req.Header("content-type", "application/json")
+									data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
+									message, _ := jsonparser.GetString(data, "message")
+									success, _ := jsonparser.GetBoolean(data, "success")
+									status, _ := jsonparser.GetInt(data, "data", "status")
+									if !success {
+										//s.Reply("滑块验证失败：" + string(data))
+									}
+									if success {
+										pcodes[string(sender.UserID)] = msg
+										sender.Reply("请输入6位验证码：")
+										break
+									}
+									if i > 5 {
+										pcodes[string(sender.UserID)] = msg
+										s := Config.Jdcurl + "/Captcha/" + msg
+										sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+										//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
+										break
+									}
+									if status == 666 {
+										i++
+										sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
+										continue
+									}
+									if strings.Contains(message, "上限") {
+										i = 6
+										sender.Reply(message)
+									}
+									//sender.Reply(message)
+								}
+								//} else if !success && captcha == 2 {
+								//	pcodes[string(sender.UserID)] = msg
+								//	s := Config.Jdcurl + "/Captcha/" + msg
+								//	sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+
+							} else {
+
+								sender.Reply("滑块失败，请网页登录")
+							}
+							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
 						}
-						//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
+					} else {
+
+						//app.get('/getCode', async (req, res) => {
+						//  let times = Date.now()
+						//  const phone = req.query.telephone
+						//  let gsign = md5(`${appid}${qversion}${times}361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN`)
+						//  let body = `client_ver=1.0.0&gsign=${gsign}&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&ts=${times}`
+						//  const token = await api(body)
+						//  times = Date.now()
+						//  const cookie = `guid=${token.data.data.guid};lsid=${token.data.data.lsid};gsalt=${token.data.data.gsalt};rsa_modulus=${token.data.data.rsa_modulus};`
+						//  gsign = md5(`${appid}${qversion}${times}362${token.data.data.gsalt}`)
+						//  let sign = md5(`${appid}${qversion}${country_code}${phone}4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj`)
+						//
+						//  body = `country_code=${country_code}&client_ver=${qversion}&gsign=${gsign}&appid=${appid}&mobile=${phone}&sign=${sign}&cmd=36&sub_cmd=2&qversion=${qversion}&ts=${times}`
+						//  const { data } = await api(body, cookie)
+						//  if (data.err_code == 0) {
+						//    res.send({ gsalt: token.data.data.gsalt, token: cookie, code: 200, msg: '短信发送成功' })
+						//  }
+						sender.Reply("请耐心等待...")
+
+						req := httplib.Get("https://qapplogin.m.jd.com/cgi-bin/qapp/quick/getCode")
+						data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", Date()))
+						has := md5.Sum(data)
+						gsign := fmt.Sprintf("%x", has)
+						body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", Date())
+						req.Header("content-type", "application/json")
+						req.Body(body)
+
+						//data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+
 					}
 				}
 			}
@@ -761,13 +795,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 				//	{Name: "tytpacketId", Value: ss[1]},
 				//}}, sender)
-				//num, f := starttyt(ss[1])
-				//if f {
-				//	return fmt.Sprintf("推一推结束共用:%d个账号", num)
-				//} else {
-				//	return "推一推失败"
-				//}
-				//return "推一推已结束"
+				num, f := starttyt(ss[1])
+				if f {
+					return fmt.Sprintf("推一推结束共用:%d个账号", num)
+				} else {
+					return "推一推失败"
+				}
+				return "推一推已结束"
 			}
 		}
 		{
