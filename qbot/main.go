@@ -353,7 +353,7 @@ func Main() {
 		reLoginLock.Lock()
 		defer reLoginLock.Unlock()
 		times = 1
-		if cli.Online {
+		if cli.Online.Load() {
 			return
 		}
 		log.Warnf("Bot已离线: %v", e.Message)
