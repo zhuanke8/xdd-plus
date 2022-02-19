@@ -341,18 +341,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 			{
-				ist := findMapKey3(string(sender.UserID), pcodes)
+				ist := pcodes[string(sender.UserID)]
 				if strings.EqualFold(ist, "true") {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 					reg := regexp.MustCompile(regular)
 					if reg.MatchString(msg) {
 						sender.Reply("请耐心等待...")
 						ck := getViVoCk()
-						logs.Info(ck.Gsalt)
 						if ck.Gsalt != "" {
 							riskcodes[string(sender.UserID)] = ck
 							var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.GUID, ck.Lsid, ck.Gsalt, ck.RsaModulus)
-							logs.Info(cookie1)
 							date := fmt.Sprint(time.Now().UnixMilli())
 							data := []byte(fmt.Sprintf("9591.0.0%s362%s", date, ck.Gsalt))
 							gsign := getMd5String(data)
@@ -372,13 +370,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							logs.Info(string(s))
 							getString, _ := jsonparser.GetString(s, "err_msg")
 							if strings.Contains(getString, "发送失败") {
-								sender.Reply("验证码发送失败，请联系管理员修复")
+								sender.Reply("验证码发送失败，,请再次尝试，多次失败请联系管理员修复")
 							} else {
 								pcodes[string(sender.UserID)] = msg
 								sender.Reply("请输入6位验证码：")
 							}
 						} else {
-							sender.Reply("验证码发送失败，请联系管理员修复")
+							sender.Reply("验证码发送失败，,请再次尝试，多次失败请联系管理员修复")
 						}
 
 						//诺兰登录
