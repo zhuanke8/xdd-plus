@@ -369,6 +369,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							req.Header("content-length", string(len(body)))
 							req.Body(body)
 							s, _ := req.Bytes()
+							logs.Info(string(s))
 							getString, _ := jsonparser.GetString(s, "err_msg")
 							if strings.Contains(getString, "发送失败") {
 								sender.Reply("验证码发送失败，请联系管理员修复")
@@ -998,7 +999,6 @@ func getViVoCk() ViVoData {
 	data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", date))
 	gsign := getMd5String(data)
 	body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", date)
-	logs.Info(body)
 	req.Header("Host", "qapplogin.m.jd.com")
 	req.Header("cookie", "")
 	req.Header("user-agent", random)
@@ -1006,7 +1006,6 @@ func getViVoCk() ViVoData {
 	req.Header("content-length", string(len(body)))
 	req.Body(body)
 	s, _ := req.Bytes()
-	logs.Info(string(s))
 	res := ViVoRes{}
 	boolean, _ := jsonparser.GetInt(s, "err_code")
 	if boolean == 0 {
