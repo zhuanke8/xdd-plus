@@ -92,6 +92,7 @@ module.exports = cookies`, cookies))
 
 				for i := range Config.Containers {
 					(&Config.Containers[i]).read()
+					Config.Containers[i].cks = []JdCookie{}
 					if Config.Containers[i].Available {
 						if Config.Containers[i].Mode != Parallel {
 							cl++
