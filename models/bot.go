@@ -39,10 +39,13 @@ type ArkRes struct {
 }
 
 type ViVoRes struct {
-	Gsalt     string `json:"gsalt"`
-	Guid      string `json:"guid"`
-	lsid      string `json:"lsid"`
-	RsaModule string `json:"rsa_modulus"`
+	Autologin  int    `json:"autologin"`
+	Gsalt      string `json:"gsalt"`
+	GUID       string `json:"guid"`
+	Lsid       string `json:"lsid"`
+	NeedAuth   int    `json:"need_auth"`
+	ReturnPage string `json:"return_page"`
+	RsaModulus string `json:"rsa_modulus"`
 }
 
 var ListenQQPrivateMessage = func(uid int64, msg string) {
@@ -165,7 +168,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					//addr := Config.Jdcurl
 					phone := findMapKey3(string(sender.UserID), pcodes)
 					ck := riskcodes[string(sender.UserID)]
-					var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
+					var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.GUID, ck.Lsid, ck.Gsalt, ck.RsaModulus)
 					date := fmt.Sprint(time.Now().UnixMilli())
 					data := []byte(fmt.Sprintf("9591.0.0%s363%s", date, ck.Gsalt))
 					gsign := getMd5String(data)
@@ -337,18 +340,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 					reg := regexp.MustCompile(regular)
 					if reg.MatchString(msg) {
-
-						//  body = `country_code=${country_code}&client_ver=${qversion}&gsign=${gsign}&appid=${appid}&mobile=${phone}&sign=${sign}&cmd=36&sub_cmd=2&qversion=${qversion}&ts=${times}`
-						//  const { data } = await api(body, cookie)
-						//  if (data.err_code == 0) {
-						//    res.send({ gsalt: token.data.data.gsalt, token: cookie, code: 200, msg: '短信发送成功' })
-						//  }
 						sender.Reply("请耐心等待...")
 						ck := getViVoCk()
 						logs.Info(ck.Gsalt)
 						if ck.Gsalt != "" {
 							riskcodes[string(sender.UserID)] = ck
-							var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
+							var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.GUID, ck.Lsid, ck.Gsalt, ck.RsaModulus)
 							logs.Info(cookie1)
 							date := fmt.Sprint(time.Now().UnixMilli())
 							data := []byte(fmt.Sprintf("9591.0.0%s362%s", date, ck.Gsalt))
@@ -1008,7 +1005,9 @@ func getViVoCk() ViVoRes {
 	boolean, _ := jsonparser.GetBoolean(s, "err_code")
 	if !boolean {
 		getString, _ := jsonparser.GetString(s, "data")
+		logs.Info(getString)
 		json.Unmarshal([]byte(getString), &res)
+		logs.Info(res.Lsid)
 		return res
 	}
 	return res
