@@ -996,7 +996,7 @@ func getViVoCk() ViVoRes {
 	req.Header("user-agent", random)
 	req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
 	req.Header("content-length", string(len(body)))
-	req.Param("body", body)
+	req.Body(body)
 	s, _ := req.Bytes()
 	logs.Info(string(s))
 	res := ViVoRes{}
