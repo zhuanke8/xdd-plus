@@ -986,7 +986,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 func getViVoCk() ViVoRes {
 	req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
 	random := browser.Random()
-	date := fmt.Sprint(time.Now().Unix())
+	date := fmt.Sprint(time.Now().UnixMicro())
 	data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", Date()))
 	gsign := getMd5String(data)
 	body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", date)
@@ -996,7 +996,7 @@ func getViVoCk() ViVoRes {
 	req.Header("user-agent", random)
 	req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
 	req.Header("content-length", string(len(body)))
-	req.Body(body)
+	req.Param("body", body)
 	s, _ := req.Bytes()
 	logs.Info(string(s))
 	res := ViVoRes{}
