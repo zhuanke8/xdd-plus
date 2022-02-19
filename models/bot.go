@@ -347,9 +347,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						ck := getViVoCk()
 						riskcodes[string(sender.UserID)] = ck
 						var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
-						data := []byte(fmt.Sprintf("9591.0.0%s362%s", Date(), ck.Gsalt))
+						logs.Info(cookie1)
 						date := fmt.Sprint(time.Now().UnixMilli())
-						logs.Info(date)
+						data := []byte(fmt.Sprintf("9591.0.0%s362%s", date, ck.Gsalt))
 						gsign := getMd5String(data)
 						data1 := []byte(fmt.Sprintf("9591.0.086%s4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj", msg))
 						sign := getMd5String(data1)
