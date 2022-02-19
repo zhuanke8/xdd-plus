@@ -1002,8 +1002,9 @@ func getViVoCk() ViVoRes {
 	s, _ := req.Bytes()
 	logs.Info(string(s))
 	res := ViVoRes{}
-	boolean, _ := jsonparser.GetBoolean(s, "err_code")
-	if !boolean {
+	boolean, _ := jsonparser.GetInt(s, "err_code")
+	logs.Info(boolean)
+	if boolean == 0 {
 		getString, _ := jsonparser.GetString(s, "data")
 		logs.Info(getString)
 		json.Unmarshal([]byte(getString), &res)
