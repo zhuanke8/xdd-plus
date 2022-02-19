@@ -169,6 +169,7 @@ func (c *Container) write(cks []JdCookie) error {
 							}
 							//toDelete = append(toDelete, fmt.Sprintf("\"%s\"", env.ID))
 						}
+						logs.Info(toDelete)
 						if len(toDelete) > 0 {
 							c.request("/api/envs", DELETE, fmt.Sprintf(`[%s]`, strings.Join(toDelete, ",")))
 						}
