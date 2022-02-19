@@ -345,31 +345,35 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						//  }
 						sender.Reply("请耐心等待...")
 						ck := getViVoCk()
-						riskcodes[string(sender.UserID)] = ck
-						var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
-						logs.Info(cookie1)
-						date := fmt.Sprint(time.Now().UnixMilli())
-						data := []byte(fmt.Sprintf("9591.0.0%s362%s", date, ck.Gsalt))
-						gsign := getMd5String(data)
-						data1 := []byte(fmt.Sprintf("9591.0.086%s4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj", msg))
-						sign := getMd5String(data1)
-						body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&appid=959&mobile=%s&sign=%s&cmd=36&sub_cmd=2&qversion=1.0.0&ts=%v", gsign, msg, sign, date)
-						logs.Info(body)
-						req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
-						random := browser.Random()
-						req.Header("Host", "qapplogin.m.jd.com")
-						req.Header("cookie", cookie1)
-						req.Header("user-agent", random)
-						req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
-						req.Header("content-length", string(len(body)))
-						req.Body(body)
-						s, _ := req.Bytes()
-						getString, _ := jsonparser.GetString(s, "err_msg")
-						if strings.Contains(getString, "发送失败") {
-							sender.Reply("验证码发送失败，请联系管理员修复")
+						if ck.Gsalt != "" {
+							riskcodes[string(sender.UserID)] = ck
+							var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
+							logs.Info(cookie1)
+							date := fmt.Sprint(time.Now().UnixMilli())
+							data := []byte(fmt.Sprintf("9591.0.0%s362%s", date, ck.Gsalt))
+							gsign := getMd5String(data)
+							data1 := []byte(fmt.Sprintf("9591.0.086%s4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj", msg))
+							sign := getMd5String(data1)
+							body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&appid=959&mobile=%s&sign=%s&cmd=36&sub_cmd=2&qversion=1.0.0&ts=%v", gsign, msg, sign, date)
+							logs.Info(body)
+							req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
+							random := browser.Random()
+							req.Header("Host", "qapplogin.m.jd.com")
+							req.Header("cookie", cookie1)
+							req.Header("user-agent", random)
+							req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
+							req.Header("content-length", string(len(body)))
+							req.Body(body)
+							s, _ := req.Bytes()
+							getString, _ := jsonparser.GetString(s, "err_msg")
+							if strings.Contains(getString, "发送失败") {
+								sender.Reply("验证码发送失败，请联系管理员修复")
+							} else {
+								pcodes[string(sender.UserID)] = msg
+								sender.Reply("请输入6位验证码：")
+							}
 						} else {
-							pcodes[string(sender.UserID)] = msg
-							sender.Reply("请输入6位验证码：")
+							sender.Reply("验证码发送失败，请联系管理员修复")
 						}
 
 						//诺兰登录
@@ -1004,6 +1008,7 @@ func getViVoCk() ViVoRes {
 	if boolean {
 		getString, _ := jsonparser.GetString(s, "data")
 		json.Unmarshal([]byte(getString), &res)
+		return res
 	}
 	return res
 }
