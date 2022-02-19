@@ -166,7 +166,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					phone := findMapKey3(string(sender.UserID), pcodes)
 					ck := riskcodes[string(sender.UserID)]
 					var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
-					date := fmt.Sprint(time.Now().Unix())
+					date := fmt.Sprint(time.Now().UnixMilli())
 					data := []byte(fmt.Sprintf("9591.0.0%s363%s", date, ck.Gsalt))
 					gsign := getMd5String(data)
 					body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&smscode=%s&appid=959&mobile=%s&cmd=36&sub_cmd=3&qversion=1.0.0&ts=%v", gsign, msg, phone, date)
@@ -348,7 +348,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						riskcodes[string(sender.UserID)] = ck
 						var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
 						data := []byte(fmt.Sprintf("9591.0.0%s362%s", Date(), ck.Gsalt))
-						date := fmt.Sprint(time.Now().Unix())
+						date := fmt.Sprint(time.Now().UnixMilli())
 						logs.Info(date)
 						gsign := getMd5String(data)
 						data1 := []byte(fmt.Sprintf("9591.0.086%s4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj", msg))
@@ -987,7 +987,7 @@ func getViVoCk() ViVoRes {
 	req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
 	random := browser.Random()
 	date := fmt.Sprint(time.Now().UnixMilli())
-	data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", Date()))
+	data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", date))
 	gsign := getMd5String(data)
 	body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", date)
 	logs.Info(body)
