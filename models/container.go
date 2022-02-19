@@ -286,7 +286,7 @@ func (c *Container) read() error {
 				} else {
 					c.Delete = append(c.Delete, fmt.Sprintf("\"%d\"", env.IntID))
 				}
-				c.Delete = append(c.Delete, fmt.Sprintf("\"%s\"", env.ID))
+				//c.Delete = append(c.Delete, fmt.Sprintf("\"%s\"", env.ID))
 				res := regexp.MustCompile(`pt_key=(\S+);pt_pin=([^\s;]+);?`).FindAllStringSubmatch(env.Value, -1)
 				for _, v := range res {
 					CheckIn(v[2], v[1])
