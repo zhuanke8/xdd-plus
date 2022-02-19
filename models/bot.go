@@ -38,6 +38,13 @@ type ArkRes struct {
 	Data    ArkResData `json:"data"`
 }
 
+type ViVoRes struct {
+	Gsalt     string `json:"gsalt"`
+	Guid      string `json:"guid"`
+	lsid      string `json:"lsid"`
+	RsaModule string `json:"rsa_modulus"`
+}
+
 var ListenQQPrivateMessage = func(uid int64, msg string) {
 	SendQQ(uid, handleMessage(msg, "qq", int(uid)))
 }
@@ -58,7 +65,7 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 
 var pcodes = make(map[string]string)
 var replies = map[string]string{}
-var riskcodes = make(map[string]string)
+var riskcodes = make(map[string]ViVoRes)
 
 func InitReplies() {
 	f, err := os.Open(ExecPath + "/conf/reply.php")
@@ -155,101 +162,173 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				reg := regexp.MustCompile(regex)
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
-					addr := Config.Jdcurl
+					//addr := Config.Jdcurl
 					phone := findMapKey3(string(sender.UserID), pcodes)
-					risk := riskcodes[string(sender.UserID)]
-
-					if strings.EqualFold(risk, "true") {
-						logs.Info("进入风险验证阶段")
-						if phone != "" {
-							req := httplib.Post(addr + "/api/VerifyCardCode")
-							req.Header("content-type", "application/json")
-							data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
-							var arkRes ArkRes
-							json.Unmarshal(data, &arkRes)
-							if arkRes.Success || strings.Contains(arkRes.Message, "添加xdd成功") {
-								sender.Reply("登录成功。可以继续登录下一个账号")
-							} else if !arkRes.Success {
-								sender.Reply("验证失败,可能填写错误")
-							}
-						}
-						riskcodes[string(sender.UserID)] = "false"
+					ck := riskcodes[string(sender.UserID)]
+					var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
+					date := Date()
+					data := []byte(fmt.Sprintf("9591.0.0%s363%s", date, ck.Gsalt))
+					gsign := getMd5String(data)
+					body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&smscode=%s&appid=959&mobile=%s&cmd=36&sub_cmd=3&qversion=1.0.0&ts=%s", gsign, msg, phone, date)
+					logs.Info(body)
+					req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
+					random := browser.Random()
+					req.Header("Host", "qapplogin.m.jd.com")
+					req.Header("cookie", cookie1)
+					req.Header("user-agent", random)
+					req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
+					req.Header("content-length", string(len(body)))
+					req.Body(body)
+					s, _ := req.Bytes()
+					getString, _ := jsonparser.GetString(s, "err_msg")
+					if strings.Contains(getString, "登录失败") {
+						sender.Reply("登录失败，请成功新登录，多次失败请联系管理员修复")
 					} else {
-						logs.Info("进入验证码阶段")
-						if phone != "" {
-							req := httplib.Post(addr + "/api/VerifyCode")
-							req.Header("content-type", "application/json")
-							data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
-							var arkRes ArkRes
-							json.Unmarshal(data, &arkRes)
-							if strings.Contains(string(data), "pt_pin=") {
-								sender.Reply("登录成功。可以继续登录下一个账号")
-								if strings.Contains(msg, "pt_key") {
-									ptKey := FetchJdCookieValue("pt_key", msg)
-									ptPin := FetchJdCookieValue("pt_pin", msg)
-									if len(ptPin) > 0 && len(ptKey) > 0 {
-										ck := JdCookie{
-											PtKey: ptKey,
-											PtPin: ptPin,
-										}
-										if CookieOK(&ck) {
-											if sender.IsQQ() {
-												ck.QQ = sender.UserID
-											} else if sender.IsTG() {
-												ck.Telegram = sender.UserID
-											}
-											if HasKey(ck.PtKey) {
-												sender.Reply(fmt.Sprintf("重复提交"))
-											} else {
-												if nck, err := GetJdCookie(ck.PtPin); err == nil {
-													nck.InPool(ck.PtKey)
-													msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-													if sender.IsQQ() {
-														ck.Update(QQ, ck.QQ)
-													}
-													sender.Reply(fmt.Sprintf(msg))
-													(&JdCookie{}).Push(msg)
-													logs.Info(msg)
-												} else {
-													if Cdle {
-														ck.Hack = True
-													}
-													NewJdCookie(&ck)
-													msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-													if sender.IsQQ() {
-														ck.Update(QQ, ck.QQ)
-													}
-													sender.Reply(fmt.Sprintf(msg))
-													sender.Reply(ck.Query())
-													(&JdCookie{}).Push(msg)
-													logs.Info(msg)
-												}
-											}
-										} else {
-											sender.Reply(fmt.Sprintf("无效"))
-										}
-									}
-									go func() {
-										Save <- &JdCookie{}
-									}()
-									return nil
+						ptKey, _ := jsonparser.GetString(s, "data", "pt_key")
+						ptPin, _ := jsonparser.GetString(s, "data", "pt_pin")
+						if len(ptPin) > 0 && len(ptKey) > 0 {
+							ck := JdCookie{
+								PtKey: ptKey,
+								PtPin: ptPin,
+							}
+							if CookieOK(&ck) {
+								if sender.IsQQ() {
+									ck.QQ = sender.UserID
+								} else if sender.IsTG() {
+									ck.Telegram = sender.UserID
 								}
-							} else if !arkRes.Success && arkRes.Data.Status == 555 {
-								//验证
-								sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
-								//做个标记
-								riskcodes[string(sender.UserID)] = "true"
-							} else if strings.Contains(arkRes.Message, "添加xdd成功") {
-								sender.Reply("登录成功。可以继续登录下一个账号")
-							} else {
-								if arkRes.Message != "" {
-									sender.Reply(arkRes.Message)
+								if HasKey(ck.PtKey) {
+									sender.Reply(fmt.Sprintf("重复提交"))
 								} else {
-									sender.Reply("登录失败。请重新登录")
+									if nck, err := GetJdCookie(ck.PtPin); err == nil {
+										nck.InPool(ck.PtKey)
+										msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+										if sender.IsQQ() {
+											ck.Update(QQ, ck.QQ)
+										}
+										sender.Reply(fmt.Sprintf(msg))
+										(&JdCookie{}).Push(msg)
+										logs.Info(msg)
+									} else {
+										if Cdle {
+											ck.Hack = True
+										}
+										NewJdCookie(&ck)
+										msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+										if sender.IsQQ() {
+											ck.Update(QQ, ck.QQ)
+										}
+										sender.Reply(fmt.Sprintf(msg))
+										sender.Reply(ck.Query())
+										(&JdCookie{}).Push(msg)
+										logs.Info(msg)
+									}
 								}
+							} else {
+								sender.Reply(fmt.Sprintf("无效"))
 							}
 						}
+						go func() {
+							Save <- &JdCookie{}
+						}()
+						return nil
 					}
+
+					//若兰登录
+					//risk := riskcodes[string(sender.UserID)]
+
+					//if strings.EqualFold(risk, "true") {
+					//	logs.Info("进入风险验证阶段")
+					//	if phone != "" {
+					//		req := httplib.Post(addr + "/api/VerifyCardCode")
+					//		req.Header("content-type", "application/json")
+					//		data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+					//		var arkRes ArkRes
+					//		json.Unmarshal(data, &arkRes)
+					//		if arkRes.Success || strings.Contains(arkRes.Message, "添加xdd成功") {
+					//			sender.Reply("登录成功。可以继续登录下一个账号")
+					//		} else if !arkRes.Success {
+					//			sender.Reply("验证失败,可能填写错误")
+					//		}
+					//	}
+					//	riskcodes[string(sender.UserID)] = "false"
+					//} else {
+					//	logs.Info("进入验证码阶段")
+					//	if phone != "" {
+					//		req := httplib.Post(addr + "/api/VerifyCode")
+					//		req.Header("content-type", "application/json")
+					//		data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
+					//		var arkRes ArkRes
+					//		json.Unmarshal(data, &arkRes)
+					//		if strings.Contains(string(data), "pt_pin=") {
+					//			sender.Reply("登录成功。可以继续登录下一个账号")
+					//			if strings.Contains(msg, "pt_key") {
+					//				ptKey := FetchJdCookieValue("pt_key", msg)
+					//				ptPin := FetchJdCookieValue("pt_pin", msg)
+					//				if len(ptPin) > 0 && len(ptKey) > 0 {
+					//					ck := JdCookie{
+					//						PtKey: ptKey,
+					//						PtPin: ptPin,
+					//					}
+					//					if CookieOK(&ck) {
+					//						if sender.IsQQ() {
+					//							ck.QQ = sender.UserID
+					//						} else if sender.IsTG() {
+					//							ck.Telegram = sender.UserID
+					//						}
+					//						if HasKey(ck.PtKey) {
+					//							sender.Reply(fmt.Sprintf("重复提交"))
+					//						} else {
+					//							if nck, err := GetJdCookie(ck.PtPin); err == nil {
+					//								nck.InPool(ck.PtKey)
+					//								msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+					//								if sender.IsQQ() {
+					//									ck.Update(QQ, ck.QQ)
+					//								}
+					//								sender.Reply(fmt.Sprintf(msg))
+					//								(&JdCookie{}).Push(msg)
+					//								logs.Info(msg)
+					//							} else {
+					//								if Cdle {
+					//									ck.Hack = True
+					//								}
+					//								NewJdCookie(&ck)
+					//								msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+					//								if sender.IsQQ() {
+					//									ck.Update(QQ, ck.QQ)
+					//								}
+					//								sender.Reply(fmt.Sprintf(msg))
+					//								sender.Reply(ck.Query())
+					//								(&JdCookie{}).Push(msg)
+					//								logs.Info(msg)
+					//							}
+					//						}
+					//					} else {
+					//						sender.Reply(fmt.Sprintf("无效"))
+					//					}
+					//				}
+					//				go func() {
+					//					Save <- &JdCookie{}
+					//				}()
+					//				return nil
+					//			}
+					//		} else if !arkRes.Success && arkRes.Data.Status == 555 {
+					//			//验证
+					//			sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
+					//			//做个标记
+					//			riskcodes[string(sender.UserID)] = "true"
+					//		} else if strings.Contains(arkRes.Message, "添加xdd成功") {
+					//			sender.Reply("登录成功。可以继续登录下一个账号")
+					//		} else {
+					//			if arkRes.Message != "" {
+					//				sender.Reply(arkRes.Message)
+					//			} else {
+					//				sender.Reply("登录失败。请重新登录")
+					//			}
+					//		}
+					//	}
+					//}
+
 				}
 			}
 			{
@@ -258,131 +337,141 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 					reg := regexp.MustCompile(regular)
 					if reg.MatchString(msg) {
-						if len(Config.Jdcurl) > 0 {
 
-							sender.Reply("请耐心等待...")
-							addr := Config.Jdcurl
-							req := httplib.Post(addr + "/api/SendSMS")
-							req.Header("content-type", "application/json")
-							data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
-							message, _ := jsonparser.GetString(data, "message")
-							success, _ := jsonparser.GetBoolean(data, "success")
-							status, _ := jsonparser.GetInt(data, "data", "status")
-							captcha, _ := jsonparser.GetInt(data, "data", "captcha")
-							if captcha == 0 {
-								captcha = 1
-							}
-							if message != "" && status != 666 {
-								sender.Reply(message)
-							}
-							i := 1
-
-							if success {
-								pcodes[string(sender.UserID)] = msg
-								sender.Reply("请输入6位验证码：")
-								break
-							}
-							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
-							if !success && status == 666 && i < 5 && captcha == 2 {
-
-								sender.Reply("正在进行验证...")
-								for {
-									req = httplib.Post(addr + "/api/AutoCaptcha")
-									req.Header("content-type", "application/json")
-									data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
-									message, _ := jsonparser.GetString(data, "message")
-									success, _ := jsonparser.GetBoolean(data, "success")
-									status, _ := jsonparser.GetInt(data, "data", "status")
-									if !success {
-										//s.Reply("滑块验证失败：" + string(data))
-									}
-									if success {
-										pcodes[string(sender.UserID)] = msg
-										sender.Reply("请输入6位验证码：")
-										break
-									}
-									if i > 5 {
-										pcodes[string(sender.UserID)] = msg
-										s := Config.Jdcurl + "/Captcha/" + msg
-										sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
-										//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
-										break
-									}
-									if status == 666 {
-										i++
-										sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
-										continue
-									}
-									if strings.Contains(message, "上限") {
-										i = 6
-										sender.Reply(message)
-									}
-									//sender.Reply(message)
-								}
-								//} else if !success && captcha == 2 {
-								//	pcodes[string(sender.UserID)] = msg
-								//	s := Config.Jdcurl + "/Captcha/" + msg
-								//	sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
-
-							} else {
-
-								sender.Reply("滑块失败，请网页登录")
-							}
-							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
-						}
-					} else {
-
-						//app.get('/getCode', async (req, res) => {
-						//  let times = Date.now()
-						//  const phone = req.query.telephone
-						//  let gsign = md5(`${appid}${qversion}${times}361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN`)
-						//  let body = `client_ver=1.0.0&gsign=${gsign}&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&ts=${times}`
-						//  const token = await api(body)
-						//  times = Date.now()
-						//  const cookie = `guid=${token.data.data.guid};lsid=${token.data.data.lsid};gsalt=${token.data.data.gsalt};rsa_modulus=${token.data.data.rsa_modulus};`
-						//  gsign = md5(`${appid}${qversion}${times}362${token.data.data.gsalt}`)
-						//  let sign = md5(`${appid}${qversion}${country_code}${phone}4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj`)
-						//
 						//  body = `country_code=${country_code}&client_ver=${qversion}&gsign=${gsign}&appid=${appid}&mobile=${phone}&sign=${sign}&cmd=36&sub_cmd=2&qversion=${qversion}&ts=${times}`
 						//  const { data } = await api(body, cookie)
 						//  if (data.err_code == 0) {
 						//    res.send({ gsalt: token.data.data.gsalt, token: cookie, code: 200, msg: '短信发送成功' })
 						//  }
 						sender.Reply("请耐心等待...")
-
-						req := httplib.Get("https://qapplogin.m.jd.com/cgi-bin/qapp/quick/getCode")
-						data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", Date()))
-						has := md5.Sum(data)
-						gsign := fmt.Sprintf("%x", has)
-						body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", Date())
-						req.Header("content-type", "application/json")
+						ck := getViVoCk()
+						riskcodes[string(sender.UserID)] = ck
+						var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
+						data := []byte(fmt.Sprintf("9591.0.0%s362%s", Date(), ck.Gsalt))
+						gsign := getMd5String(data)
+						data1 := []byte(fmt.Sprintf("9591.0.086%s4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj", msg))
+						sign := getMd5String(data1)
+						body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&appid=959&mobile=%s&sign=%s&cmd=36&sub_cmd=2&qversion=1.0.0&ts=%s", gsign, msg, sign, Date())
+						logs.Info(body)
+						req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
+						random := browser.Random()
+						req.Header("Host", "qapplogin.m.jd.com")
+						req.Header("cookie", cookie1)
+						req.Header("user-agent", random)
+						req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
+						req.Header("content-length", string(len(body)))
 						req.Body(body)
+						s, _ := req.Bytes()
+						getString, _ := jsonparser.GetString(s, "err_msg")
+						if strings.Contains(getString, "发送失败") {
+							sender.Reply("验证码发送失败，请联系管理员修复")
+						} else {
+							pcodes[string(sender.UserID)] = msg
+							sender.Reply("请输入6位验证码：")
+						}
 
-						//data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
-
+						//诺兰登录
+						//if len(Config.Jdcurl) > 0 {
+						//	sender.Reply("请耐心等待...")
+						//	addr := Config.Jdcurl
+						//	req := httplib.Post(addr + "/api/SendSMS")
+						//	req.Header("content-type", "application/json")
+						//	data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+						//	message, _ := jsonparser.GetString(data, "message")
+						//	success, _ := jsonparser.GetBoolean(data, "success")
+						//	status, _ := jsonparser.GetInt(data, "data", "status")
+						//	captcha, _ := jsonparser.GetInt(data, "data", "captcha")
+						//	if captcha == 0 {
+						//		captcha = 1
+						//	}
+						//	if message != "" && status != 666 {
+						//		sender.Reply(message)
+						//	}
+						//	i := 1
+						//
+						//	if success {
+						//		pcodes[string(sender.UserID)] = msg
+						//		sender.Reply("请输入6位验证码：")
+						//		break
+						//	}
+						//	//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
+						//	if !success && status == 666 && i < 5 && captcha == 2 {
+						//
+						//		sender.Reply("正在进行验证...")
+						//		for {
+						//			req = httplib.Post(addr + "/api/AutoCaptcha")
+						//			req.Header("content-type", "application/json")
+						//			data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
+						//			message, _ := jsonparser.GetString(data, "message")
+						//			success, _ := jsonparser.GetBoolean(data, "success")
+						//			status, _ := jsonparser.GetInt(data, "data", "status")
+						//			if !success {
+						//				//s.Reply("滑块验证失败：" + string(data))
+						//			}
+						//			if success {
+						//				pcodes[string(sender.UserID)] = msg
+						//				sender.Reply("请输入6位验证码：")
+						//				break
+						//			}
+						//			if i > 5 {
+						//				pcodes[string(sender.UserID)] = msg
+						//				s := Config.Jdcurl + "/Captcha/" + msg
+						//				sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+						//				//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
+						//				break
+						//			}
+						//			if status == 666 {
+						//				i++
+						//				sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
+						//				continue
+						//			}
+						//			if strings.Contains(message, "上限") {
+						//				i = 6
+						//				sender.Reply(message)
+						//			}
+						//			//sender.Reply(message)
+						//		}
+						//		//} else if !success && captcha == 2 {
+						//		//	pcodes[string(sender.UserID)] = msg
+						//		//	s := Config.Jdcurl + "/Captcha/" + msg
+						//		//	sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+						//
+						//	} else {
+						//
+						//		sender.Reply("滑块失败，请网页登录")
+						//	}
+						//	//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
+						//}
 					}
 				}
 			}
+
 			//识别登录
 			{
 				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
-					var tabcount int64
-					addr := Config.Jdcurl
-					if addr == "" {
-						return "若兰很忙，请稍后再试。"
-					}
-					logs.Info(addr + "/api/Config")
-					if addr != "" {
-						data, _ := httplib.Get(addr + "/api/Config").Bytes()
-						logs.Info(string(data) + "返回数据")
-						tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
-						if tabcount != 0 {
-							pcodes[string(sender.UserID)] = "true"
-							sender.Reply("若兰为您服务，请输入11位手机号：")
-						} else {
-							sender.Reply("服务忙，请稍后再试。")
-						}
-					}
+
+					pcodes[string(sender.UserID)] = "true"
+					sender.Reply("小滴滴为您服务，请输入11位手机号：")
+
+					//var tabcount int64
+					//addr := Config.Jdcurl
+					//if addr == "" {
+					//	return "若兰很忙，请稍后再试。"
+					//}
+					//logs.Info(addr + "/api/Config")
+					//if addr != "" {
+					//	data, _ := httplib.Get(addr + "/api/Config").Bytes()
+					//	logs.Info(string(data) + "返回数据")
+					//	tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
+					//	if tabcount != 0 {
+					//		pcodes[string(sender.UserID)] = "true"
+					//		sender.Reply("若兰为您服务，请输入11位手机号：")
+					//	} else {
+					//		sender.Reply("服务忙，请稍后再试。")
+					//	}
+					//}
+					//
+
 					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
 				}
 			}
@@ -890,6 +979,28 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 	}
 	return nil
+}
+
+func getViVoCk() ViVoRes {
+	req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
+	random := browser.Random()
+	data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", Date()))
+	gsign := getMd5String(data)
+	body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", Date())
+	req.Header("Host", "qapplogin.m.jd.com")
+	req.Header("cookie", "")
+	req.Header("user-agent", random)
+	req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header("content-length", string(len(body)))
+	req.Body(body)
+	s, _ := req.Bytes()
+	res := ViVoRes{}
+	json.Unmarshal(s, res)
+	return res
+}
+
+func getMd5String(b []byte) string {
+	return fmt.Sprintf("%x", md5.Sum(b))
 }
 
 func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 bool) {
