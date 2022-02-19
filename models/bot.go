@@ -345,6 +345,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						//  }
 						sender.Reply("请耐心等待...")
 						ck := getViVoCk()
+						logs.Info(ck.Gsalt)
 						if ck.Gsalt != "" {
 							riskcodes[string(sender.UserID)] = ck
 							var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.Guid, ck.lsid, ck.Gsalt, ck.RsaModule)
@@ -1008,7 +1009,6 @@ func getViVoCk() ViVoRes {
 	if !boolean {
 		getString, _ := jsonparser.GetString(s, "data")
 		json.Unmarshal([]byte(getString), &res)
-		logs.Info("进入")
 		return res
 	}
 	return res
