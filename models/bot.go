@@ -38,7 +38,7 @@ type ArkRes struct {
 	Data    ArkResData `json:"data"`
 }
 
-type ViVoRes struct {
+type ViVoData struct {
 	Autologin  int    `json:"autologin"`
 	Gsalt      string `json:"gsalt"`
 	GUID       string `json:"guid"`
@@ -46,6 +46,12 @@ type ViVoRes struct {
 	NeedAuth   int    `json:"need_auth"`
 	ReturnPage string `json:"return_page"`
 	RsaModulus string `json:"rsa_modulus"`
+}
+
+type ViVoRes struct {
+	Data    ViVoData `json:"data"`
+	ErrCode int      `json:"err_code"`
+	ErrMsg  string   `json:"err_msg"`
 }
 
 var ListenQQPrivateMessage = func(uid int64, msg string) {
@@ -68,7 +74,7 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 
 var pcodes = make(map[string]string)
 var replies = map[string]string{}
-var riskcodes = make(map[string]ViVoRes)
+var riskcodes = make(map[string]ViVoData)
 
 func InitReplies() {
 	f, err := os.Open(ExecPath + "/conf/reply.php")
@@ -985,7 +991,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	return nil
 }
 
-func getViVoCk() ViVoRes {
+func getViVoCk() ViVoData {
 	req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
 	random := browser.Random()
 	date := fmt.Sprint(time.Now().UnixMilli())
@@ -1003,15 +1009,11 @@ func getViVoCk() ViVoRes {
 	logs.Info(string(s))
 	res := ViVoRes{}
 	boolean, _ := jsonparser.GetInt(s, "err_code")
-	logs.Info(boolean)
 	if boolean == 0 {
-		getString, _ := jsonparser.GetString(s, "data")
-		logs.Info(getString)
-		json.Unmarshal([]byte(getString), &res)
-		logs.Info(res.Lsid)
-		return res
+		json.Unmarshal(s, &res)
+		return res.Data
 	}
-	return res
+	return res.Data
 }
 
 func getMd5String(b []byte) string {
