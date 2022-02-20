@@ -202,10 +202,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								var arkRes ArkRes
 								json.Unmarshal(data, &arkRes)
 								if !arkRes.Success {
-									//验证
-									sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
-									//做个标记
-									riskcodes[string(sender.UserID)] = "true"
+									////验证
+									//sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
+									////做个标记
+									//riskcodes[string(sender.UserID)] = "true"
+									sender.Reply("登陆失败，请重新登录，多次尝试失败请联系管理员")
 								} else if strings.Contains(arkRes.Message, "添加xdd成功") {
 									sender.Reply("登录成功。可以继续登录下一个账号")
 								} else {
