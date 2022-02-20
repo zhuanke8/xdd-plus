@@ -470,7 +470,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						if addr != "" {
 							data, _ := httplib.Get(addr + "/api/Config").Bytes()
 							logs.Info(string(data) + "返回数据")
-							tabcount, _ = jsonparser.GetInt(data, "data", "tabcount")
+							tabcount, _ = jsonparser.GetInt(data, "data", "autocount")
 							if tabcount != 0 {
 								pcodes[string(sender.UserID)] = "true"
 								sender.Reply("若兰为您服务，请输入11位手机号：")
