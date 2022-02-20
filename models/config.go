@@ -12,7 +12,7 @@ import (
 
 type Yaml struct {
 	Containers []Container
-	// Tasks              []Task
+	Tasks              []Task
 	Qrcode              string
 	Master              string
 	Mode                string
