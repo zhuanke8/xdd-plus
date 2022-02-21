@@ -30,6 +30,7 @@ require (
 	github.com/tidwall/gjson v1.12.1
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 	github.com/willf/bitset v1.2.0 // indirect
+	github.com/wxpusher/wxpusher-sdk-go v1.0.3 // indirect
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11

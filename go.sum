@@ -491,6 +491,8 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/wdvxdr1123/go-silk v0.0.0-20210316130616-d47b553def60/go.mod h1:ecFKZPX81BaB70I6ruUgEwYcDOtuNgJGnjdK+MIl5ko=
 github.com/wendal/errors v0.0.0-20130201093226-f66c77a7882b/go.mod h1:Q12BUT7DqIlHRmgv3RskH+UCM/4eqVMgI0EMmlSpAXc=
+github.com/wxpusher/wxpusher-sdk-go v1.0.3 h1:KMI7yYhPps5AbiI5X2d24v0l+D/0Kzm4iiCyWBlWSKE=
+github.com/wxpusher/wxpusher-sdk-go v1.0.3/go.mod h1:OfMYzFcCUNECO0ycmjCUciKD1PG67LBWeMC9B1KtBnE=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.0.2/go.mod h1:1WAq6h33pAW+iRreB34OORO2Nf7qel3VV3fjBj+hCSs=
 github.com/xdg-go/stringprep v1.0.2/go.mod h1:8F9zXuvzgwmyT5DUm4GUfZGDdT3W+LCvS6+da4O5kxM=

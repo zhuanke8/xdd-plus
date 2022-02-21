@@ -94,6 +94,7 @@ type JdCookie struct {
 	BeanNum      string `gorm:"column:BeanNum"`
 	QQ           int    `gorm:"column:QQ"`
 	PushPlus     string `gorm:"column:PushPlus"`
+	WxPush       string `gorm:"column:WxPush"`
 	Telegram     int    `gorm:"column:Telegram"`
 	Fruit        string `gorm:"column:Fruit"`
 	Pet          string `gorm:"column:Pet"`

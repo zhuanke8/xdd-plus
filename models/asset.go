@@ -56,6 +56,7 @@ func DailyAssetsPush() {
 	for _, ck := range GetJdCookies() {
 		if (ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil) || ck.PushPlus != "" {
 			msg := ck.Query()
+
 			if ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil {
 				SendQQ(int64(ck.QQ), msg)
 			}
@@ -65,6 +66,27 @@ func DailyAssetsPush() {
 		}
 	}
 }
+
+func CompletePush() {
+	for _, ck := range GetJdCookies() {
+		if (ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil) || ck.PushPlus != "" {
+			msg := ck.Query()
+			var fruit = make(chan string)
+			var pet = make(chan string)
+			cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
+			go initFarm(cookie, fruit)
+			go initPetTown(cookie, pet)
+
+			if ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil {
+				SendQQ(int64(ck.QQ), msg)
+			}
+			if ck.PushPlus != "" {
+				pushPlus(ck.PushPlus, msg)
+			}
+		}
+	}
+}
+
 func (ck *JdCookie) Query1() string {
 	name := "jd_bean_change_new.js"
 	envs := []Env{{Name: "pins", Value: "&" + ck.PtPin}}
