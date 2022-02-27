@@ -222,12 +222,12 @@ func updateCookie() {
 					yy++
 					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请求超时，账号:%s", ck.PtPin))
 				}
-				go func() {
-					Save <- &JdCookie{}
-				}()
 			}
 		}
 	}
+	go func() {
+		Save <- &JdCookie{}
+	}()
 	(&JdCookie{}).Push(fmt.Sprintf("所有CK转换完成，共%d个,转换失败个数共%d个", xx, yy))
 }
 
