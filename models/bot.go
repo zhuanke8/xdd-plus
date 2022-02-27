@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 	"io/ioutil"
 	"math/rand"
+	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -244,6 +245,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						} else {
 							ptKey, _ := jsonparser.GetString(s, "data", "pt_key")
 							ptPin, _ := jsonparser.GetString(s, "data", "pt_pin")
+							ptPin = url.QueryEscape(ptPin)
 							if len(ptPin) > 0 && len(ptKey) > 0 {
 								ck := JdCookie{
 									PtKey: ptKey,

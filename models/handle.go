@@ -87,35 +87,38 @@ module.exports = cookies`, cookies))
 				}
 			} else if Config.Mode == Vip {
 
-				cl := 0
-				logs.Info("进入VIP模式")
+				if Config.VIP {
+					cl := 0
+					logs.Info("进入VIP模式")
 
-				for i := range Config.Containers {
-					(&Config.Containers[i]).read()
-					Config.Containers[i].cks = []JdCookie{}
-					if Config.Containers[i].Available {
-						if Config.Containers[i].Mode != Parallel {
-							cl++
+					for i := range Config.Containers {
+						(&Config.Containers[i]).read()
+						Config.Containers[i].cks = []JdCookie{}
+						if Config.Containers[i].Available {
+							if Config.Containers[i].Mode != Parallel {
+								cl++
+							}
+						}
+					}
+
+					if cl != 0 {
+						for i := range cks {
+							j := i % cl
+							Config.Containers[j].cks = append(Config.Containers[j].cks, cks[i])
+						}
+					}
+
+					for i := range Config.Containers {
+						if Config.Containers[i].Available {
+							if Config.Containers[i].Mode != Parallel {
+								(&Config.Containers[i]).write(Config.Containers[i].cks)
+							} else {
+								(&Config.Containers[i]).write(cks)
+							}
 						}
 					}
 				}
 
-				if cl != 0 {
-					for i := range cks {
-						j := i % cl
-						Config.Containers[j].cks = append(Config.Containers[j].cks, cks[i])
-					}
-				}
-
-				for i := range Config.Containers {
-					if Config.Containers[i].Available {
-						if Config.Containers[i].Mode != Parallel {
-							(&Config.Containers[i]).write(Config.Containers[i].cks)
-						} else {
-							(&Config.Containers[i]).write(cks)
-						}
-					}
-				}
 			} else {
 				resident := []JdCookie{}
 				if Config.Resident != "" {
