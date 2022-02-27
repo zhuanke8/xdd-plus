@@ -189,6 +189,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								json.Unmarshal(data, &arkRes)
 								if arkRes.Success || strings.Contains(arkRes.Message, "添加xdd成功") {
 									sender.Reply("登录成功。可以继续登录下一个账号")
+									go func() {
+										Save <- &JdCookie{}
+									}()
 								} else if !arkRes.Success {
 									sender.Reply("验证失败,可能填写错误")
 								}
@@ -213,6 +216,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									sender.Reply("登陆失败，请重新登录，多次尝试失败请联系管理员")
 								} else if strings.Contains(arkRes.Message, "添加xdd成功") {
 									sender.Reply("登录成功。可以继续登录下一个账号")
+									go func() {
+										Save <- &JdCookie{}
+									}()
 								} else {
 									if arkRes.Message != "" {
 										sender.Reply(arkRes.Message)
