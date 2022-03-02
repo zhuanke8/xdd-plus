@@ -11,13 +11,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/Mrs4s/go-cqhttp/coolq"
-	"github.com/Mrs4s/go-cqhttp/global"
 	//"github.com/Mrs4s/go-cqhttp/global/config"
 	"github.com/cdle/xdd/models"
 
@@ -29,6 +28,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/term"
+
+	"github.com/Mrs4s/go-cqhttp/coolq"
+	"github.com/Mrs4s/go-cqhttp/db"
+	"github.com/Mrs4s/go-cqhttp/global"
 )
 
 var (
@@ -53,7 +56,7 @@ var (
 var bot *coolq.CQBot
 
 func Main() {
-	time.Sleep(time.Second)
+
 	models.SendQQ = func(uid int64, msg interface{}) {
 		if bot == nil {
 			return
@@ -100,22 +103,6 @@ func Main() {
 
 	coolq.PrivateMessageEventCallback = models.ListenQQPrivateMessage
 	coolq.GroupMessageEventCallback = models.ListenQQGroupMessage
-
-	// c := flag.String("c", config.DefaultConfigFile, "configuration filename default is config.hjson")
-	// d := flag.Bool("d", false, "running as a daemon")
-	// h := flag.Bool("h", false, "this help")
-	// wd := flag.String("w", "", "cover the working directory")
-	// debug := flag.Bool("D", false, "debug mode")
-	// flag.Parse()
-
-	// switch {
-	// case *h:
-	// 	help()
-	// case *d:xs
-	// 	server.Daemon()
-	// case *wd != "":
-	// 	resetWorkDir(*wd)
-	// }
 
 	//通过-c 参数替换 配置文件路径
 	//config = models.ExecPath + "/qbot/config.yml"
@@ -169,6 +156,12 @@ func Main() {
 	mkCacheDir(global.VoicePath, "语音")
 	mkCacheDir(global.VideoPath, "视频")
 	mkCacheDir(global.CachePath, "发送图片")
+	mkCacheDir(path.Join(global.ImagePath, "guild-images"), "频道图片缓存")
+
+	db.Init()
+	if err := db.Open(); err != nil {
+		log.Fatalf("打开数据库失败: %v", err)
+	}
 
 	var byteKey []byte
 	arg := os.Args

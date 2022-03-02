@@ -850,18 +850,26 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个互助值", Config.Tyt))
 				} else {
 					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个互助值，管理员通道", Config.Tyt))
+					num, f := starttyt(ss[1])
+					if f {
+						return fmt.Sprintf("推一推结束共用:%d个账号", num)
+					} else {
+						return "推一推失败"
+					}
+					return "推一推已结束"
 				}
 
 				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 				//	{Name: "tytpacketId", Value: ss[1]},
 				//}}, sender)
-				num, f := starttyt(ss[1])
-				if f {
-					return fmt.Sprintf("推一推结束共用:%d个账号", num)
-				} else {
-					return "推一推失败"
-				}
-				return "推一推已结束"
+
+				//num, f := starttyt(ss[1])
+				//if f {
+				//	return fmt.Sprintf("推一推结束共用:%d个账号", num)
+				//} else {
+				//	return "推一推失败"
+				//}
+				//return "推一推已结束"
 			}
 		}
 		{
@@ -1081,7 +1089,7 @@ func starttyt(red string) (num int, f bool) {
 		}
 		cookie := "pt_key=" + cks[n+200].PtKey + ";pt_pin=" + cks[n+200].PtPin + ";"
 
-		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641900500241&body={"actId":"d5a8c7198ee54de093d2adb04089d3ec","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}&_ste=1`, red)
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641900500241&body={"actId":"49f40d2f40b3470e8d6c39aa4866c7ff","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}&_ste=1`, red)
 		req := httplib.Post(sprintf)
 		//req.Param("functionId", "helpCoinDozer")
 		//req.Param("appid", "station-sgoa-h5")
