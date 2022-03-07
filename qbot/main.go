@@ -414,9 +414,8 @@ func Main() {
 	}
 	cli.SetOnlineStatus(allowStatus[base.Account.Status])
 
-	_ = bot.Client
 	if models.Config.IsAddFriend {
-		bot.Client.OnNewFriendRequest(func(_ *client.QQClient, a *client.NewFriendRequest) {
+		cli.OnNewFriendRequest(func(_ *client.QQClient, a *client.NewFriendRequest) {
 			a.Accept()
 		})
 	}
