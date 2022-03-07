@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/Mrs4s/go-cqhttp/global/terminal"
 	"github.com/Mrs4s/go-cqhttp/modules/servers"
-	"github.com/Mrs4s/go-cqhttp/server"
 	"github.com/cdle/xdd/qbot/internal/base"
 	"github.com/cdle/xdd/qbot/internal/cache"
 	"io/ioutil"
@@ -120,14 +119,14 @@ func Main() {
 		return
 	}
 
-	switch {
-	case base.LittleH:
-		base.Help()
-	case base.LittleD:
-		server.Daemon()
-	case base.LittleWD != "":
-		base.ResetWorkingDir()
-	}
+	//switch {
+	//case base.LittleH:
+	//	base.Help()
+	//case base.LittleD:
+	//	server.Daemon()
+	//case base.LittleWD != "":
+	//	base.ResetWorkingDir()
+	//}
 	base.Init()
 
 	//通过-c 参数替换 配置文件路径
