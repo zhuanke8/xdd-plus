@@ -413,9 +413,10 @@ func Main() {
 		base.Account.Status = 0
 	}
 	cli.SetOnlineStatus(allowStatus[base.Account.Status])
+	bot = coolq.NewQQBot(cli)
 
 	if models.Config.IsAddFriend {
-		cli.OnNewFriendRequest(func(_ *client.QQClient, a *client.NewFriendRequest) {
+		bot.Client.OnNewFriendRequest(func(_ *client.QQClient, a *client.NewFriendRequest) {
 			a.Accept()
 		})
 	}
