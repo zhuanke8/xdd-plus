@@ -6,7 +6,12 @@ import (
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/hex"
-	"github.com/Mrs4s/go-cqhttp/modules/config"
+	"fmt"
+	"github.com/Mrs4s/go-cqhttp/global/terminal"
+	"github.com/Mrs4s/go-cqhttp/modules/servers"
+	"github.com/Mrs4s/go-cqhttp/server"
+	"github.com/cdle/xdd/qbot/internal/base"
+	"github.com/cdle/xdd/qbot/internal/cache"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -20,22 +25,22 @@ import (
 	//"github.com/Mrs4s/go-cqhttp/global/config"
 	"github.com/cdle/xdd/models"
 
-	"github.com/Mrs4s/MiraiGo/binary"
-	"github.com/Mrs4s/MiraiGo/client"
-
-	"github.com/Mrs4s/MiraiGo/message"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/term"
 
+	"github.com/Mrs4s/MiraiGo/binary"
+	"github.com/Mrs4s/MiraiGo/client"
+	"github.com/Mrs4s/MiraiGo/message"
 	"github.com/Mrs4s/go-cqhttp/coolq"
 	"github.com/Mrs4s/go-cqhttp/db"
 	"github.com/Mrs4s/go-cqhttp/global"
+	//"github.com/Mrs4s/go-cqhttp/modules/config"
 )
 
 var (
-	conf        *config.Config
+	//conf        *config.Config
 	isFastStart = false
 	// PasswordHash 存储QQ密码哈希供登录使用
 	PasswordHash [16]byte
@@ -104,9 +109,30 @@ func Main() {
 	coolq.PrivateMessageEventCallback = models.ListenQQPrivateMessage
 	coolq.GroupMessageEventCallback = models.ListenQQGroupMessage
 
+	base.Parse()
+
+	if !base.FastStart && terminal.RunningByDoubleClick() {
+		err := terminal.NoMoreDoubleClick()
+		if err != nil {
+			log.Errorf("遇到错误: %v", err)
+			time.Sleep(time.Second * 5)
+		}
+		return
+	}
+
+	switch {
+	case base.LittleH:
+		base.Help()
+	case base.LittleD:
+		server.Daemon()
+	case base.LittleWD != "":
+		base.ResetWorkingDir()
+	}
+	base.Init()
+
 	//通过-c 参数替换 配置文件路径
 	//config = models.ExecPath + "/qbot/config.yml"
-	conf = config.Parse(models.ExecPath + "/qbot/config.yml")
+	//conf = config.Parse(models.ExecPath + "/qbot/config.yml")
 
 	//if models.Config.QbotConfigFile != "" {
 	//	//config.DefaultConfigFile = models.Config.QbotConfigFile
@@ -118,9 +144,9 @@ func Main() {
 	// if *debug {
 	// 	conf.Output.Debug = true
 	// }
-	if conf.Output.Debug {
-		log.SetReportCaller(true)
-	}
+	//if conf.Output.Debug {
+	//	log.SetReportCaller(true)
+	//}
 	//
 	//logFormatter := &easy.Formatter{
 	//	TimestampFormat: "2006-01-02 15:04:05",
@@ -129,21 +155,19 @@ func Main() {
 	rotateOptions := []rotatelogs.Option{
 		rotatelogs.WithRotationTime(time.Hour * 24),
 	}
-
-	if conf.Output.LogAging > 0 {
-		rotateOptions = append(rotateOptions, rotatelogs.WithMaxAge(time.Hour*24*time.Duration(conf.Output.LogAging)))
-	}
-	if conf.Output.LogForceNew {
+	rotateOptions = append(rotateOptions, rotatelogs.WithMaxAge(base.LogAging))
+	if base.LogForceNew {
 		rotateOptions = append(rotateOptions, rotatelogs.ForceNewFile())
 	}
 
-	//w, err := rotatelogs.New(path.Join("logs", "%Y-%m-%d.log"), rotateOptions...)
-	//if err != nil {
-	//	log.Errorf("rotatelogs init err: %v", err)
-	//	panic(err)
-	//}
-
-	//log.AddHook(global.NewLocalHook(w, logFormatter, global.GetLogLevel(conf.Output.LogLevel)...))
+	w, err := rotatelogs.New(path.Join("logs", "%Y-%m-%d.log"), rotateOptions...)
+	if err != nil {
+		log.Errorf("rotatelogs init err: %v", err)
+		panic(err)
+	}
+	consoleFormatter := global.LogFormat{EnableColor: base.LogColorful}
+	fileFormatter := global.LogFormat{EnableColor: false}
+	log.AddHook(global.NewLocalHook(w, consoleFormatter, fileFormatter, global.GetLogLevel(base.LogLevel)...))
 
 	mkCacheDir := func(path string, _type string) {
 		if !global.PathExists(path) {
@@ -157,6 +181,7 @@ func Main() {
 	mkCacheDir(global.VideoPath, "视频")
 	mkCacheDir(global.CachePath, "发送图片")
 	mkCacheDir(path.Join(global.ImagePath, "guild-images"), "频道图片缓存")
+	cache.Init()
 
 	db.Init()
 	if err := db.Open(); err != nil {
@@ -183,23 +208,19 @@ func Main() {
 			}
 		}
 	}
-	// if terminal.RunningByDoubleClick() && !isFastStart {
-	// 	log.Warning("警告: 强烈不推荐通过双击直接运行本程序, 这将导致一些非预料的后果.")
-	// 	log.Warning("将等待10s后启动")
-	// 	time.Sleep(time.Second * 10)
-	// }
 
-	if (conf.Account.Uin == 0 || (conf.Account.Password == "" && !conf.Account.Encrypt)) && !global.PathExists("session.token") {
-		// log.Warn("账号密码未配置, 将使用二维码登录.")
-		// if !isFastStart {
-		// 	log.Warn("将在 5秒 后继续.")
-		// 	time.Sleep(time.Second * 5)
-		// }
+	if (base.Account.Uin == 0 || (base.Account.Password == "" && !base.Account.Encrypt)) && !global.PathExists("session.token") {
+		log.Warn("账号密码未配置, 将使用二维码登录.")
+		if !base.FastStart {
+			log.Warn("将在 5秒 后继续.")
+			time.Sleep(time.Second * 5)
+		}
 	}
 
-	// log.Info("当前版本:", coolq.Version)
-	if conf.Output.Debug {
+	log.Info("当前版本:", base.Version)
+	if base.Debug {
 		log.SetLevel(log.DebugLevel)
+		log.SetReportCaller(true)
 		log.Warnf("已开启Debug模式.")
 		// log.Debugf("开发交流群: 192548878")
 	}
@@ -215,22 +236,23 @@ func Main() {
 			log.Fatalf("加载设备信息失败: %v", err)
 		}
 	}
-	if conf.Account.Encrypt {
+
+	if base.Account.Encrypt {
 		if !global.PathExists("password.encrypt") {
-			if conf.Account.Password == "" {
+			if base.Account.Password == "" {
 				log.Error("无法进行加密，请在配置文件中的添加密码后重新启动.")
 				readLine()
 				os.Exit(0)
 			}
 			log.Infof("密码加密已启用, 请输入Key对密码进行加密: (Enter 提交)")
 			byteKey, _ = term.ReadPassword(int(os.Stdin.Fd()))
-			PasswordHash = md5.Sum([]byte(conf.Account.Password))
-			_ = os.WriteFile("password.encrypt", []byte(PasswordHashEncrypt(PasswordHash[:], byteKey)), 0o644)
+			base.PasswordHash = md5.Sum([]byte(base.Account.Password))
+			_ = os.WriteFile("password.encrypt", []byte(PasswordHashEncrypt(base.PasswordHash[:], byteKey)), 0o644)
 			log.Info("密码已加密，为了您的账号安全，请删除配置文件中的密码后重新启动.")
 			readLine()
 			os.Exit(0)
 		} else {
-			if conf.Account.Password != "" {
+			if base.Account.Password != "" {
 				log.Error("密码已加密，为了您的账号安全，请删除配置文件中的密码后重新启动.")
 				readLine()
 				os.Exit(0)
@@ -262,54 +284,40 @@ func Main() {
 			if err != nil {
 				log.Fatalf("加密存储的密码损坏，请尝试重新配置密码")
 			}
-			copy(PasswordHash[:], ph)
+			copy(base.PasswordHash[:], ph)
 		}
-	} else {
-		PasswordHash = md5.Sum([]byte(conf.Account.Password))
+	} else if len(base.Account.Password) > 0 {
+		base.PasswordHash = md5.Sum([]byte(base.Account.Password))
 	}
-	// if !isFastStart {
-	// 	log.Info("Bot将在5秒后登录并开始信息处理, 按 Ctrl+C 取消.")
-	// 	time.Sleep(time.Second * 5)
-	// }
+	if !base.FastStart {
+		log.Info("Bot将在5秒后登录并开始信息处理, 按 Ctrl+C 取消.")
+		time.Sleep(time.Second * 5)
+	}
 	log.Info("开始尝试登录并同步消息...")
-	log.Infof("使用协议: %v", func() string {
-		switch client.SystemDeviceInfo.Protocol {
-		case client.IPad:
-			return "iPad"
-		case client.AndroidPhone:
-			return "Android Phone"
-		case client.AndroidWatch:
-			return "Android Watch"
-		case client.MacOS:
-			return "MacOS"
-		case client.QiDian:
-			return "企点"
-		}
-		return "未知"
-	}())
+	log.Infof("使用协议: %s", client.SystemDeviceInfo.Protocol)
 	cli = newClient()
-
-	//global.Proxy = conf.Message.ProxyRewrite
-	isQRCodeLogin := (conf.Account.Uin == 0 || len(conf.Account.Password) == 0) && !conf.Account.Encrypt
+	isQRCodeLogin := (base.Account.Uin == 0 || len(base.Account.Password) == 0) && !base.Account.Encrypt
 	isTokenLogin := false
 	saveToken := func() {
-		AccountToken = cli.GenToken()
-		_ = os.WriteFile("session.token", AccountToken, 0o644)
+		base.AccountToken = cli.GenToken()
+		_ = os.WriteFile("session.token", base.AccountToken, 0o644)
 	}
+
 	if global.PathExists("session.token") {
 		token, err := os.ReadFile("session.token")
 		if err == nil {
-			if conf.Account.Uin != 0 {
+			if base.Account.Uin != 0 {
 				r := binary.NewReader(token)
 				cu := r.ReadInt64()
-				if cu != conf.Account.Uin {
-					log.Warnf("警告: 配置文件内的QQ号 (%v) 与缓存内的QQ号 (%v) 不相同", conf.Account.Uin, cu)
+				if cu != base.Account.Uin {
+					log.Warnf("警告: 配置文件内的QQ号 (%v) 与缓存内的QQ号 (%v) 不相同", base.Account.Uin, cu)
 					log.Warnf("1. 使用会话缓存继续.")
 					log.Warnf("2. 删除会话缓存并重启.")
 					log.Warnf("请选择: (5秒后自动选1)")
 					text := readLineTimeout(time.Second*5, "1")
 					if text == "2" {
 						_ = os.Remove("session.token")
+						log.Infof("缓存已删除.")
 						os.Exit(0)
 					}
 				}
@@ -326,10 +334,11 @@ func Main() {
 			}
 		}
 	}
-	if conf.Account.Uin != 0 && PasswordHash != [16]byte{} {
-		cli.Uin = conf.Account.Uin
-		cli.PasswordMd5 = PasswordHash
+	if base.Account.Uin != 0 && base.PasswordHash != [16]byte{} {
+		cli.Uin = base.Account.Uin
+		cli.PasswordMd5 = base.PasswordHash
 	}
+
 	if !isTokenLogin {
 		if !isQRCodeLogin {
 			if err := commonLogin(); err != nil {
@@ -351,23 +360,28 @@ func Main() {
 			return
 		}
 		log.Warnf("Bot已离线: %v", e.Message)
-		time.Sleep(time.Second * time.Duration(conf.Account.ReLogin.Delay))
+		time.Sleep(time.Second * time.Duration(base.Reconnect.Delay))
 		for {
-			if conf.Account.ReLogin.Disabled {
+			if base.Reconnect.Disabled {
+				log.Warnf("未启用自动重连, 将退出.")
 				os.Exit(1)
 			}
-			if times > conf.Account.ReLogin.MaxTimes && conf.Account.ReLogin.MaxTimes != 0 {
+			if times > base.Reconnect.MaxTimes && base.Reconnect.MaxTimes != 0 {
 				log.Fatalf("Bot重连次数超过限制, 停止")
 			}
 			times++
-			if conf.Account.ReLogin.Interval > 0 {
-				log.Warnf("将在 %v 秒后尝试重连. 重连次数：%v/%v", conf.Account.ReLogin.Interval, times, conf.Account.ReLogin.MaxTimes)
-				time.Sleep(time.Second * time.Duration(conf.Account.ReLogin.Interval))
+			if base.Reconnect.Interval > 0 {
+				log.Warnf("将在 %v 秒后尝试重连. 重连次数：%v/%v", base.Reconnect.Interval, times, base.Reconnect.MaxTimes)
+				time.Sleep(time.Second * time.Duration(base.Reconnect.Interval))
 			} else {
 				time.Sleep(time.Second)
 			}
+			if cli.Online.Load() {
+				log.Infof("登录已完成")
+				break
+			}
 			log.Warnf("尝试重连...")
-			err := cli.TokenLogin(AccountToken)
+			err := cli.TokenLogin(base.AccountToken)
 			if err == nil {
 				saveToken()
 				return
@@ -395,12 +409,10 @@ func Main() {
 	log.Infof("开始加载群列表...")
 	global.Check(cli.ReloadGroupList(), true)
 	log.Infof("共加载 %v 个群.", len(cli.GroupList))
-	//if conf.Account.Status >= int32(len(allowStatus)) || conf.Account.Status < 0 {
-	//	conf.Account.Status = 0
-	//}
-	conf.Account.Status = 0
-	cli.SetOnlineStatus(allowStatus[conf.Account.Status])
-	bot = coolq.NewQQBot(cli)
+	if uint(base.Account.Status) >= uint(len(allowStatus)) {
+		base.Account.Status = 0
+	}
+	cli.SetOnlineStatus(allowStatus[base.Account.Status])
 
 	_ = bot.Client
 	if models.Config.IsAddFriend {
@@ -409,27 +421,9 @@ func Main() {
 		})
 	}
 
-	//bot.Client.OnTempMessage(func(qqClient *client.QQClient, event *client.TempMessageEvent) {
-	//	models.ListenQQTempPrivateMessage(event.Session.Sender, event.Message.ToString())
-	//})
-
-	//if conf.Message.PostFormat != "string" && conf.Message.PostFormat != "array" {
-	//	log.Warnf("post-format 配置错误, 将自动使用 string")
-	//	coolq.SetMessageFormat("string")
-	//} else {
-	//	coolq.SetMessageFormat(conf.Message.PostFormat)
-	//}
-	//coolq.MessageSourceType()
-
-	//coolq.IgnoreInvalidCQCode = conf.Message.IgnoreInvalidCQCode
-	//coolq.SplitURL = conf.Message.FixURL
-	//coolq.ForceFragmented = conf.Message.ForceFragment
-	//coolq.RemoveReplyAt = conf.Message.RemoveReplyAt
-	//coolq.ExtraReplyData = conf.Message.ExtraReplyData
-	//coolq.SkipMimeScan = conf.Message.SkipMimeScan
 	//加载WS地址
 
-	for _, m := range conf.Servers {
+	for _, m := range base.Servers {
 		//if h, ok := m["http"]; ok {
 		//	hc := new(config.Server)
 		//
@@ -457,27 +451,10 @@ func Main() {
 				go runWSClient(bot, c)
 			}
 		}
-		//if p, ok := m["pprof"]; ok {
-		//	pc := new(config.PprofServer)
-		//	if err := p.Decode(pc); err != nil {
-		//		log.Warn("读取pprof配置失败 :", err)
-		//	} else {
-		//		go server.RunPprofServer(pc)
-		//	}
-		//}
-		//if p, ok := m["lambda"]; ok {
-		//	lc := new(config.LambdaServer)
-		//	if err := p.Decode(lc); err != nil {
-		//		log.Warn("读取pprof配置失败 :", err)
-		//	} else {
-		//		go server.RunLambdaClient(bot, lc)
-		//	}
-		//}
+
 	}
 
-	//config.Server{}
-	//servers.Run(coolq.NewQQBot(cli))
-
+	servers.Run(coolq.NewQQBot(cli))
 	log.Info("资源初始化完成, 开始处理信息.")
 	log.Info("アトリは、高性能ですから!")
 
@@ -685,7 +662,7 @@ func resetWorkDir(wd string) {
 func newClient() *client.QQClient {
 	c := client.NewClientEmpty()
 	c.OnServerUpdated(func(bot *client.QQClient, e *client.ServerUpdatedEvent) bool {
-		if !conf.Account.UseSSOAddress {
+		if !base.UseSSOAddress {
 			log.Infof("收到服务器地址更新通知, 根据配置文件已忽略.")
 			return false
 		}
@@ -696,7 +673,7 @@ func newClient() *client.QQClient {
 		log.Infof("检测到 address.txt 文件. 将覆盖目标IP.")
 		addr := global.ReadAddrFile("address.txt")
 		if len(addr) > 0 {
-			cli.SetCustomServer(addr)
+			c.SetCustomServer(addr)
 		}
 		log.Infof("读取到 %v 个自定义地址.", len(addr))
 	}
@@ -708,6 +685,13 @@ func newClient() *client.QQClient {
 			log.Error("Protocol -> " + e.Message)
 		case "DEBUG":
 			log.Debug("Protocol -> " + e.Message)
+		case "DUMP":
+			if !global.PathExists(global.DumpsPath) {
+				_ = os.MkdirAll(global.DumpsPath, 0o755)
+			}
+			dumpFile := path.Join(global.DumpsPath, fmt.Sprintf("%v.dump", time.Now().Unix()))
+			log.Errorf("出现错误 %v. 详细信息已转储至文件 %v 请连同日志提交给开发者处理", e.Message, dumpFile)
+			_ = os.WriteFile(dumpFile, e.Dump, 0o644)
 		}
 	})
 	return c
