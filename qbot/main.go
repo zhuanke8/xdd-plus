@@ -76,7 +76,6 @@ func Main() {
 					//bot.UploadLocalImageAsPrivate(uid, &coolq.LocalImageElement{File: "./output.jpg"})
 					log.Info("开始发送图片")
 					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&coolq.LocalImageElement{File: "output.jpg"}}})
-					bot.UploadLocalImageAsPrivate(uid, &coolq.LocalImageElement{})
 				} else {
 					bot.SendPrivateMessage(uid, models.Config.QQGroupID, &message.SendingMessage{Elements: []message.IMessageElement{&message.TextElement{Content: msg.(string)}}})
 				}
