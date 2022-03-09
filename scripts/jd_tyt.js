@@ -39,7 +39,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
         });
         return;
     }
-    console.log("推一推开始")
+    // console.log("推一推开始")
     cookiesArr.sort(function () {
         return .5 - Math.random();
     });
@@ -70,7 +70,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
             await $.wait(8000)
         }
     }
-    console.log("推一推结束")
+    // console.log("推一推结束")
 })()
     .catch((e) => {
         $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')

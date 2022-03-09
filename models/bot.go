@@ -859,6 +859,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 						{Name: "tytpacketId", Value: ss[1]},
 					}}, sender)
+
 					return "推一推已结束"
 				}
 
