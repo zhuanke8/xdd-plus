@@ -850,18 +850,21 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个互助值", Config.Tyt))
 				} else {
 					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个互助值，管理员通道", Config.Tyt))
-					num, f := starttyt(ss[1])
-					if f {
-						return fmt.Sprintf("推一推结束共用:%d个账号", num)
-					} else {
-						return "推一推失败"
-					}
+					//num, f := starttyt(ss[1])
+					//if f {
+					//	return fmt.Sprintf("推一推结束共用:%d个账号", num)
+					//} else {
+					//	return "推一推失败"
+					//}
+					runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+						{Name: "tytpacketId", Value: ss[1]},
+					}}, sender)
 					return "推一推已结束"
 				}
 
-				runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-					{Name: "tytpacketId", Value: ss[1]},
-				}}, sender)
+				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+				//	{Name: "tytpacketId", Value: ss[1]},
+				//}}, sender)
 
 				//num, f := starttyt(ss[1])
 				//if f {
