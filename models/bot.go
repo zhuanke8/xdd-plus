@@ -179,6 +179,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						//若兰登录
 
 						risk := riskcodes[string(sender.UserID)]
+						logs.Info(sender.UserID)
 						if strings.EqualFold(risk, "true") {
 							logs.Info("进入风险验证阶段")
 							if phone != "" {
@@ -329,6 +330,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 							if success {
 								pcodes[string(sender.UserID)] = msg
+								logs.Info(sender.UserID)
 								sender.Reply("请输入6位验证码：")
 								break
 							}
