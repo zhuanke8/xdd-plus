@@ -85,6 +85,7 @@ type JdCookie struct {
 	ID           int    `gorm:"column:ID;primaryKey"`
 	Priority     int    `gorm:"column:Priority;default:1"`
 	CreateAt     string `gorm:"column:CreateAt"`
+	UpdateAt     string `gorm:"column:UpdateAt"`
 	PtKey        string `gorm:"column:PtKey"`
 	PtPin        string `gorm:"column:PtPin;unique"`
 	WsKey        string `gorm:"column:WsKey"`
@@ -271,6 +272,7 @@ func NewJdCookie(ck *JdCookie) error {
 	ck.Priority = Config.DefaultPriority
 	date := Date()
 	ck.CreateAt = date
+	ck.UpdateAt = date
 	tx := db.Begin()
 	if err := tx.Create(ck).Error; err != nil {
 		tx.Rollback()

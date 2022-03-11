@@ -104,8 +104,12 @@ func (ck *JdCookie) Query1() string {
 }
 
 func (ck *JdCookie) Query() string {
+	parse, _ := time.Parse("2006-01-02 15:04:05", ck.CreateAt)
+	t, _ := time.Parse("2006-01-02 15:04:05", time.Now().Format("2006-01-02 15:04:05"))
+	f := t.Sub(parse).Hours() / 24
 	msgs := []string{
 		fmt.Sprintf("账号昵称：%s", ck.Nickname),
+		fmt.Sprintf("您已挂机：%f天", f),
 	}
 	if ck.Note != "" {
 		msgs = append(msgs, fmt.Sprintf("账号备注：%s", ck.Note))
@@ -115,7 +119,11 @@ func (ck *JdCookie) Query() string {
 		//msgs = append(msgs, fmt.Sprintf("优先级：%v", ck.Priority))
 		//msgs = append(msgs, fmt.Sprintf("用户等级：%v", ck.UserLevel))
 		//msgs = append(msgs, fmt.Sprintf("等级名称：%v", ck.LevelName))
+
 		cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
+		if !strings.Contains(cookie, "open") {
+			msgs = append(msgs, fmt.Sprintf("您距离失效还有：%f天", f))
+		}
 		var rpc = make(chan []RedList)
 		var fruit = make(chan string)
 		var pet = make(chan string)
@@ -149,7 +157,7 @@ func (ck *JdCookie) Query() string {
 			bds := getJingBeanBalanceDetail(page, cookie)
 			if bds == nil {
 				end = true
-				msgs = append(msgs, "京豆数据异常")
+				msgs = append(msgs, "京豆加载中，请耐心登录")
 				break
 			}
 			for _, bd := range bds {

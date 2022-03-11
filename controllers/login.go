@@ -506,13 +506,19 @@ func (c *LoginController) SMSLogin() {
 		if qq != "" {
 			ck.QQ, _ = strconv.Atoi(qq)
 		}
+
 		if ptKey != "" && ptPin != "" {
 			if models.CookieOK(ck) {
 				(&models.JdCookie{}).Push(cookie)
 				if nck, err := models.GetJdCookie(ck.PtPin); err == nil {
 					nck.InPool(ptKey)
 					if qq != "" && len(qq) > 6 {
-						ck.Update(models.QQ, qq)
+						//ck.Update(models.QQ, qq)
+						atoi, _ := strconv.Atoi(qq)
+						ck.Updates(models.JdCookie{
+							QQ:       atoi,
+							UpdateAt: time.Now().Local().Format("2006-01-02"),
+						})
 					}
 					msg := fmt.Sprintf("来自短信的更新,账号：%s,QQ: %v", nck.PtPin, qq)
 					(&models.JdCookie{}).Push(msg)

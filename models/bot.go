@@ -441,8 +441,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							}
 						}
 					} else {
-						pcodes[sender.UserID] = "true"
-						sender.Reply("小滴滴为您服务，请输入11位手机号：")
+						//pcodes[sender.UserID] = "true"
+						//sender.Reply("小滴滴")
 					}
 
 					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
