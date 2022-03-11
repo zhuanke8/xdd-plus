@@ -356,23 +356,23 @@ var codeSignals = []CodeSignal{
 	{
 		Command: []string{"查询", "query"},
 		Handle: func(sender *Sender) interface{} {
-			//sender.Reply("如果您有多个账号，将依次为您展示查询结果：")
-			//if sender.IsAdmin {
-			//	sender.handleJdCookies(func(ck *JdCookie) {
-			//		time.Sleep(time.Second * time.Duration(Config.Later))
-			//		sender.Reply(ck.Query())
-			//	})
-			//} else {
-			//	if getLimit(sender.UserID, 1) {
-			//		sender.handleJdCookies(func(ck *JdCookie) {
-			//			time.Sleep(time.Second * time.Duration(Config.Later))
-			//			sender.Reply(ck.Query())
-			//		})
-			//	} else {
-			//		sender.Reply(fmt.Sprintf("鉴于东哥对接口限流，为了不影响大家的任务正常运行，即日起每日限流%d次，已超过今日限制", Config.Lim))
-			//	}
-			//}
-			sender.Reply("今日查询接口维护，请明日再来")
+			sender.Reply("如果您有多个账号，将依次为您展示查询结果：")
+			if sender.IsAdmin {
+				sender.handleJdCookies(func(ck *JdCookie) {
+					time.Sleep(time.Second * time.Duration(Config.Later))
+					sender.Reply(ck.Query())
+				})
+			} else {
+				if getLimit(sender.UserID, 1) {
+					sender.handleJdCookies(func(ck *JdCookie) {
+						time.Sleep(time.Second * time.Duration(Config.Later))
+						sender.Reply(ck.Query())
+					})
+				} else {
+					sender.Reply(fmt.Sprintf("鉴于东哥对接口限流，为了不影响大家的任务正常运行，即日起每日限流%d次，已超过今日限制", Config.Lim))
+				}
+			}
+			//sender.Reply("今日查询接口维护，请明日再来")
 
 			return nil
 		},
