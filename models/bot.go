@@ -73,7 +73,7 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 	}
 }
 
-var pcodes = make(map[string]string)
+var pcodes = make(map[int]string)
 var replies = map[string]string{}
 var riskcodes = make(map[string]string)
 var riskcodes1 = make(map[string]ViVoData)
@@ -174,7 +174,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
 					addr := Config.Jdcurl
-					phone := findMapKey3(string(sender.UserID), pcodes)
+					phone := pcodes[sender.UserID]
 					if len(addr) > 0 {
 						//若兰登录
 
@@ -304,7 +304,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 			{
-				ist := pcodes[string(sender.UserID)]
+				ist := pcodes[(sender.UserID)]
 				if strings.EqualFold(ist, "true") {
 					regular := `^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$`
 					reg := regexp.MustCompile(regular)
@@ -329,7 +329,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							i := 1
 
 							if success {
-								pcodes[string(sender.UserID)] = msg
+								pcodes[sender.UserID] = msg
 								logs.Info(string(sender.UserID))
 								sender.Reply("请输入6位验证码：")
 								break
@@ -349,12 +349,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										//s.Reply("滑块验证失败：" + string(data))
 									}
 									if success {
-										pcodes[string(sender.UserID)] = msg
+										pcodes[sender.UserID] = msg
 										sender.Reply("请输入6位验证码：")
 										break
 									}
 									if i > 5 {
-										pcodes[string(sender.UserID)] = msg
+										pcodes[sender.UserID] = msg
 										s := Config.Jdcurl + "/Captcha/" + msg
 										sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
 										//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
@@ -407,7 +407,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								if strings.Contains(getString, "发送失败") {
 									sender.Reply("验证码发送失败，,请再次尝试，多次失败请联系管理员修复")
 								} else {
-									pcodes[string(sender.UserID)] = msg
+									pcodes[sender.UserID] = msg
 									sender.Reply("请输入6位验证码：")
 								}
 							} else {
@@ -434,14 +434,14 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							logs.Info(string(data) + "返回数据")
 							tabcount, _ = jsonparser.GetInt(data, "data", "autocount")
 							if tabcount != 0 {
-								pcodes[string(sender.UserID)] = "true"
+								pcodes[sender.UserID] = "true"
 								sender.Reply("若兰为您服务，请输入11位手机号：")
 							} else {
 								sender.Reply("服务忙，请稍后再试。")
 							}
 						}
 					} else {
-						pcodes[string(sender.UserID)] = "true"
+						pcodes[sender.UserID] = "true"
 						sender.Reply("小滴滴为您服务，请输入11位手机号：")
 					}
 
