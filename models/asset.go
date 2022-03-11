@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/beego/beego/v2/core/logs"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -105,7 +106,9 @@ func (ck *JdCookie) Query1() string {
 
 func (ck *JdCookie) Query() string {
 	parse, _ := time.Parse("2006-01-02 15:04:05", ck.CreateAt)
+	logs.Info(parse)
 	t, _ := time.Parse("2006-01-02 15:04:05", time.Now().Format("2006-01-02 15:04:05"))
+	logs.Info(t)
 	f := t.Sub(parse).Hours() / 24
 	msgs := []string{
 		fmt.Sprintf("账号昵称：%s", ck.Nickname),
@@ -122,7 +125,12 @@ func (ck *JdCookie) Query() string {
 
 		cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
 		if !strings.Contains(cookie, "open") {
-			msgs = append(msgs, fmt.Sprintf("您距离失效还有：%f天", f))
+			if ck.UpdateAt != "" {
+				parse1, _ := time.Parse("2006-01-02 15:04:05", ck.UpdateAt)
+				logs.Info(parse1)
+				f := t.Sub(parse1).Hours() / 24
+				msgs = append(msgs, fmt.Sprintf("您距离失效还有：%f天", f))
+			}
 		}
 		var rpc = make(chan []RedList)
 		var fruit = make(chan string)
