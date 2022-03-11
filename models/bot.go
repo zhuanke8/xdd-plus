@@ -330,7 +330,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 							if success {
 								pcodes[string(sender.UserID)] = msg
-								logs.Info(sender.UserID)
+								logs.Info(string(sender.UserID))
 								sender.Reply("请输入6位验证码：")
 								break
 							}
