@@ -163,7 +163,7 @@ func (ck *JdCookie) Query() string {
 			bds := getJingBeanBalanceDetail(page, cookie)
 			if bds == nil {
 				end = true
-				msgs = append(msgs, "京豆加载中，请耐心登录")
+				msgs = append(msgs, "京豆加载中，请耐心等待")
 				break
 			}
 			for _, bd := range bds {
