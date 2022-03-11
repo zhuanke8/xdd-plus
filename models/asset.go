@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/beego/beego/v2/core/logs"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -106,13 +105,12 @@ func (ck *JdCookie) Query1() string {
 
 func (ck *JdCookie) Query() string {
 	parse, _ := time.Parse("2006-01-02", ck.CreateAt)
-	logs.Info(parse)
 	t, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-	logs.Info(t)
 	f := t.Sub(parse).Hours() / 24
+	i, _ := strconv.Atoi(fmt.Sprintf("%1.0f", f))
 	msgs := []string{
 		fmt.Sprintf("账号昵称：%s", ck.Nickname),
-		fmt.Sprintf("您已挂机：%f天", f),
+		fmt.Sprintf("您已挂机：%d天", i),
 	}
 	if ck.Note != "" {
 		msgs = append(msgs, fmt.Sprintf("账号备注：%s", ck.Note))
@@ -127,9 +125,9 @@ func (ck *JdCookie) Query() string {
 		if !strings.Contains(cookie, "open") {
 			if ck.UpdateAt != "" {
 				parse1, _ := time.Parse("2006-01-02", ck.UpdateAt)
-				logs.Info(parse1)
 				f := t.Sub(parse1).Hours() / 24
-				msgs = append(msgs, fmt.Sprintf("您距离失效还有：%f天", f))
+				i, _ := strconv.Atoi(fmt.Sprintf("%1.0f", f))
+				msgs = append(msgs, fmt.Sprintf("您距离失效还有：%d天", i+30))
 			}
 		}
 		var rpc = make(chan []RedList)
