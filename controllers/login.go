@@ -521,12 +521,12 @@ func (c *LoginController) SMSLogin() {
 						})
 					}
 					msg := fmt.Sprintf("来自短信的更新,账号：%s,QQ: %v", nck.PtPin, qq)
+					ck.Push(ck.Query())
 					(&models.JdCookie{}).Push(msg)
 
 				} else {
 
 					models.NewJdCookie(ck)
-					ck.Query()
 					if qq != "" {
 						msg := fmt.Sprintf("来自短信的添加,账号：%s,QQ: %v", ck.PtPin, qq)
 						(&models.JdCookie{}).Push(msg)
@@ -534,6 +534,7 @@ func (c *LoginController) SMSLogin() {
 						msg := fmt.Sprintf("来自短信的添加,账号：%s", ck.PtPin)
 						(&models.JdCookie{}).Push(msg)
 					}
+					ck.Push(ck.Query())
 
 				}
 
