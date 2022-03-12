@@ -858,16 +858,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					//} else {
 					//	return "推一推失败"
 					//}
-					runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-						{Name: "tytpacketId", Value: ss[1]},
-					}}, sender)
+					//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+					//	{Name: "tytpacketId", Value: ss[1]},
+					//}}, sender)
 
-					return "推一推已结束"
+					//return "推一推已结束"
 				}
 
-				//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-				//	{Name: "tytpacketId", Value: ss[1]},
-				//}}, sender)
+				runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+					{Name: "tytpacketId", Value: ss[1]},
+				}}, sender)
 
 				//num, f := starttyt(ss[1])
 				//if f {
@@ -875,7 +875,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//} else {
 				//	return "推一推失败"
 				//}
-				//return "推一推已结束"
+				return "推一推已结束"
 			}
 		}
 		{
