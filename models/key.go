@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"strings"
 	"time"
@@ -57,7 +58,7 @@ func useKey(id string, use int) string {
 			u.UseBy = use
 			u.Use = true
 			db.Where("Token = ?", id).Updates(u)
-			return "充值成功"
+			return fmt.Sprintf("使用成功,积分增加%d", u.Value)
 		} else {
 			return "卡密已被使用"
 		}
