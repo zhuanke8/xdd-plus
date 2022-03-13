@@ -57,7 +57,10 @@ type Yaml struct {
 	NoAdmin             bool   `yaml:"no_admin"`
 	QbotConfigFile      string `yaml:"qbot_config_file"`
 	Repos               []Repo
-	HttpProxyServerPort int `yaml:"http_proxy_server_port"`
+	HttpProxyServerPort int  `yaml:"http_proxy_server_port"`
+	Priority            int  `yaml:"Priority"`
+	DailyCompletePush   bool `yaml:"daily_complete_push"`
+	RefreshTime         int  `yaml:"refresh_time"`
 }
 
 var Balance = "balance"
@@ -136,6 +139,9 @@ func initConfig() {
 	}
 	if Config.Node == "" {
 		Config.Node = "node"
+	}
+	if Config.RefreshTime == 0 {
+		Config.RefreshTime = 10
 	}
 	if Config.Python == "" {
 		Config.Python = "python3"

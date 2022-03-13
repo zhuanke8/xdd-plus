@@ -43,6 +43,9 @@ type Container struct {
 	Config    string
 	Limit     int
 	cks       []JdCookie
+	Zhu       int
+	Ci        int
+	Resident  string
 }
 
 func initContainer() {
