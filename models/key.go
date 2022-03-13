@@ -43,11 +43,17 @@ func useKey(id string, use int) string {
 			var user = &User{}
 			err := db.Where("Number = ?", use).First(&user).Error
 			if err != nil {
-				user.Coin = u.Value
-				db.Create(user)
+				db.Create(&User{
+					Class:    "qq",
+					Number:   use,
+					Coin:     u.Value,
+					ActiveAt: time.Now(),
+					Womail:   "",
+				})
+
 			}
 			u.UseBy = use
-			db.Updates(u).Where(u.Token)
+			db.Where("Token = ?", id).Updates(u)
 			return "充值成功"
 		} else {
 			return "卡密已被使用"
