@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -107,6 +108,19 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 }
 
 var codeSignals = []CodeSignal{
+
+	{
+		Command: []string{"生成卡密"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			if Config.VIP == true {
+				content := sender.JoinContens()
+				num, _ := strconv.Atoi(content)
+				return createKey(num, Config.Tyt)
+			}
+			return "非VIP用户"
+		},
+	},
 
 	{
 		Command: []string{"status", "状态"},

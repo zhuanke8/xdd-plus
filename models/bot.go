@@ -76,6 +76,7 @@ var pcodes = make(map[int]string)
 var replies = map[string]string{}
 var riskcodes = make(map[string]string)
 var riskcodes1 = make(map[string]ViVoData)
+var tytlist []int
 
 func InitReplies() {
 	f, err := os.Open(ExecPath + "/conf/reply.php")
@@ -90,16 +91,6 @@ func InitReplies() {
 	if _, ok := replies["壁纸"]; !ok {
 		replies["壁纸"] = "https://acg.toubiec.cn/random.php"
 	}
-}
-
-func findMapKey3(str string, m map[string]string) string {
-	if val, ok := m[str]; ok {
-		fmt.Println("查询到", str, "手机号为：", val)
-		return val
-	} else {
-		fmt.Println("未能检索到该数据")
-	}
-	return ""
 }
 
 var handleMessage = func(msgs ...interface{}) interface{} {
@@ -451,6 +442,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
 				}
 			}
+
 		}
 	}
 

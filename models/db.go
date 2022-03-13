@@ -46,6 +46,7 @@ func initDB() {
 		&UserAdmin{},
 		&Limit{},
 		&Cache{},
+		&Key{},
 	)
 	keys = make(map[string]bool)
 	pins = make(map[string]bool)
@@ -195,6 +196,7 @@ func (ck *JdCookie) Updates(values interface{}) {
 		db.Model(ck).Where(PtPin+" = ?", ck.PtPin).Updates(values)
 	}
 }
+
 func (ck *JdCookie) Update(column string, value interface{}) {
 	if ck.ID != 0 {
 		db.Model(ck).Update(column, value)
