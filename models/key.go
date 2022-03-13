@@ -37,11 +37,11 @@ func createKey(num int, value int) string {
 
 func useKey(id string, use int) string {
 	var u Key
-	err := db.Select(&Key{}).Where(&Key{Token: id, Use: false}).First(&u).Error
+	err := db.Where("Token = ?", id).First(&u).Error
 	if err != nil {
 		if u.Use != true {
-			var user = &User{Number: use}
-			err := db.Select(user).First(&user).Error
+			var user = &User{}
+			err := db.Where("Number = ?", use).First(&user).Error
 			if err == nil {
 				user.Coin = u.Value
 				db.Create(user)
