@@ -39,7 +39,7 @@ func createKey(num int, value int) string {
 func useKey(id string, use int) string {
 	var u Key
 	err := db.Where("Token = ?", id).First(&u).Error
-	if err != nil {
+	if err == nil {
 		logs.Info(u.Use)
 		logs.Info(u.Token)
 		if u.Use != true {
