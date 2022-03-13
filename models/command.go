@@ -116,9 +116,9 @@ var codeSignals = []CodeSignal{
 			if Config.VIP == true {
 				contents := sender.Contents
 				//content := sender.JoinContens()
-				num, _ := strconv.Atoi(contents[1])
-				value, _ := strconv.Atoi(contents[2])
-				logs.Info(contents[1])
+				num, _ := strconv.Atoi(contents[0])
+				value, _ := strconv.Atoi(contents[1])
+				logs.Info(contents[0])
 				return createKey(num, value)
 			}
 			return "非VIP用户"
