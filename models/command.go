@@ -107,6 +107,7 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 }
 
 var codeSignals = []CodeSignal{
+
 	{
 		Command: []string{"status", "状态"},
 		Admin:   true,
@@ -114,6 +115,7 @@ var codeSignals = []CodeSignal{
 			return Count()
 		},
 	},
+
 	{
 		Command: []string{"清空WCK"},
 		Admin:   true,
@@ -122,6 +124,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"删除WCK"},
 		Admin:   true,
@@ -133,6 +136,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	//{
 	//	Command: []string{"sign", "打卡", "签到"},
 	//	Handle: func(sender *Sender) interface{} {
@@ -192,6 +196,7 @@ var codeSignals = []CodeSignal{
 	//		return nil
 	//	},
 	//},
+
 	{
 		Command: []string{"清零"},
 		Admin:   true,
@@ -204,6 +209,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"更新优先级", "更新车位"},
 		Handle: func(sender *Sender) interface{} {
@@ -250,6 +256,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"重启", "reload", "restart", "reboot"},
 		Admin:   true,
@@ -259,6 +266,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"更新账号", "Whiskey更新", "给老子更新"},
 		Admin:   true,
@@ -269,6 +277,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"查询", "query"},
 		Handle: func(sender *Sender) interface{} {
@@ -293,6 +302,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"详细查询", "query"},
 		Handle: func(sender *Sender) interface{} {
@@ -315,6 +325,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"发送", "通知", "notify", "send"},
 		Admin:   true,
@@ -333,6 +344,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"设置管理员"},
 		Admin:   true,
@@ -342,6 +354,7 @@ var codeSignals = []CodeSignal{
 			return "已设置管理员"
 		},
 	},
+
 	{
 		Command: []string{"取消管理员"},
 		Admin:   true,
@@ -351,21 +364,7 @@ var codeSignals = []CodeSignal{
 			return "已取消管理员"
 		},
 	},
-	{
-		Command: []string{"QQ转账"},
-		Admin:   true,
-		Handle: func(sender *Sender) interface{} {
-			qq := Int(sender.Contents[0])
-			logs.Info(qq)
-			if len(sender.Contents) > 1 {
-				//sender.Contents = sender.Contents[1:]
-				logs.Info(sender.Contents[1:])
-				AdddCoin(qq, Int(sender.Contents[1]))
-				sender.Reply(fmt.Sprintf("%d已增加%d枚积分。", qq, Int(sender.Contents[1])))
-			}
-			return nil
-		},
-	},
+
 	{
 		Command: []string{"run", "执行", "运行"},
 		Admin:   true,
@@ -392,6 +391,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"优先级", "priority"},
 		Admin:   true,
@@ -407,6 +407,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"绑定"},
 		Handle: func(sender *Sender) interface{} {
@@ -421,6 +422,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"cmd", "command", "命令"},
 		Admin:   true,
@@ -433,79 +435,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-	{
-		Command: []string{"环境变量", "environments", "envs"},
-		Admin:   true,
-		Handle: func(_ *Sender) interface{} {
-			rt := []string{}
-			envs := GetEnvs()
-			if len(envs) == 0 {
-				return "未设置任何环境变量"
-			}
-			for _, env := range envs {
-				rt = append(rt, fmt.Sprintf(`%s="%s"`, env.Name, env.Value))
-			}
-			return strings.Join(rt, "\n")
-		},
-	},
-	{
-		Command: []string{"get-env", "env", "e"},
-		Handle: func(sender *Sender) interface{} {
-			ct := sender.JoinContens()
-			if ct == "" {
-				return "未指定变量名"
-			}
-			value := GetEnv(ct)
-			if value == "" {
-				return "未设置环境变量"
-			}
-			return fmt.Sprintf("环境变量的值为：" + value)
-		},
-	},
-	{
-		Command: []string{"set-env", "se", "export"},
-		Admin:   true,
-		Handle: func(sender *Sender) interface{} {
-			env := &Env{}
-			if len(sender.Contents) >= 2 {
-				env.Name = sender.Contents[0]
-				env.Value = strings.Join(sender.Contents[1:], " ")
-			} else if len(sender.Contents) == 1 {
-				ss := regexp.MustCompile(`^([^'"=]+)=['"]?([^=]+?)['"]?$`).FindStringSubmatch(sender.Contents[0])
-				if len(ss) != 3 {
-					return "无法解析"
-				}
-				env.Name = ss[1]
-				env.Value = ss[2]
-			} else {
-				return "???"
-			}
-			ExportEnv(env)
-			return "操作成功"
-		},
-	},
-	{
-		Command: []string{"unset-env", "ue", "unexport", "de"},
-		Admin:   true,
-		Handle: func(sender *Sender) interface{} {
-			UnExportEnv(&Env{
-				Name: sender.JoinContens(),
-			})
-			return "操作成功"
-		},
-	},
-	{
-		Command: []string{"降级"},
-		Handle: func(sender *Sender) interface{} {
-			return "滚"
-		},
-	},
-	{
-		Command: []string{"。。。"},
-		Handle: func(sender *Sender) interface{} {
-			return "你很无语吗？"
-		},
-	},
+
 	{
 		Command: []string{"reply", "回复"},
 		Admin:   true,
@@ -518,6 +448,7 @@ var codeSignals = []CodeSignal{
 			return "操作成功"
 		},
 	},
+
 	{
 		Command: []string{"屏蔽", "hack"},
 		Admin:   true,
@@ -529,6 +460,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"更新指定"},
 		Admin:   true,
@@ -570,6 +502,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"删除", "clean"},
 		Admin:   true,
@@ -582,6 +515,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"清理过期账号"},
 		Admin:   true,
@@ -593,6 +527,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"删除WCK"},
 		Admin:   true,
@@ -604,6 +539,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
 		Command: []string{"献祭", "导出"},
 		Admin:   true,
@@ -614,8 +550,9 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+
 	{
-		Command: []string{"导出wsk"},
+		Command: []string{"导出wskey"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			sender.handleJdCookies(func(ck *JdCookie) {
@@ -656,30 +593,3 @@ func LimitJdCookie(cks []JdCookie, a string) []JdCookie {
 	}
 	return ncks
 }
-
-//func ReturnCoin(sender *Sender) {
-//	tx := db.Begin()
-//	ws := []Wish{}
-//	if err := tx.Where("status = 0 and user_number = ?", sender.UserID).Find(&ws).Error; err != nil {
-//		tx.Rollback()
-//		sender.Reply(err.Error())
-//	}
-//	for _, w := range ws {
-//		if tx.Model(User{}).Where("number = ? ", sender.UserID).Update(
-//			"coin", gorm.Expr(fmt.Sprintf("coin + %d", w.Coin)),
-//		).RowsAffected == 0 {
-//			tx.Rollback()
-//			sender.Reply("愿望未达成退还积分失败。")
-//			return
-//		}
-//		sender.Reply(fmt.Sprintf("愿望未达成退还%d枚积分。", w.Coin))
-//		if tx.Model(&w).Update(
-//			"status", 1,
-//		).RowsAffected == 0 {
-//			tx.Rollback()
-//			sender.Reply("愿望未达成退还积分失败。")
-//			return
-//		}
-//	}
-//	tx.Commit()
-//}
