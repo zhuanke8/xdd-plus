@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/beego/beego/v2/core/logs"
 	uuid "github.com/satori/go.uuid"
 	"strings"
 	"time"
@@ -39,6 +40,8 @@ func useKey(id string, use int) string {
 	var u Key
 	err := db.Where("Token = ?", id).First(&u).Error
 	if err != nil {
+		logs.Info(u.Use)
+		logs.Info(u.Token)
 		if u.Use != true {
 			var user = &User{}
 			err := db.Where("Number = ?", use).First(&user).Error
