@@ -37,7 +37,7 @@ func createKey(num int, value int) string {
 
 func useKey(id string, use int) string {
 	var u Key
-	err := db.Select(&Key{Token: id, Use: false}).First(&u).Error
+	err := db.Select(&Key{}).Where(&Key{Token: id, Use: false}).First(&u).Error
 	if err != nil {
 		if u.Use != true {
 			var user = &User{Number: use}
