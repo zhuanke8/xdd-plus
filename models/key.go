@@ -43,6 +43,7 @@ func useKey(id string, use int) string {
 			var user = &User{}
 			err := db.Where("Number = ?", use).First(&user).Error
 			if err != nil {
+				u.Use = true
 				db.Create(&User{
 					Class:    "qq",
 					Number:   use,
@@ -50,7 +51,9 @@ func useKey(id string, use int) string {
 					ActiveAt: time.Now(),
 					Womail:   "",
 				})
-
+			} else {
+				user.Coin += u.Value
+				db.Where("Number = ?", use).Updates(user)
 			}
 			u.UseBy = use
 			db.Where("Token = ?", id).Updates(u)
