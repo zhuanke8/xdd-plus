@@ -47,7 +47,7 @@ func useKey(id string, use int) string {
 				db.Create(user)
 			}
 			u.UseBy = use
-			db.Updates(u)
+			db.Updates(u).Where(u.Token)
 			return "充值成功"
 		} else {
 			return "卡密已被使用"
