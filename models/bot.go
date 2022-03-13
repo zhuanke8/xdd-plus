@@ -717,7 +717,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		//}
 
 		{ //tyt
-			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)`).FindStringSubmatch(msg)
+			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
 			logs.Info(ss[0])
 			logs.Info(ss[1])
 			//if len(ss) > 0 {
