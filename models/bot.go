@@ -137,7 +137,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		default:
 			//校验卡密
 			logs.Info(len(msg))
-			if len(msg) == 37 {
+			if len(msg) == 36 {
 				return useKey(msg, sender.UserID)
 			}
 
