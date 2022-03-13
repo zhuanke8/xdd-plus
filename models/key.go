@@ -40,6 +40,12 @@ func useKey(id string, use int) string {
 	err := db.Select(&Key{Token: id, Use: false}).First(&u).Error
 	if err != nil {
 		if u.Use != true {
+			var user = &User{Number: use}
+			err := db.Select(user).First(&user).Error
+			if err == nil {
+				user.Coin = u.Value
+				db.Create(user)
+			}
 			u.UseBy = use
 			db.Updates(u)
 			return "充值成功"
