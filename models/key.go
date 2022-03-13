@@ -42,7 +42,7 @@ func useKey(id string, use int) string {
 		if u.Use != true {
 			var user = &User{}
 			err := db.Where("Number = ?", use).First(&user).Error
-			if err == nil {
+			if err != nil {
 				user.Coin = u.Value
 				db.Create(user)
 			}
