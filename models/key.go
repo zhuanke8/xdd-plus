@@ -34,3 +34,18 @@ func createKey(num int, value int) string {
 	}
 	return strings.Join(str, "\n")
 }
+
+func useKey(id string, use int) string {
+	var u Key
+	err := db.Select(&Key{Token: id, Use: false}).First(&u).Error
+	if err != nil {
+		if u.Use != true {
+			u.UseBy = use
+			db.Updates(u)
+			return "充值成功"
+		} else {
+			return "卡密已被使用"
+		}
+	}
+	return "查无此卡"
+}

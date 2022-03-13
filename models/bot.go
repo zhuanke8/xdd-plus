@@ -135,6 +135,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	if Config.VIP {
 		switch msg {
 		default:
+			//校验卡密
+			if len(msg) == 37 {
+				return useKey(msg, sender.UserID)
+			}
+
 			//转码
 			{
 				if strings.Contains(msg, "https://kpl.m.jd.com/product") {
