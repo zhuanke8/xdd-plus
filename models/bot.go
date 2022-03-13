@@ -76,7 +76,7 @@ var pcodes = make(map[int]string)
 var replies = map[string]string{}
 var riskcodes = make(map[string]string)
 var riskcodes1 = make(map[string]ViVoData)
-var tytlist []int
+var tytnum = 0
 
 func InitReplies() {
 	f, err := os.Open(ExecPath + "/conf/reply.php")
@@ -722,7 +722,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					if strings.Contains(split[i], "packetId=") {
 						logs.Info(split[i])
 						env := strings.Split(split[i], "=")
-
 						if !sender.IsAdmin {
 							coin := GetCoin(sender.UserID)
 							if coin < Config.Tyt {
@@ -733,10 +732,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						} else {
 							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
 						}
-						runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-							{Name: "tytpacketId", Value: env[1]},
-						}}, sender)
-						return "推一推已结束"
+						//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+						//	{Name: "tytpacketId", Value: env[1]},
+						//}}, sender)
+
+						go runtyt(sender, env[1])
+						//return "推一推已结束"
 					}
 				}
 			}
@@ -823,6 +824,20 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 	}
 	return nil
+}
+
+func runtyt(sender *Sender, code string) {
+	for {
+		time.Sleep(time.Duration(rand.Intn(50)))
+		if tytnum < 3 {
+			tytnum++
+			runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+				{Name: "tytpacketId", Value: code},
+			}}, sender)
+			tytnum -= 1
+			return
+		}
+	}
 }
 
 func getViVoCk() ViVoData {
