@@ -716,45 +716,30 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		//}
 
 		{ //tyt
-			//ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
-			//logs.Info(ss[0])
-			//logs.Info(ss[1])
-			logs.Info(msg)
-			//if len(ss) > 0 {
-			//	if !sender.IsAdmin {
-			//		coin := GetCoin(sender.UserID)
-			//		if coin < Config.Tyt {
-			//			return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
-			//		}
-			//		RemCoin(sender.UserID, Config.Tyt)
-			//		sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分", Config.Tyt))
-			//	} else {
-			//		sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
-			//		//num, f := starttyt(ss[1])
-			//		//if f {
-			//		//	return fmt.Sprintf("推一推结束共用:%d个账号", num)
-			//		//} else {
-			//		//	return "推一推失败"
-			//		//}
-			//		//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-			//		//	{Name: "tytpacketId", Value: ss[1]},
-			//		//}}, sender)
-			//
-			//		//return "推一推已结束"
-			//	}
-			//
-			//	runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-			//		{Name: "tytpacketId", Value: ss[1]},
-			//	}}, sender)
-			//
-			//	//num, f := starttyt(ss[1])
-			//	//if f {
-			//	//	return fmt.Sprintf("推一推结束共用:%d个账号", num)
-			//	//} else {
-			//	//	return "推一推失败"
-			//	//}
-			//	return "推一推已结束"
-			//}
+			if strings.Contains(msg, "49f40d2f40b3470e8d6c39aa4866c7ff") {
+				split := strings.Split(msg, "&amp;")
+				for i := range split {
+					if strings.Contains(split[i], "packetId=") {
+						logs.Info(split[i])
+						env := strings.Split(split[i], "=")
+
+						if !sender.IsAdmin {
+							coin := GetCoin(sender.UserID)
+							if coin < Config.Tyt {
+								return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
+							}
+							RemCoin(sender.UserID, Config.Tyt)
+							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分", Config.Tyt))
+						} else {
+							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
+						}
+						runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+							{Name: "tytpacketId", Value: env[1]},
+						}}, sender)
+						return "推一推已结束"
+					}
+				}
+			}
 		}
 
 		{
