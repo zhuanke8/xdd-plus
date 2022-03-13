@@ -43,7 +43,6 @@ func useKey(id string, use int) string {
 			var user = &User{}
 			err := db.Where("Number = ?", use).First(&user).Error
 			if err != nil {
-				u.Use = true
 				db.Create(&User{
 					Class:    "qq",
 					Number:   use,
@@ -56,6 +55,7 @@ func useKey(id string, use int) string {
 				db.Where("Number = ?", use).Updates(user)
 			}
 			u.UseBy = use
+			u.Use = true
 			db.Where("Token = ?", id).Updates(u)
 			return "充值成功"
 		} else {
