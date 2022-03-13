@@ -136,7 +136,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		switch msg {
 		default:
 			//校验卡密
-			logs.Info(len(msg))
 			if len(msg) == 36 {
 				return useKey(msg, sender.UserID)
 			}
@@ -718,8 +717,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 		{ //tyt
 			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
-			logs.Info(ss[0])
-			logs.Info(ss[1])
+			//logs.Info(ss[0])
+			//logs.Info(ss[1])
 			logs.Info(msg)
 			//if len(ss) > 0 {
 			//	if !sender.IsAdmin {
