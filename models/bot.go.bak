@@ -8,6 +8,7 @@ import (
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
 	"github.com/skip2/go-qrcode"
+	"gorm.io/gorm"
 	"io/ioutil"
 	"math/rand"
 	"net/url"
@@ -167,8 +168,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					return "data:image/png;base64," + base64.StdEncoding.EncodeToString(data)
 				}
 			}
-
-			//验证码
 			{
 				regex := "^\\d{6}$"
 				reg := regexp.MustCompile(regex)
@@ -304,8 +303,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					}
 				}
 			}
-
-			//手机号
 			{
 				ist := pcodes[(sender.UserID)]
 				if strings.EqualFold(ist, "true") {
@@ -451,6 +448,134 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
 				}
 			}
+			{
+				//发财挖宝
+				//dyj
+				inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)inviterCode`).FindStringSubmatch(msg)
+				inviterCode := regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_user`).FindStringSubmatch(msg)
+				//t := regexp.MustCompile(`t=(\S+)(&|&amp;)appid`).FindStringSubmatch(msg)
+
+				if len(inviterCode) == 0 {
+					inviterCode = regexp.MustCompile(`inviterCode=(\S+)(&|&amp;)utm_source`).FindStringSubmatch(msg)
+				}
+				if len(inviterId) > 0 && len(inviterCode) > 0 {
+					if !sender.IsAdmin {
+						sender.Reply("仅管理员可用")
+					} else {
+						sender.Reply(fmt.Sprintf("发财挖宝开始，管理员通道"))
+						num, num1, f := startfcwb(inviterId[1], inviterCode[1])
+						if f {
+							sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,无效助力账号:%d个", num, num1))
+						}
+					}
+					return nil
+				}
+			}
+			{
+				if strings.Contains(msg, "口令") {
+					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+					rsp.Param("url", msg)
+					rsp.Param("type", "hy")
+					//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
+					data, err := rsp.Response()
+
+					if err != nil {
+						return "口令转换失败"
+					}
+					body, _ := ioutil.ReadAll(data.Body)
+					if strings.Contains(string(body), "口令转换失败") {
+						return "口令转换失败"
+					} else {
+						return string(body)
+					}
+				}
+			}
+			{
+				if sender.IsAdmin {
+					if strings.Contains(msg, "膨胀") {
+						rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+						rsp.Param("url", msg)
+						rsp.Param("type", "hy")
+						data, err := rsp.Response()
+
+						if err != nil {
+							return "口令转换失败"
+						}
+						body, _ := ioutil.ReadAll(data.Body)
+						if strings.Contains(string(body), "口令转换失败") {
+							return "口令转换失败"
+						} else {
+							if strings.Contains(string(body), "shareType=expandHelp") {
+								inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+								k, flag := startpz(inviterCode[1])
+								if flag {
+									return fmt.Sprintf("助力完成，一共助力%d账号", k)
+								} else {
+									return fmt.Sprintf("助力失败，一共助力%d账号", k)
+								}
+							}
+						}
+					}
+				}
+
+			}
+			{
+				if sender.IsAdmin {
+					if strings.Contains(msg, "天降") {
+						rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+						rsp.Param("url", msg)
+						rsp.Param("type", "hy")
+						data, err := rsp.Response()
+
+						if err != nil {
+							return "口令转换失败"
+						}
+						body, _ := ioutil.ReadAll(data.Body)
+						if strings.Contains(string(body), "口令转换失败") {
+							return "口令转换失败"
+						} else {
+							if strings.Contains(string(body), "shareType=fallingRedbagHelp") {
+								inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+								k, flag := starttj(inviterCode[1])
+								if flag {
+									return fmt.Sprintf("助力完成，一共助力%d账号", k)
+								} else {
+									return fmt.Sprintf("助力失败，一共助力%d账号", k)
+								}
+							}
+						}
+					}
+				}
+			}
+			{
+				if sender.IsAdmin {
+					if strings.Contains(msg, "年兽") {
+						rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+						rsp.Param("url", msg)
+						rsp.Param("type", "hy")
+						data, err := rsp.Response()
+
+						if err != nil {
+							return "口令转换失败"
+						}
+						body, _ := ioutil.ReadAll(data.Body)
+						if strings.Contains(string(body), "口令转换失败") {
+							return "口令转换失败"
+						} else {
+							if strings.Contains(string(body), "shareType=taskHelp") {
+								inviterCode := regexp.MustCompile(`inviteId=(\S+)(&|&amp;)mpin`).FindStringSubmatch(string(body))
+								flag := nianhelp(inviterCode[1])
+								if flag {
+									return "助力完成"
+								} else {
+									return "助力失败"
+								}
+							}
+						}
+					}
+				}
+
+			}
 		}
 	}
 
@@ -471,14 +596,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
-
 		{
 			if strings.Contains(msg, "wskey=") {
 				logs.Info(msg + "开始WSKEY登录")
 				wsKey := FetchJdCookieValue("wskey", msg)
-				ptPin := FetchJdCookieValue("pin", msg)
+				ptPin := FetchJdCookieValue("pt_pin", msg)
 				if len(ptPin) == 0 {
-					ptPin = FetchJdCookieValue("pt_pin", msg)
+					ptPin = FetchJdCookieValue("pin", msg)
 				}
 				if len(wsKey) > 0 && len(ptPin) > 0 {
 					wkey := "pin=" + ptPin + ";wskey=" + wsKey + ";"
@@ -630,7 +754,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			//	}
 			//}
 		}
-
 		//{ //
 		//	ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 		//
@@ -674,50 +797,49 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		//		return nil
 		//	}
 		//}
-		//{
-		//	//dyj
-		//	inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)helpType`).FindStringSubmatch(msg)
-		//	redEnvelopeId := regexp.MustCompile(`redEnvelopeId=(\S+)(&|&amp;)inviterId`).FindStringSubmatch(msg)
-		//	if len(inviterId) > 0 && len(redEnvelopeId) > 0 {
-		//		if !sender.IsAdmin {
-		//			sender.Reply("仅管理员可用")
-		//		} else {
-		//			sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
-		//			num, num1, f, f1 := startdyj(inviterId[1], redEnvelopeId[1], 1)
-		//			if f {
-		//				sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,火爆账号:%d个", num, num1))
-		//				if f1 {
-		//					sender.Reply("满足提现条件，开始自动提现助力")
-		//					n, i, _, f12 := startdyj(inviterId[1], redEnvelopeId[1], 2)
-		//					if f12 {
-		//						sender.Reply(fmt.Sprintf("提现助力完成，助力成功：%d个,火爆账号:%d个", n, i))
-		//					}
-		//				}
-		//			} else {
-		//				sender.Reply(fmt.Sprintf("你已经黑IP拉！，助力成功：%d个,火爆账号:%d个", num, num1))
-		//			}
-		//
-		//		}
-		//		return nil
-		//	}
-		//
-		//}
-		//{
-		//	//k1k
-		//	ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
-		//	if len(ss) > 0 {
-		//		if !sender.IsAdmin {
-		//			sender.Reply("仅管理员可用")
-		//		} else {
-		//			sender.Reply(fmt.Sprintf("砍价开始，管理员通道"))
-		//			runTask(&Task{Path: "jd_kanjia.js", Envs: []Env{
-		//				{Name: "launchid", Value: ss[1]},
-		//			}}, sender)
-		//		}
-		//		return nil
-		//	}
-		//}
+		{
+			//dyj
+			inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)helpType`).FindStringSubmatch(msg)
+			redEnvelopeId := regexp.MustCompile(`redEnvelopeId=(\S+)(&|&amp;)inviterId`).FindStringSubmatch(msg)
+			if len(inviterId) > 0 && len(redEnvelopeId) > 0 {
+				if !sender.IsAdmin {
+					sender.Reply("仅管理员可用")
+				} else {
+					sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
+					num, num1, f, f1 := startdyj(inviterId[1], redEnvelopeId[1], 1)
+					if f {
+						sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,火爆账号:%d个", num, num1))
+						if f1 {
+							sender.Reply("满足提现条件，开始自动提现助力")
+							n, i, _, f12 := startdyj(inviterId[1], redEnvelopeId[1], 2)
+							if f12 {
+								sender.Reply(fmt.Sprintf("提现助力完成，助力成功：%d个,火爆账号:%d个", n, i))
+							}
+						}
+					} else {
+						sender.Reply(fmt.Sprintf("你已经黑IP拉！，助力成功：%d个,火爆账号:%d个", num, num1))
+					}
 
+				}
+				return nil
+			}
+
+		}
+		{
+			//k1k
+			ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
+			if len(ss) > 0 {
+				if !sender.IsAdmin {
+					sender.Reply("仅管理员可用")
+				} else {
+					sender.Reply(fmt.Sprintf("砍价开始，管理员通道"))
+					runTask(&Task{Path: "jd_kanjia.js", Envs: []Env{
+						{Name: "launchid", Value: ss[1]},
+					}}, sender)
+				}
+				return nil
+			}
+		}
 		{ //tyt
 			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)currentActId`).FindStringSubmatch(msg)
 			if len(ss) > 0 {
@@ -756,7 +878,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return "推一推已结束"
 			}
 		}
-
 		{
 			if strings.Contains(msg, "pt_key") {
 				logs.Info(msg + "开始CK登录")
@@ -810,6 +931,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
+		{
+			o := findShareCode(msg)
+			if o != "" {
+				return "导入互助码成功"
+			}
+		}
 
 		for k, v := range replies {
 			if regexp.MustCompile(k).FindString(msg) != "" {
@@ -835,7 +962,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return v
 			}
 		}
-
 	}
 	return nil
 }
@@ -865,6 +991,311 @@ func getViVoCk() ViVoData {
 
 func getMd5String(b []byte) string {
 	return fmt.Sprintf("%x", md5.Sum(b))
+}
+
+func startdyj(ine string, red string, type1 int) (num int, num1 int, f bool, f1 bool) {
+	k := 0
+	n := 0
+	cks := GetJdCookies()
+	for i := range cks {
+		time.Sleep(time.Second * time.Duration(5))
+		cookie := "pt_key=" + cks[i].PtKey + ";pt_pin=" + cks[i].PtPin + ";"
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/client.action?functionId=openRedEnvelopeInteract&body={"linkId":"PFbUR7wtwUcQ860Sn8WRfw","redEnvelopeId":"%s","inviter":"%s","helpType":"%d"}&t=1626363029817&appid=activities_platform&clientVersion=3.5.0`, red, ine, type1)
+		req := httplib.Get(sprintf)
+		random := browser.Random()
+		req.Header("User-Agent", random)
+		req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Connection", "keep-alive")
+		req.Header("Accept-Language", "zh-cn")
+		req.Header("Accept-Encoding", "gzip, deflate, br")
+		req.Header("Origin", "https://618redpacket.jd.com")
+		req.Header("Cookie", cookie)
+		data, _ := req.String()
+		if strings.Contains(data, "助力成功") {
+			logs.Info("助力成功")
+			k++
+		} else if strings.Contains(data, "火爆") {
+			logs.Info("火爆了")
+			n++
+		} else if strings.EqualFold(data, "") {
+			return i, n, false, false
+		} else if strings.Contains(data, "今日帮好友拆红包次数已达上限") {
+			logs.Info("助力上限")
+		} else if strings.Contains(data, "已成功提现") {
+			return i, n, true, true
+		} else {
+			logs.Info("要么助力过了，要么没登录")
+		}
+	}
+	return k, n, true, false
+}
+
+func startfcwb(ine string, red string) (num int, num1 int, f bool) {
+	logs.Info("开始发财挖宝")
+	k := 0
+	n := 0
+	cks := GetJdCookies()
+	for i := len(cks); i > 0; i-- {
+		if k > 30 {
+			return k, n, true
+		}
+		time.Sleep(time.Second * time.Duration(3))
+		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
+		//https://api.m.jd.com/?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"-ftyyGV7YwjPJ63tnKLwjw","inviteCode":"7476e3bed5d74f74b0a547b7e4d1e07225061636959196596"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=happyDigHelp&body={"linkId":"pTTvJeSTrpthgk9ASBVGsw","inviter":"%s","inviteCode":"%s"}&t=1635561607124&appid=activities_platform&client=H5&clientVersion=1.0.0`, ine, red)
+		logs.Info(sprintf)
+		req := httplib.Get(sprintf)
+		random := browser.Random()
+		req.Header("User-Agent", random)
+		//req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Connection", "keep-alive")
+		req.Header("Accept-Language", "zh-cn")
+		req.Header("Accept-Encoding", "gzip, deflate, br")
+		req.Header("Origin", "https://api.m.jd.com")
+		req.Header("Cookie", cookie)
+
+		data, _ := req.String()
+		logs.Info(data)
+		if strings.Contains(data, "true") {
+			logs.Info("助力成功")
+			k++
+		} else if strings.Contains(data, "已经邀请过") {
+			logs.Info("已经邀请过")
+		} else if strings.Contains(data, "火爆") {
+			logs.Info("火爆了")
+			n++
+		} else {
+			logs.Info("要么助力过了，要么没登录,要么火爆")
+		}
+	}
+
+	return k, n, true
+}
+
+func starttyt(red string) (num int, f bool) {
+	k := 0
+	n := 0
+
+	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+		return sb.Where(fmt.Sprintf("%s != ? and %s = ?", Tyt, Available), False, True)
+	})
+	cache := getCache("tyt")
+	if cache != "" {
+		n, _ = strconv.Atoi(cache)
+	}
+
+	for i := range cks {
+		time.Sleep(time.Second * 5)
+		if n >= len(cks) {
+			n = 0
+		} else {
+			n++
+		}
+		cookie := "pt_key=" + cks[n+200].PtKey + ";pt_pin=" + cks[n+200].PtPin + ";"
+
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641900500241&body={"actId":"49f40d2f40b3470e8d6c39aa4866c7ff","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}&_ste=1`, red)
+		req := httplib.Post(sprintf)
+		//req.Param("functionId", "helpCoinDozer")
+		//req.Param("appid", "station-sgoa-h5")
+		//req.Param("client", "H5")
+		//req.Param("clientVersion", "1.0.0")
+		////1644767512
+		//req.Param("t", "1623120183787")
+		//req.Param("_ste", "1")
+		//req.Param("body", sprintf)
+		//req.Param("_stk", "appid,body,client,clientVersion,functionId,t")
+		//req.Param("h5st", "20210608104303790;8489907903583162;10005;tk01w89681aa9a8nZDdIanIyWnVuWFLK4gnqY+05WKcPY3NWU2dcfa73B7PBM7ufJEN0U+4MyHW5N2mT/RNMq72ycJxH;7e6b956f1a8a71b269a0038bbb4abd24bcfb834a88910818cf1bdfc55b7b96e5")
+		random := browser.Random()
+		req.Header("User-Agent", random)
+		req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Origin", "https://pushgold.jd.com")
+		req.Header("Cookie", cookie)
+		data, _ := req.String()
+		code, _ := jsonparser.GetInt([]byte(data), "code")
+		logs.Info(data)
+		if code == 0 {
+			k++
+			logs.Info(jsonparser.GetString([]byte(data), "data", "amount"))
+		} else {
+
+			if strings.Contains(data, "完成") {
+				return k, true
+			} else if strings.Contains(data, "帮砍机会已用完") {
+
+			} else if strings.Contains(data, "火爆") {
+				cks[n].Tyt = "false"
+				cks[n].Updates(cks[i])
+			} else {
+				logs.Info("额为异常")
+				logs.Info(data)
+			}
+		}
+	}
+	return k, false
+}
+
+func nianhelp(invited string) (flag bool) {
+	logs.Info("开始年兽助力")
+	k := 0
+	cks := GetJdCookies()
+	for i := len(cks); i > 0; i-- {
+		if k > 8 {
+			//todo 结束
+			return true
+		}
+		time.Sleep(time.Second * time.Duration(3))
+		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
+
+		sc := getScKey(cookie)
+		if sc != "" {
+			url := "https://api.m.jd.com/client.action?functionId=tigernian_collectScore"
+			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
+			req := httplib.Post(url)
+			random := browser.Random()
+			req.Param("clientVersion", "1.0.0")
+			req.Param("client", "wh5")
+			req.Param("functionId", "tigernian_collectScore")
+			req.Param("body", body)
+			req.Header("User-Agent", random)
+			req.Header("Accept", "application/json, text/plain, */*")
+			req.Header("Connection", "keep-alive")
+			req.Header("Accept-Language", "zh-cn")
+			req.Header("Accept-Encoding", "gzip, deflate, br")
+			req.Header("Origin", "https://api.m.jd.com")
+			req.Header("Cookie", cookie)
+			s, _ := req.String()
+			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
+			if bizCode == 0 {
+				k++
+				logs.Info("助力成功")
+
+			} else {
+				logs.Info("助力失败")
+				logs.Info(s)
+				if strings.Contains(s, "好友人气爆棚不需要助力啦") {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func getScKey(ck string) (key string) {
+	url := "https://api.m.jd.com/client.action?functionId=tigernian_getHomeData"
+	req := httplib.Get(url)
+	random := browser.Random()
+	req.Param("clientVersion", "1.0.0")
+	req.Param("client", "wh5")
+	req.Param("functionId", "tigernian_getHomeData")
+	req.Header("User-Agent", random)
+	req.Header("Host", "api.m.jd.com")
+	req.Header("Accept", "application/json, text/plain, */*")
+	req.Header("Connection", "keep-alive")
+	req.Header("Accept-Language", "zh-cn")
+	req.Header("Accept-Encoding", "gzip, deflate, br")
+	req.Header("Origin", "https://api.m.jd.com")
+	req.Header("Cookie", ck)
+	data, _ := req.String()
+	if strings.Contains(data, "secretp") {
+		index := strings.Index(data, "\"secretp\":") + 11
+		i := strings.Index(data, "shareMiniprogramSwitch") - 3
+		s := data[index:i]
+		return s
+	}
+	return ""
+}
+
+func startpz(invited string) (num int, flag bool) {
+	logs.Info("开始膨胀助力")
+	k := 0
+	cks := GetJdCookies()
+	for i := len(cks); i > 0; i-- {
+		time.Sleep(time.Second * time.Duration(3))
+		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
+		sc := getScKey(cookie)
+		if sc != "" {
+			url := "https://api.m.jd.com/client.action?functionId=tigernian_pk_collectPkExpandScore"
+			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
+			req := httplib.Post(url)
+			random := browser.Random()
+			req.Param("clientVersion", "1.0.0")
+			req.Param("client", "wh5")
+			req.Param("functionId", "tigernian_pk_collectPkExpandScore")
+			req.Param("body", body)
+			req.Header("User-Agent", random)
+			req.Header("Accept", "application/json, text/plain, */*")
+			req.Header("Connection", "keep-alive")
+			req.Header("Accept-Language", "zh-cn")
+			req.Header("Accept-Encoding", "gzip, deflate, br")
+			req.Header("Origin", "https://wbbny.m.jd.com")
+			req.Header("Cookie", cookie)
+			s, _ := req.String()
+			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
+			bizMsg, _ := jsonparser.GetString([]byte(s), "data", "bizMsg")
+
+			if bizCode == 0 {
+				k++
+				logs.Info("助力成功")
+
+			} else {
+				logs.Info("助力失败")
+				logs.Info(s)
+				if strings.Contains(bizMsg, "好友人气爆棚") {
+					return k, true
+				}
+			}
+		}
+	}
+	return k, false
+
+}
+
+func starttj(invited string) (num int, flag bool) {
+	logs.Info("开始天降助力")
+	k := 0
+	cks := GetJdCookies()
+	for i := len(cks); i > 0; i-- {
+		time.Sleep(time.Second * time.Duration(3))
+		cookie := "pt_key=" + cks[i-1].PtKey + ";pt_pin=" + cks[i-1].PtPin + ";"
+		sc := getScKey(cookie)
+		if sc != "" {
+			url := "https://api.m.jd.com/client.action?functionId=tigernian_doDropTask"
+			body := fmt.Sprintf(`{"ss":"{\"extraData\":{\"log\":\"\",\"sceneid\":\"HYGJZYh5\"},\"secretp\":\"%s\",\"random\":\"%d\"}","inviteId":"%s"}`, sc, rand.Intn(99999999), invited)
+			req := httplib.Post(url)
+			random := browser.Random()
+			req.Param("clientVersion", "1.0.0")
+			req.Param("client", "wh5")
+			req.Param("functionId", "tigernian_doDropTask")
+			req.Param("body", body)
+			req.Header("User-Agent", random)
+			req.Header("Accept", "application/json, text/plain, */*")
+			req.Header("Connection", "keep-alive")
+			req.Header("Accept-Language", "zh-cn")
+			req.Header("Accept-Encoding", "gzip, deflate, br")
+			req.Header("Origin", "https://wbbny.m.jd.com")
+			req.Header("Cookie", cookie)
+			s, _ := req.String()
+			bizCode, _ := jsonparser.GetInt([]byte(s), "data", "bizCode")
+			bizMsg, _ := jsonparser.GetString([]byte(s), "data", "bizMsg")
+			if bizCode == 0 {
+				k++
+				logs.Info("助力成功")
+
+			} else {
+				logs.Info("助力失败")
+				logs.Info(s)
+				if strings.Contains(bizMsg, "好友人气爆棚") {
+					return k, true
+				}
+			}
+		}
+	}
+	return k, false
+
 }
 
 func FetchJdCookieValue(key string, cookies string) string {
