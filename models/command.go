@@ -116,7 +116,6 @@ var codeSignals = []CodeSignal{
 			if Config.VIP == true {
 				contents := sender.Contents
 				logs.Info(contents[0])
-				//content := sender.JoinContens()
 				num, _ := strconv.Atoi(contents[0])
 				value, _ := strconv.Atoi(contents[1])
 				return createKey(num, value)
