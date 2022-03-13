@@ -835,6 +835,7 @@ func runtyt(sender *Sender, code string) {
 				{Name: "tytpacketId", Value: code},
 			}}, sender)
 			tytnum -= 1
+			sender.Reply("推一推已结束，请检查是否完成，未完成请联系群主")
 			return
 		}
 	}
