@@ -115,10 +115,10 @@ var codeSignals = []CodeSignal{
 		Handle: func(sender *Sender) interface{} {
 			if Config.VIP == true {
 				contents := sender.Contents
+				logs.Info(contents[0])
 				//content := sender.JoinContens()
 				num, _ := strconv.Atoi(contents[0])
 				value, _ := strconv.Atoi(contents[1])
-				logs.Info(contents[0])
 				return createKey(num, value)
 			}
 			return "非VIP用户"
