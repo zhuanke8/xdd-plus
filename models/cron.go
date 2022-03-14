@@ -17,9 +17,11 @@ func initCron() {
 			logs.Info("资产推送任务就绪")
 		}
 
-		c.AddFunc(Config.DailyCompletePush, CompletePush)
 		//c.AddFunc("3 */1 * * *", initVersion)
 		//c.AddFunc("40 */1 * * *", GitPullAll)
+	}
+	if Config.DailyCompletePush != "" {
+		c.AddFunc(Config.DailyCompletePush, CompletePush)
 	}
 	//logs.Info("0 " + strconv.Itoa(rand.Intn(59)) + " 0/" + strconv.Itoa(Config.Later) + " * * ?" + "调试推送时间")
 	c.AddFunc("0 8-20/5 * * ?", initCookie)
