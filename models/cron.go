@@ -16,6 +16,8 @@ func initCron() {
 		} else {
 			logs.Info("资产推送任务就绪")
 		}
+
+		c.AddFunc(Config.DailyCompletePush, CompletePush)
 		//c.AddFunc("3 */1 * * *", initVersion)
 		//c.AddFunc("40 */1 * * *", GitPullAll)
 	}
