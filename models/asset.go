@@ -63,6 +63,7 @@ func DailyAssetsPush() {
 			if ck.PushPlus != "" {
 				pushPlus(ck.PushPlus, msg)
 			}
+            time.Sleep(time.Second * 60)
 		}
 	}
 }
@@ -93,7 +94,6 @@ func CompletePush() {
 					pushPlus(ck.PushPlus, strings.Join(msg1, "\n"))
 				}
 			}
-
 		}
 	}
 }
