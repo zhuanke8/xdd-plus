@@ -70,25 +70,30 @@ func DailyAssetsPush() {
 func CompletePush() {
 	for _, ck := range GetJdCookies() {
 		if (ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil) || ck.PushPlus != "" {
-			msg := ck.Query()
+			flag := false
 			var msg1 []string
 			var fruit = make(chan string)
 			var pet = make(chan string)
 			cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
 			go initFarm(cookie, fruit)
 			if strings.Contains(<-fruit, "已可领取") {
+				flag = true
 				msg1 = append(msg1, "您的农场无门槛红包已经成熟，请尽快领取\r\n 【东东农场】京东->我的->东东农场,完成是京东红包,可以用于京东app的任意商品")
 			}
 			go initPetTown(cookie, pet)
 			if strings.Contains(<-pet, "已可领取") {
+				flag = true
 				msg1 = append(msg1, "您的萌宠无门槛红包已经成熟，请尽快领取\r\n 【东东萌宠】京东->我的->东东萌宠,完成是京东红包,可以用于京东app的任意商品")
 			}
-			if ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil {
-				SendQQ(int64(ck.QQ), msg)
+			if flag {
+				if ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil {
+					SendQQ(int64(ck.QQ), strings.Join(msg1, "\n"))
+				}
+				if ck.PushPlus != "" {
+					pushPlus(ck.PushPlus, strings.Join(msg1, "\n"))
+				}
 			}
-			if ck.PushPlus != "" {
-				pushPlus(ck.PushPlus, msg)
-			}
+
 		}
 	}
 }
