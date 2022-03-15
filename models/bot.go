@@ -164,6 +164,26 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 
+            {
+				if strings.Contains(msg, "口令") {
+					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
+					rsp.Param("url", msg)
+					rsp.Param("type", "hy")
+					//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
+					data, err := rsp.Response()
+	
+					if err != nil {
+						return "口令转换失败"
+					}
+					body, _ := ioutil.ReadAll(data.Body)
+					if strings.Contains(string(body), "口令转换失败") {
+						return "口令转换失败"
+					} else {
+						return string(body)
+					}
+				}
+			}
+
 			//验证码
 			{
 				regex := "^\\d{6}$"
