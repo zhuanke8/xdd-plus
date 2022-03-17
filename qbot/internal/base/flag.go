@@ -39,7 +39,6 @@ var (
 	LogForceNew         bool // 是否在每次启动时强制创建全新的文件储存日志
 	LogColorful         bool // 是否启用日志颜色
 	FastStart           bool // 是否为快速启动
-	AllowTempSession    bool // 是否允许发送临时会话信息
 
 	PostFormat        string                 // 上报格式 string or array
 	Proxy             string                 // 存储 proxy_rewrite,用于设置代理
@@ -58,13 +57,12 @@ var (
 // Parse parse flags
 func Parse() {
 	wd, _ := os.Getwd()
-	dc := path.Join(wd, "/qbot/config.yml")
+	dc := path.Join(wd, "config.yml")
 	flag.StringVar(&LittleC, "c", dc, "configuration filename")
 	flag.BoolVar(&LittleD, "d", false, "running as a daemon")
 	flag.BoolVar(&LittleH, "h", false, "this Help")
 	flag.StringVar(&LittleWD, "w", "", "cover the working directory")
 	d := flag.Bool("D", false, "debug mode")
-	flag.BoolVar(&FastStart, "faststart", false, "skip waiting 5 seconds")
 	flag.Parse()
 
 	if *d {
