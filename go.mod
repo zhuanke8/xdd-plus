@@ -6,12 +6,12 @@ replace github.com/willf/bitset v1.2.0 => github.com/bits-and-blooms/bitset v1.2
 
 //replace github.com/Mrs4s/go-cqhttp v1.0.0-beta5 => github.com/cdle/go-cqhttp v1.1.2
 
-replace github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2 => github.com/764763903a/go-cqhttp v1.0.9
+replace github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2 => github.com/764763903a/go-cqhttp v1.1.1
 
 require (
 	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
 	github.com/EDDYCJY/fake-useragent v0.2.0
-	github.com/Mrs4s/MiraiGo v0.0.0-20220227135520-9884d9b0de20
+	github.com/Mrs4s/MiraiGo v0.0.0-20211208080234-25c67a3ee1c1
 	//github.com/Mrs4s/MiraiGo v0.0.0-20210726103104-1d68826cef0e
 	github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect

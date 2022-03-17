@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"encoding/hex"
 	"fmt"
+	"github.com/cdle/xdd/qbot/internal/base"
 	"hash"
 	"io"
 	"os"
@@ -18,7 +19,6 @@ import (
 	"github.com/tidwall/gjson"
 
 	"github.com/Mrs4s/go-cqhttp/global"
-	"github.com/Mrs4s/go-cqhttp/internal/base"
 )
 
 func readLine() (str string) {
