@@ -1,7 +1,7 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
-github.com/764763903a/go-cqhttp v1.0.6 h1:altpzYteHLbVpAa4UFwpAcSWfCcCL05PWs5nSwAiPik=
-github.com/764763903a/go-cqhttp v1.0.6/go.mod h1:qqBbg8VNg/u/fjRY9cX+wdhhpHOmMSN8jfpAl14EFGw=
+github.com/764763903a/go-cqhttp v1.0.8 h1:N8v82mZrdfvBW/Y1bgs6jMR3YNoGY2ib2sbHGaVNeRw=
+github.com/764763903a/go-cqhttp v1.0.8/go.mod h1:qqBbg8VNg/u/fjRY9cX+wdhhpHOmMSN8jfpAl14EFGw=
 github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f h1:2dk3eOnYllh+wUOuDhOoC2vUVoJF/5z478ryJ+wzEII=
 github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f/go.mod h1:4a58ifQTEe2uwwsaqbh3i2un5/CBPg+At/qHpt18Tmk=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=

@@ -6,7 +6,6 @@ import (
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/hex"
-	"fmt"
 	"github.com/Mrs4s/go-cqhttp/global/terminal"
 	"github.com/Mrs4s/go-cqhttp/modules/servers"
 	"github.com/cdle/xdd/qbot/internal/base"
@@ -693,13 +692,6 @@ func newClient() *client.QQClient {
 			log.Error("Protocol -> " + e.Message)
 		case "DEBUG":
 			log.Debug("Protocol -> " + e.Message)
-		case "DUMP":
-			if !global.PathExists(global.DumpsPath) {
-				_ = os.MkdirAll(global.DumpsPath, 0o755)
-			}
-			dumpFile := path.Join(global.DumpsPath, fmt.Sprintf("%v.dump", time.Now().Unix()))
-			log.Errorf("出现错误 %v. 详细信息已转储至文件 %v 请连同日志提交给开发者处理", e.Message, dumpFile)
-			_ = os.WriteFile(dumpFile, e.Dump, 0o644)
 		}
 	})
 	return c
