@@ -135,11 +135,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	if Config.VIP {
 		switch msg {
 		default:
-			//校验卡密
-			if len(msg) == 36 {
-				return useKey(msg, sender.UserID)
-			}
 
+			//校验卡密
+			{
+				if strings.HasPrefix(msg, "XDD") {
+					return useKey(msg, sender.UserID)
+				}
+			}
 			//转码
 			{
 				if strings.Contains(msg, "https://kpl.m.jd.com/product") {
@@ -164,14 +166,14 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 
-            {
+			{
 				if strings.Contains(msg, "口令") {
 					rsp := httplib.Post("http://jd.zack.xin/api/jd/ulink.php")
 					rsp.Param("url", msg)
 					rsp.Param("type", "hy")
 					//rsp.Body(fmt.Sprintf(`url=%s&type=hy`, msg))
 					data, err := rsp.Response()
-	
+
 					if err != nil {
 						return "口令转换失败"
 					}

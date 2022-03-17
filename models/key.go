@@ -19,7 +19,7 @@ func createKey(num int, value int) string {
 	var str []string
 	for i := 0; i < num; i++ {
 		id := uuid.NewV4()
-		ids := id.String()
+		ids := "XDD" + id.String()
 		var u Key
 		u = Key{
 			Expiration: time.Now(),
