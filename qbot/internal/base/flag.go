@@ -87,7 +87,6 @@ func Init() {
 		SkipMimeScan = conf.Message.SkipMimeScan
 		ReportSelfMessage = conf.Message.ReportSelfMessage
 		UseSSOAddress = conf.Account.UseSSOAddress
-		AllowTempSession = conf.Account.AllowTempSession
 	}
 	{ // others
 		Proxy = conf.Message.ProxyRewrite
