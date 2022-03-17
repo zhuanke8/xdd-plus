@@ -6,7 +6,7 @@ replace github.com/willf/bitset v1.2.0 => github.com/bits-and-blooms/bitset v1.2
 
 //replace github.com/Mrs4s/go-cqhttp v1.0.0-beta5 => github.com/cdle/go-cqhttp v1.1.2
 
-replace github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2 => github.com/764763903a/go-cqhttp v1.0.5
+replace github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2 => github.com/764763903a/go-cqhttp v1.0.6
 
 require (
 	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
@@ -53,7 +53,6 @@ require (
 require (
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/RomiChan/protobuf v0.0.0-20220227114948-643565fff248 // indirect
-	github.com/RomiChan/websocket v1.4.3-0.20220123145318-307a86b127bc // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
@@ -61,7 +60,7 @@ require (
 	github.com/fumiama/imgsz v0.0.2 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.0 // indirect
-	github.com/google/uuid v1.1.1 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.8.1 // indirect
@@ -94,7 +93,7 @@ require (
 	golang.org/x/net v0.0.0-20211123203042-d83791d6bcd9 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.0.0-20201211185031-d93e913c1a58 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect

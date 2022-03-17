@@ -63,7 +63,7 @@ func DailyAssetsPush() {
 			if ck.PushPlus != "" {
 				pushPlus(ck.PushPlus, msg)
 			}
-            time.Sleep(time.Second * 60)
+			time.Sleep(time.Second * 60)
 		}
 	}
 }
@@ -79,12 +79,12 @@ func CompletePush() {
 			go initFarm(cookie, fruit)
 			if strings.Contains(<-fruit, "已可领取") {
 				flag = true
-				msg1 = append(msg1, ck.Nickname + "您的农场无门槛红包已经成熟，请尽快领取\r\n 【东东农场】京东->我的->东东农场,完成是京东红包,可以用于京东app的任意商品")
+				msg1 = append(msg1, ck.Nickname+"您的农场无门槛红包已经成熟，请尽快领取\r\n 【东东农场】京东->我的->东东农场,完成是京东红包,可以用于京东app的任意商品")
 			}
 			go initPetTown(cookie, pet)
 			if strings.Contains(<-pet, "已可领取") {
 				flag = true
-				msg1 = append(msg1, ck.Nickname + "您的萌宠无门槛红包已经成熟，请尽快领取\r\n 【东东萌宠】京东->我的->东东萌宠,完成是京东红包,可以用于京东app的任意商品")
+				msg1 = append(msg1, ck.Nickname+"您的萌宠无门槛红包已经成熟，请尽快领取\r\n 【东东萌宠】京东->我的->东东萌宠,完成是京东红包,可以用于京东app的任意商品")
 			}
 			if flag {
 				if ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil {
@@ -138,7 +138,7 @@ func (ck *JdCookie) Query() string {
 				parse1, _ := time.Parse("2006-01-02", ck.UpdateAt)
 				f := t.Sub(parse1).Hours() / 24
 				i, _ := strconv.Atoi(fmt.Sprintf("%1.0f", f))
-				msgs = append(msgs, fmt.Sprintf("您距离失效还有：%d天", i+28))
+				msgs = append(msgs, fmt.Sprintf("您距离失效还有：%d天", 28-i))
 			}
 		}
 		var rpc = make(chan []RedList)
