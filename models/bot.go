@@ -851,7 +851,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 func runtyt(sender *Sender, code string) {
 	for {
 		time.Sleep(time.Duration(rand.Intn(50)))
-		if tytnum < 3 {
+		if tytnum < 5 {
 			tytnum++
 			runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 				{Name: "tytpacketId", Value: code},
