@@ -484,7 +484,7 @@ type JingXiDetail struct {
 }
 
 func getJingXiBeanDeatil(cookie string) []JingXiDetail {
-	req := httplib.Get(fmt.Sprintf("https://m.jingxi.com/activeapi/queryuserjingdoudetail?_=%t&sceneval=2&g_login_type=1&g_ty=ls&pagesize=15&type=16", time.Now().Unix()))
+	req := httplib.Get(fmt.Sprintf("https://m.jingxi.com/activeapi/queryuserjingdoudetail?_=%t&sceneval=2&g_login_type=1&g_ty=ls&pagesize=15&type=16", time.Now().UnixMilli()))
 	req.Header("User-Agent", "jdpingou;android;5.5.0;11;network/wifi;model/M2102K1C;appBuild/18299;partner/lcjx11;session/110;pap/JA2019_3111789;brand/Xiaomi;Mozilla/5.0 (Linux; Android 11; M2102K1C Build/RKQ1.201112.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.159 Mobile Safari/537.36")
 	req.Header("Host", "m.jingxi.com")
 	req.Header("Accept", "*/*")
@@ -495,6 +495,7 @@ func getJingXiBeanDeatil(cookie string) []JingXiDetail {
 	resp, _ := req.Bytes()
 	a := JingXiBeanDetails{}
 	json.Unmarshal(resp, &a)
+	log.Info(string(resp))
 	return a.Detail
 }
 
