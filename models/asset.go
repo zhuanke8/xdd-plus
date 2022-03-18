@@ -173,6 +173,29 @@ func (ck *JdCookie) Query() string {
 		yestoday := time.Now().Local().Add(-time.Hour * 24).Format("2006-01-02")
 		page := 1
 		end := false
+		jds := getJingXiBeanDeatil(cookie)
+		if jds == nil {
+			msgs = append(msgs, "喜豆加载中，请耐心等待")
+		}
+		for _, jd := range jds {
+			amount := jd.Amount
+			if strings.Contains(jd.Createdate, today) {
+				if amount > 0 {
+					asset.Bean.XDTodayIn += amount
+				} else {
+					asset.Bean.XDTodayOut += -amount
+				}
+			} else if strings.Contains(jd.Createdate, yestoday) {
+				if amount > 0 {
+					asset.Bean.XDYestodayIn += amount
+				} else {
+					asset.Bean.XDYestodayOut += -amount
+				}
+			} else {
+				end = true
+				break
+			}
+		}
 		for {
 			if end {
 				msgs = append(msgs, []string{
@@ -184,36 +207,11 @@ func (ck *JdCookie) Query() string {
 				break
 			}
 			bds := getJingBeanBalanceDetail(page, cookie)
-			jds := getJingXiBeanDeatil(cookie)
-			if jds == nil {
-				msgs = append(msgs, "喜豆加载中，请耐心等待")
-				break
-			}
 			if bds == nil {
 				end = true
 				msgs = append(msgs, "京豆加载中，请耐心等待")
 				break
 			}
-			for _, jd := range jds {
-				amount := jd.Amount
-				if strings.Contains(jd.Createdate, today) {
-					if amount > 0 {
-						asset.Bean.XDTodayIn += amount
-					} else {
-						asset.Bean.XDTodayOut += -amount
-					}
-				} else if strings.Contains(jd.Createdate, yestoday) {
-					if amount > 0 {
-						asset.Bean.XDYestodayIn += amount
-					} else {
-						asset.Bean.XDYestodayOut += -amount
-					}
-				} else {
-					end = true
-					break
-				}
-			}
-
 			for _, bd := range bds {
 				amount := Int(bd.Amount)
 				if strings.Contains(bd.Date, today) {
