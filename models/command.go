@@ -125,6 +125,22 @@ var codeSignals = []CodeSignal{
 	},
 
 	{
+		Command: []string{"获取临时CK"},
+		Handle: func(sender *Sender) interface{} {
+			if Config.VIP == true {
+				sender.handleJdCookies(func(ck *JdCookie) {
+					time.Sleep(time.Second * time.Duration(Config.Later))
+					cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
+					if strings.Contains(cookie, "app_open") {
+						sender.Reply(cookie)
+					}
+				})
+			}
+			return nil
+		},
+	},
+
+	{
 		Command: []string{"status", "状态"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
