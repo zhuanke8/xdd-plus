@@ -181,6 +181,8 @@ func (ck *JdCookie) Query() string {
 		}
 		for _, jd := range jds {
 			amount := jd.Amount
+			log.Info(amount)
+			log.Info(jd.Createdate)
 			if strings.Contains(jd.Createdate, today) {
 				if amount > 0 {
 					asset.Bean.XDTodayIn += amount
@@ -496,7 +498,6 @@ func getJingXiBeanDeatil(cookie string) []JingXiDetail {
 	resp, _ := req.Bytes()
 	a := JingXiBeanDetails{}
 	json.Unmarshal(resp, &a)
-	log.Info(string(resp))
 	return a.Detail
 }
 
