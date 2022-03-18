@@ -16,12 +16,16 @@ import (
 type Asset struct {
 	Nickname string
 	Bean     struct {
-		Total       int
-		TodayIn     int
-		TodayOut    int
-		YestodayIn  int
-		YestodayOut int
-		ToExpire    []int
+		Total         int
+		TodayIn       int
+		TodayOut      int
+		YestodayIn    int
+		YestodayOut   int
+		XDTodayIn     int
+		XDTodayOut    int
+		XDYestodayIn  int
+		XDYestodayOut int
+		ToExpire      []int
 	}
 	RedPacket struct {
 		Total      float64
@@ -163,6 +167,7 @@ func (ck *JdCookie) Query() string {
 		go jxgc(cookie, xgc)
 		go jdsy(cookie, dsy)
 		go jingxiangzhi(cookie, jxzz)
+		msgs = append(msgs, fmt.Sprintf("京享值：%s", <-jxzz))
 		today := time.Now().Local().Format("2006-01-02")
 		yestoday := time.Now().Local().Add(-time.Hour * 24).Format("2006-01-02")
 		page := 1
@@ -170,19 +175,44 @@ func (ck *JdCookie) Query() string {
 		for {
 			if end {
 				msgs = append(msgs, []string{
-					fmt.Sprintf("昨日收入：%d京豆", asset.Bean.YestodayIn),
+					fmt.Sprintf("昨日收入：%d京豆,%d喜豆", asset.Bean.YestodayIn, asset.Bean.XDYestodayIn),
 					//fmt.Sprintf("昨日支出：%d京豆", asset.Bean.YestodayOut),
-					fmt.Sprintf("今日收入：%d京豆", asset.Bean.TodayIn),
+					fmt.Sprintf("今日收入：%d京豆,%d喜豆", asset.Bean.TodayIn, asset.Bean.XDTodayIn),
 					//fmt.Sprintf("今日支出：%d京豆", asset.Bean.TodayOut),
 				}...)
 				break
 			}
 			bds := getJingBeanBalanceDetail(page, cookie)
+			jds := getJingXiBeanDeatil(cookie)
+			if jds == nil {
+				msgs = append(msgs, "喜豆加载中，请耐心等待")
+				break
+			}
 			if bds == nil {
 				end = true
 				msgs = append(msgs, "京豆加载中，请耐心等待")
 				break
 			}
+			for _, jd := range jds {
+				amount := jd.Amount
+				if strings.Contains(jd.Createdate, today) {
+					if amount > 0 {
+						asset.Bean.XDTodayIn += amount
+					} else {
+						asset.Bean.XDTodayOut += -amount
+					}
+				} else if strings.Contains(jd.Createdate, yestoday) {
+					if amount > 0 {
+						asset.Bean.XDYestodayIn += amount
+					} else {
+						asset.Bean.XDYestodayOut += -amount
+					}
+				} else {
+					end = true
+					break
+				}
+			}
+
 			for _, bd := range bds {
 				amount := Int(bd.Amount)
 				if strings.Contains(bd.Date, today) {
@@ -205,7 +235,8 @@ func (ck *JdCookie) Query() string {
 			page++
 		}
 		//logs.Info(ck.BeanNum)
-		msgs = append(msgs, fmt.Sprintf("当前京豆：%s京豆", ck.BeanNum))
+		xd, s := getXd(cookie)
+		msgs = append(msgs, fmt.Sprintf("当前京豆：%s京豆,%s喜豆", s, xd))
 		ysd := int(time.Now().Add(24 * time.Hour).Unix())
 		if rps := <-rpc; len(rps) != 0 {
 			for _, rp := range rps {
@@ -284,6 +315,26 @@ func (ck *JdCookie) Query() string {
 	return strings.Join(msgs, "\n")
 }
 
+func getXd(cookie string) (string, string) {
+	req := httplib.Get(fmt.Sprintf("https://m.jingxi.com/activeapi/querybeanamount?_=%t&sceneval=2&g_login_type=1&g_ty=ls", time.Now()))
+	req.Header("User-Agent", "jdpingou;android;5.5.0;11;network/wifi;model/M2102K1C;appBuild/18299;partner/lcjx11;session/110;pap/JA2019_3111789;brand/Xiaomi;Mozilla/5.0 (Linux; Android 11; M2102K1C Build/RKQ1.201112.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.159 Mobile Safari/537.36")
+	req.Header("Host", "m.jingxi.com")
+	req.Header("Accept", "*/*")
+	req.Header("Accept-Encoding", "gzip, deflate, br")
+	req.Header("Accept-Language", "zh-CN,zh-Hans;q=0.9")
+	req.Header("Referer", "https://st.jingxi.com/")
+	req.Header("Cookie", cookie)
+	resp, _ := req.Bytes()
+	xibean, err := jsonparser.GetString(resp, "data", "xibean")
+	if err != nil {
+		xibean = "喜豆加载中"
+	}
+	jingbean, err := jsonparser.GetString(resp, "data", "jingbean")
+	if err != nil {
+		jingbean = "京豆加载中"
+	}
+	return xibean, jingbean
+}
 func jingxiangzhi(cookie string, state chan string) {
 	req := httplib.Get(`https://wxapp.m.jd.com/kwxhome/myJd/home.json?&useGuideModule=0&bizId=&brandId=&fromType=wxapp&timestamp=` + fmt.Sprint(time.Now().Unix()))
 	req.Header("User-Agent", ua)
@@ -418,6 +469,33 @@ func getJingBeanBalanceDetail(page int, cookie string) []BeanDetail {
 	}
 	json.Unmarshal(data, &a)
 	return a.DetailList
+}
+
+type JingXiBeanDetails struct {
+	Detail []JingXiDetail `json:"detail"`
+	Ret    int            `json:"ret"`
+	Retmsg string         `json:"retmsg"`
+}
+
+type JingXiDetail struct {
+	Amount      int    `json:"amount"`
+	Createdate  string `json:"createdate"`
+	Visibleinfo string `json:"visibleinfo"`
+}
+
+func getJingXiBeanDeatil(cookie string) []JingXiDetail {
+	req := httplib.Get(fmt.Sprintf("https://m.jingxi.com/activeapi/queryuserjingdoudetail?_=%t&sceneval=2&g_login_type=1&g_ty=ls&pagesize=15&type=16", time.Now()))
+	req.Header("User-Agent", "jdpingou;android;5.5.0;11;network/wifi;model/M2102K1C;appBuild/18299;partner/lcjx11;session/110;pap/JA2019_3111789;brand/Xiaomi;Mozilla/5.0 (Linux; Android 11; M2102K1C Build/RKQ1.201112.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.159 Mobile Safari/537.36")
+	req.Header("Host", "m.jingxi.com")
+	req.Header("Accept", "*/*")
+	req.Header("Accept-Encoding", "gzip, deflate, br")
+	req.Header("Accept-Language", "zh-CN,zh-Hans;q=0.9")
+	req.Header("Referer", "https://st.jingxi.com/")
+	req.Header("Cookie", cookie)
+	resp, _ := req.Bytes()
+	a := JingXiBeanDetails{}
+	json.Unmarshal(resp, &a)
+	return a.Detail
 }
 
 type RedList struct {
