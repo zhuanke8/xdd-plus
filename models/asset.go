@@ -191,9 +191,6 @@ func (ck *JdCookie) Query() string {
 				} else {
 					asset.Bean.XDYestodayOut += -amount
 				}
-			} else {
-				end = true
-				break
 			}
 		}
 		for {
