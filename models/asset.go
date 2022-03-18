@@ -185,6 +185,7 @@ func (ck *JdCookie) Query() string {
 			log.Info(jd.Createdate)
 			log.Info(today)
 			if strings.Contains(jd.Createdate, today) {
+				log.Info("进入今天")
 				if amount > 0 {
 					asset.Bean.XDTodayIn += amount
 				} else {
