@@ -86,6 +86,7 @@ func CompletePush() {
 				flag = true
 				msg1 = append(msg1, ck.Nickname+"您的农场无门槛红包已经成熟，请尽快领取\r\n 【东东农场】京东->我的->东东农场,完成是京东红包,可以用于京东app的任意商品")
 			}
+			time.Sleep(time.Second * 30)
 			go initPetTown(cookie, pet)
 			if strings.Contains(<-pet, "已可领取") {
 				flag = true
@@ -99,6 +100,7 @@ func CompletePush() {
 					pushPlus(ck.PushPlus, strings.Join(msg1, "\n"))
 				}
 			}
+			time.Sleep(time.Second * 30)
 		}
 	}
 }
@@ -322,18 +324,17 @@ func getXd(cookie string) (string, string) {
 	req.Header("Referer", "https://st.jingxi.com/")
 	req.Header("Cookie", cookie)
 	resp, _ := req.Bytes()
-	xibean, err := jsonparser.GetString(resp, "data", "xibean")
+	xibean, err := jsonparser.GetInt(resp, "data", "xibean")
 	if err != nil {
-		xibean = "喜豆加载中"
 		log.Info(err)
-		log.Info(string(resp))
+		return "喜豆加载中", "京豆加载中"
 	}
-	jingbean, err := jsonparser.GetString(resp, "data", "jingbean")
+	jingbean, err := jsonparser.GetInt(resp, "data", "jingbean")
 	if err != nil {
-		jingbean = "京豆加载中"
 		log.Info(err)
+		return "喜豆加载中", "京豆加载中"
 	}
-	return xibean, jingbean
+	return strconv.FormatInt(xibean, 10), strconv.FormatInt(jingbean, 10)
 }
 func jingxiangzhi(cookie string, state chan string) {
 	req := httplib.Get(`https://wxapp.m.jd.com/kwxhome/myJd/home.json?&useGuideModule=0&bizId=&brandId=&fromType=wxapp&timestamp=` + fmt.Sprint(time.Now().Unix()))
