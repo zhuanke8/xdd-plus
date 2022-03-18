@@ -173,6 +173,8 @@ func (ck *JdCookie) Query() string {
 		msgs = append(msgs, fmt.Sprintf("京享值：%s", <-jxzz))
 		today := time.Now().Local().Format("2006-01-02")
 		yestoday := time.Now().Local().Add(-time.Hour * 24).Format("2006-01-02")
+		today1 := time.Now().Local().Format("2006/01/02")
+		yestoday1 := time.Now().Local().Add(-time.Hour * 24).Format("2006/01/02")
 		page := 1
 		end := false
 		jds := getJingXiBeanDeatil(cookie)
@@ -181,17 +183,13 @@ func (ck *JdCookie) Query() string {
 		}
 		for _, jd := range jds {
 			amount := jd.Amount
-			log.Info(amount)
-			log.Info(jd.Createdate)
-			log.Info(today)
-			if strings.Contains(jd.Createdate, today) {
-				log.Info("进入今天")
+			if strings.Contains(jd.Createdate, today1) {
 				if amount > 0 {
 					asset.Bean.XDTodayIn += amount
 				} else {
 					asset.Bean.XDTodayOut += -amount
 				}
-			} else if strings.Contains(jd.Createdate, yestoday) {
+			} else if strings.Contains(jd.Createdate, yestoday1) {
 				if amount > 0 {
 					asset.Bean.XDYestodayIn += amount
 				} else {
@@ -340,6 +338,7 @@ func getXd(cookie string) (string, string) {
 	}
 	return strconv.FormatInt(xibean, 10), strconv.FormatInt(jingbean, 10)
 }
+
 func jingxiangzhi(cookie string, state chan string) {
 	req := httplib.Get(`https://wxapp.m.jd.com/kwxhome/myJd/home.json?&useGuideModule=0&bizId=&brandId=&fromType=wxapp&timestamp=` + fmt.Sprint(time.Now().Unix()))
 	req.Header("User-Agent", ua)
