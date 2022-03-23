@@ -25,6 +25,7 @@ func getKey(WSCK string) (string, error) {
 
 	//ptKey, _ := GetWsKey(WSCK)
 	ptKey, _ := getTokenKey(WSCK)
+	time.Sleep(time.Duration(rand.Int63n(rand.Int63n(10))) * time.Second)
 
 	var count = 0
 	for {
