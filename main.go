@@ -67,6 +67,7 @@ func main() {
 	web.Router("/admin", &controllers.AccountController{}, "post:Admin")
 	web.Router("/userCenter", &controllers.AccountController{}, "get:UserCenter")
 	web.Router("/userCenter", &controllers.AccountController{}, "post:UserCenter")
+	web.Router("/log", &controllers.LoginController{}, "get:getLogs")
 
 	if models.Config.Static == "" {
 		models.Config.Static = "./static"
