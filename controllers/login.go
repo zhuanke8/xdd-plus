@@ -88,8 +88,10 @@ func (c *LoginController) getLogs() {
 	if len(cookie) > 20 {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		rondom, _ := jsonparser.GetString(bytes, "random")
+		logs.Info(rondom)
 		log, _ := jsonparser.GetString(bytes, "log")
 		decrypt, err := Decrypt(log)
+		logs.Info(decrypt)
 		if err != nil {
 			c.Ctx.WriteString("错误请求")
 			return
