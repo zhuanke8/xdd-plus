@@ -131,7 +131,7 @@ func getKey(WSCK string) (string, error) {
 */
 
 func getToken() string {
-	post := httplib.Post("https://api.jds.codes/genToken")
+	post := httplib.Post("https://api.jds.codes/jd/genToken")
 	post.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 	bytes, _ := post.Bytes()
 	logs.Info(string(bytes))
