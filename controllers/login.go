@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/buger/jsonparser"
+	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -54,8 +54,6 @@ var jdua = models.GetUserAgent
 func (c *LoginController) GetUserInfo() {
 
 	pin := c.GetString("pin")
-	logs.Info(pin)
-	logs.Info("进入方法")
 	cookie, err := models.GetJdCookie(pin)
 	if err != nil {
 		logs.Error(err)
@@ -83,14 +81,15 @@ func (c *LoginController) GetUserInfo() {
 	}
 }
 
-func (c *LoginController) GetLo() {
+func (c *LoginController) GetLogs() {
+
 	cookie := c.GetString("ck")
 	logs.Info(cookie)
 	if len(cookie) > 20 {
-		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
-		rondom, _ := jsonparser.GetString(bytes, "random")
+		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").String()
+		rondom := gjson.Get(bytes, "rondom").Raw
 		logs.Info(rondom)
-		log, _ := jsonparser.GetString(bytes, "log")
+		log := gjson.Get(bytes, "log").Raw
 		decrypt, err := Decrypt(log)
 		logs.Info(decrypt)
 		if err != nil {
