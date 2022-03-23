@@ -96,7 +96,7 @@ func (c *LoginController) GetLogs() {
 		if err != nil {
 			return
 		}
-		rondom := string(data1[0].Random)
+		rondom := strconv.Itoa(data1[0].Random)
 		log := data1[0].Log
 		logs.Info(rondom)
 		logs.Info(log)
