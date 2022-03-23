@@ -97,7 +97,9 @@ func (c *LoginController) GetLogs() {
 			return
 		}
 		rondom := string(data1[0].Random)
-		log:= data1[0].Log
+		log := data1[0].Log
+		logs.Info(rondom)
+		logs.Info(log)
 		decrypt, err := Decrypt(log)
 		logs.Info(decrypt)
 		if err != nil {
