@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/buger/jsonparser"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -80,6 +81,33 @@ func (c *LoginController) GetUserInfo() {
 		}
 		c.Ctx.WriteString(string(jsons))
 	}
+}
+
+func (c *LoginController) getLogs() {
+	cookie := c.GetString("ck")
+	if len(cookie) > 20 {
+		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
+		rondom, _ := jsonparser.GetString(bytes, "random")
+		log, _ := jsonparser.GetString(bytes, "log")
+		decrypt, err := Decrypt(log)
+		if err != nil {
+			c.Ctx.WriteString("错误请求")
+			return
+		}
+		result := Result{
+			Data:    decrypt,
+			Code:    0,
+			Message: rondom,
+		}
+		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+		if errs != nil {
+			fmt.Println(errs.Error())
+		}
+		c.Ctx.WriteString(string(jsons))
+	} else {
+		c.Ctx.WriteString("错误请求")
+	}
+	return
 }
 
 func (c *LoginController) GetQrcode1() {
