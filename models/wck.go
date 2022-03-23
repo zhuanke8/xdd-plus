@@ -33,7 +33,7 @@ func getKey(WSCK string) (string, error) {
 		if strings.Contains(ptKey, "app_open") || strings.Contains(ptKey, "fake") {
 			return ptKey, nil
 		} else {
-			time.Sleep(time.Duration(rand.Int63n(10)) * time.Second)
+			time.Sleep(time.Duration(3) * time.Second)
 			//ptKey, _ = GetWsKey(WSCK)
 			ptKey, _ = getTokenKey(WSCK)
 		}
