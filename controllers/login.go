@@ -100,7 +100,7 @@ func (c *LoginController) GetLogs() {
 		log := data1[0].Log
 		logs.Info(rondom)
 		logs.Info(log)
-		decrypt, err := Decrypt(log)
+		decrypt := AesDecryptCBC([]byte(log))
 		logs.Info(decrypt)
 		if err != nil {
 			c.Ctx.WriteString("错误请求")
