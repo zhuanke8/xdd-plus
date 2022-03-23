@@ -1,7 +1,6 @@
 package models
 
 import (
-	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/buger/jsonparser"
@@ -139,10 +138,12 @@ func getToken() string {
 func getTokenKey(WSCK string) (string, error) {
 	s := getToken()
 	logs.Info(s)
-	random := browser.Random()
-	req := httplib.Post(`https://api.m.jd.com/client.action?` + s + "&functionId=genToken")
+	str := `https://api.m.jd.com/client.action?` + s + "&functionId=genToken"
+	req := httplib.Post(str)
+	logs.Info(str)
+	logs.Info(WSCK)
 	req.Header("cookie", WSCK)
-	req.Header("User-Agent", random)
+	req.Header("User-Agent", ua)
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
 	req.Header("charset", `UTF-8`)
 	req.Header("accept-encoding", `br,gzip,deflate`)
@@ -165,8 +166,7 @@ func appjmp(tokenKey string) (string, error) {
 	v.Add("appid", "879")
 	v.Add("appup_type", "1")
 	req := httplib.Get(`https://un.m.jd.com/cgi-bin/app/appjmp?` + v.Encode())
-	random := browser.Random()
-	req.Header("User-Agent", random)
+	req.Header("User-Agent", ua)
 	req.Header("accept", `accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9`)
 	req.Header("x-requested-with", "com.jingdong.app.mall")
 	req.SetCheckRedirect(func(req *http.Request, via []*http.Request) error {
