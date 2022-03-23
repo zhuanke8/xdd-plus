@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -81,16 +80,24 @@ func (c *LoginController) GetUserInfo() {
 	}
 }
 
+type Logs []struct {
+	Random int    `json:"random"`
+	Log    string `json:"log"`
+}
+
 func (c *LoginController) GetLogs() {
 
 	cookie := c.GetString("ck")
 	logs.Info(cookie)
 	if len(cookie) > 20 {
-		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").String()
-		logs.Info(bytes)
-		rondom := gjson.Get(bytes, ".0.rondom").String()
-		logs.Info(rondom)
-		log := gjson.Get(bytes, ".0.log").String()
+		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
+		data1 := Logs{}
+		err := json.Unmarshal(bytes, &data1)
+		if err != nil {
+			return
+		}
+		rondom := string(data1[0].Random)
+		log:= data1[0].Log
 		decrypt, err := Decrypt(log)
 		logs.Info(decrypt)
 		if err != nil {
