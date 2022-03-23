@@ -6,12 +6,8 @@ import "bytes"
 import "encoding/base64"
 import "log"
 
-var (
-	REQ_KEY = "2djshdncjdsa9584"
-	REQ_IV  = "dcmdskdijnhfy65s"
-)
-var key = []byte(REQ_KEY)
-var iv = []byte(REQ_IV)
+var key = []byte("2djshdncjdsa9584")
+var iv = []byte("dcmdskdijnhfy65s")
 
 func Encrypt(text []byte) (string, error) {
 	//生成cipher.Block 数据块
