@@ -146,7 +146,6 @@ func getTokenKey(WSCK string) (string, error) {
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
 	req.Header("charset", `UTF-8`)
 	req.Header("accept-encoding", `br,gzip,deflate`)
-	req.Body(`body=%7B%22to%22%3A%22https%253a%252f%252fplogin.m.jd.com%252fjd-mlogin%252fstatic%252fhtml%252fappjmp_blank.html%22%7D&`)
 	data, err := req.Bytes()
 	if err != nil {
 		return "", err
