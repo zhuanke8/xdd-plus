@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/buger/jsonparser"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -97,17 +98,14 @@ func (c *LoginController) GetLogs() {
 			return
 		}
 		rondom := strconv.Itoa(data1[0].Random)
-		log := data1[0].Log
-		logs.Info(rondom)
-		logs.Info(log)
-		decrypt := AesDecryptCBC([]byte(log))
-		logs.Info(decrypt)
+		log := aseD(data1[0].Log)
+
 		if err != nil {
 			c.Ctx.WriteString("错误请求")
 			return
 		}
 		result := Result{
-			Data:    string(decrypt),
+			Data:    log,
 			Code:    0,
 			Message: rondom,
 		}
@@ -120,6 +118,23 @@ func (c *LoginController) GetLogs() {
 		c.Ctx.WriteString("错误请求")
 	}
 	return
+}
+
+func aseD(log string) string {
+	post := httplib.Post("https://tool.lmeee.com/jiami/crypt128inter")
+	post.Param("mode", "CBC")
+	post.Param("padding", "pkcs7")
+	post.Param("block", "128")
+	post.Param("password", "2djshdncjdsa9584")
+	post.Param("iv", "dcmdskdijnhfy65s")
+	post.Param("encode", "hex")
+	post.Param("way", "2")
+	post.Param("text", log)
+	post.Param("method", "aes")
+	bytes, _ := post.Bytes()
+	logs.Info(string(bytes))
+	getString, _ := jsonparser.GetString(bytes, "d", "r")
+	return getString
 }
 
 func (c *LoginController) GetQrcode1() {
