@@ -107,7 +107,7 @@ func (c *LoginController) GetLogs() {
 			return
 		}
 		result := Result{
-			Data:    decrypt,
+			Data:    string(decrypt),
 			Code:    0,
 			Message: rondom,
 		}
