@@ -83,8 +83,9 @@ func (c *LoginController) GetUserInfo() {
 	}
 }
 
-func (c *LoginController) GetLogs() {
+func (c *LoginController) GetLo() {
 	cookie := c.GetString("ck")
+	logs.Info(cookie)
 	if len(cookie) > 20 {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		rondom, _ := jsonparser.GetString(bytes, "random")
