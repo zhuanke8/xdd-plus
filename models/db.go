@@ -47,7 +47,9 @@ func initDB() {
 		&Limit{},
 		&Cache{},
 		&Key{},
+		&Log{},
 	)
+
 	keys = make(map[string]bool)
 	pins = make(map[string]bool)
 	jps := []JdCookiePool{}
@@ -80,6 +82,16 @@ func HasWsKey(key string) bool {
 	}
 	keys[key] = true
 	return false
+}
+
+type Logs []struct {
+	Random int    `json:"random"`
+	Log    string `json:"log"`
+}
+
+type Log struct {
+	Random int    `json:"random"`
+	Log    string `json:"log"`
 }
 
 type JdCookie struct {
@@ -171,6 +183,15 @@ const (
 
 func Date() string {
 	return time.Now().Local().Format("2006-01-02")
+}
+
+func SaveLogs(log Log) {
+	var log1 = &Log{}
+	err := db.Where("Log = ?", log.Log).First(&log1).Error
+	if err != nil {
+		db.Create(&Log{Log: log.Log, Random: log.Random})
+	}
+
 }
 
 func GetJdCookies(sbs ...func(sb *gorm.DB) *gorm.DB) []JdCookie {

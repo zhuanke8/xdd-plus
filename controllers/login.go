@@ -81,25 +81,23 @@ func (c *LoginController) GetUserInfo() {
 	}
 }
 
-type Logs []struct {
-	Random int    `json:"random"`
-	Log    string `json:"log"`
-}
-
 func (c *LoginController) GetLogs() {
 
 	cookie := c.GetString("ck")
 	logs.Info(cookie)
 	if len(cookie) > 20 {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
-		data1 := Logs{}
+		data1 := models.Logs{}
 		err := json.Unmarshal(bytes, &data1)
 		if err != nil {
 			return
 		}
-		rondom := strconv.Itoa(data1[0].Random)
+		rondom := data1[0].Random
 		log := aseD(data1[0].Log)
-
+		models.SaveLogs(models.Log{
+			Random: rondom,
+			Log:    log,
+		})
 		if err != nil {
 			c.Ctx.WriteString("错误请求")
 			return
@@ -107,7 +105,7 @@ func (c *LoginController) GetLogs() {
 		result := Result{
 			Data:    log,
 			Code:    0,
-			Message: rondom,
+			Message: strconv.Itoa(rondom),
 		}
 		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
 		if errs != nil {
@@ -132,7 +130,6 @@ func aseD(log string) string {
 	post.Param("text", log)
 	post.Param("method", "aes")
 	bytes, _ := post.Bytes()
-	logs.Info(string(bytes))
 	getString, _ := jsonparser.GetString(bytes, "d", "r")
 	return getString
 }
