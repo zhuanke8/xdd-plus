@@ -87,9 +87,9 @@ func (c *LoginController) GetLogs() {
 	logs.Info(cookie)
 	if len(cookie) > 20 {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").String()
-		rondom := gjson.Get(bytes, "rondom").Raw
+		rondom := gjson.Get(bytes, "rondom").String()
 		logs.Info(rondom)
-		log := gjson.Get(bytes, "log").Raw
+		log := gjson.Get(bytes, "log").String()
 		decrypt, err := Decrypt(log)
 		logs.Info(decrypt)
 		if err != nil {
