@@ -90,8 +90,13 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 			}
 		}
 		if !ok {
-			sender.Reply("你尚未绑定🐶东账号，请发送教程获取最新上车方法。")
-			return errors.New("你尚未绑定🐶东账号，请发送教程获取最新上车方法。")
+			if Config.Query != "" {
+				sender.Reply(Config.Query)
+				return errors.New(Config.Query)
+			} else {
+				sender.Reply("你尚未绑定🐶东账号，请发送教程获取最新上车方法。")
+				return errors.New("你尚未绑定🐶东账号，请发送教程获取最新上车方法。")
+			}
 		}
 	} else {
 		cks = LimitJdCookie(cks, a)

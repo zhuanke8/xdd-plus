@@ -37,6 +37,7 @@ type Yaml struct {
 	ApiToken           string `yaml:"ApiToken"`
 	Invalid            string `yaml:"Invalid"`
 	Query              string `yaml:"Query"`
+	Query1             string `yaml:"Query1"`
 	Wskey              bool   `yaml:"Wskey"`
 	TGURL              string `yaml:"TGURL"`
 	SMSAddress         string `yaml:"SMSAddress"`

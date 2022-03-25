@@ -312,8 +312,8 @@ func (ck *JdCookie) Query() string {
 		}...)
 	}
 	ck.PtPin, _ = url.QueryUnescape(ck.PtPin)
-	if Config.Query != "" {
-		msgs = append(msgs, Config.Query)
+	if Config.Query1 != "" {
+		msgs = append(msgs, Config.Query1)
 	}
 	return strings.Join(msgs, "\n")
 }
