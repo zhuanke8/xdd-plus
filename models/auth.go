@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/robfig/cron/v3"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -21,4 +22,11 @@ func GetAuthKey() {
 	post.Param("master", Config.Master)
 	post.Param("uid", string(Config.QQGroupID))
 	post.Bytes()
+}
+
+func getAuthFlag() {
+	post := httplib.Post("http://auth.smxy.xyz/user/authFlag")
+	post.Param("qqNum", strconv.FormatInt(Config.QQID, 10))
+	s, _ := post.String()
+	log.Info(s)
 }
