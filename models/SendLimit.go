@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/beego/beego/v2/core/logs"
 	"time"
 )
 
@@ -20,7 +19,7 @@ func getLimit(uid int, typ int) bool {
 	u := &Limit{}
 	err := db.Where("number = ? and typ = ? and active_at = ?", uid, typ, time.Now().Format("2006-01-02")).First(&u).Error
 	if err == nil {
-		logs.Info(u.Number)
+		//logs.Info(u.Number)
 		if u.Num < Config.Lim {
 			db.Where("ID = ?", u.ID).Updates(&Limit{
 				Num: u.Num + 1,
