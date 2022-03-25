@@ -14,9 +14,7 @@ var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
 
 func initVersion() {
-	if Config.Version != "" {
-		version = Config.Version
-	}
+	Config.Version = version
 	//logs.Info("检查更新" + version)
 	//value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/764763903a/xdd-plus/main/models/version.go").String()
 	//if err != nil {
