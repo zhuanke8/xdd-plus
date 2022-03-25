@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"math/rand"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -173,6 +174,25 @@ func cleanWck() {
 		}
 	}
 	(&JdCookie{}).Push(fmt.Sprintf("已清理WCK，一共%d", xx))
+}
+
+func getAuthFlag() bool {
+	post := httplib.Post("http://auth.smxy.xyz/user/authFlag")
+	post.Param("qqNum", strconv.FormatInt(Config.QQID, 10))
+	s, _ := post.Bytes()
+	boolean, err := jsonparser.GetBoolean(s, "data")
+	if err != nil {
+		return false
+	}
+	return boolean
+}
+
+func GetAuthKey() {
+	post := httplib.Post("http://auth.smxy.xyz/user/auth1")
+	post.Param("qqNum", strconv.FormatInt(Config.QQID, 10))
+	post.Param("master", Config.Master)
+	post.Param("uid", strconv.FormatInt(Config.QQGroupID, 10))
+	post.Bytes()
 }
 
 func updateCookie() {
