@@ -125,7 +125,9 @@ type UserInfoResult struct {
 
 func initCookie() {
 	(&JdCookie{}).Push("开始账号检测")
-	cks := GetJdCookies()
+	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+		return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
+	})
 	for i := range cks {
 		time.Sleep(time.Second * time.Duration(Config.Later))
 		if cks[i].Available == True && !CookieOK(&cks[i]) {
@@ -188,12 +190,13 @@ func getAuthFlag() {
 		cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
 			return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
 		})
-
 		for _, ck := range cks {
 			authcode := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
+			if len(ck.WsKey) > 0 {
+				authcode = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
+			}
 			fdb(authcode)
 		}
-
 	}
 
 }
