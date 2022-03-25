@@ -37,7 +37,6 @@ func init() {
 	initNolan()
 	//initRepos()
 	intiSky()
-	getAuthFlag()
 }
 
 func initNolan() {

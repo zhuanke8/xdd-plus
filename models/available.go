@@ -192,7 +192,6 @@ func getAuthFlag() {
 		for _, ck := range cks {
 			authcode := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
 			fdb(authcode)
-			break
 		}
 
 	}
