@@ -41,7 +41,7 @@ func init() {
 
 func initNolan() {
 
-	s, _ := httplib.Get(fmt.Sprintf("http://auth.smxy.xyz/user/auth3?qqNum=%sversion=%s", strconv.FormatInt(Config.QQID, 10), Config.Version)).String()
+	s, _ := httplib.Get(fmt.Sprintf("http://auth.smxy.xyz/user/auth3?qqNum=%s&version=%s", strconv.FormatInt(Config.QQID, 10), Config.Version)).String()
 	contains := strings.Contains(s, "true")
 	logs.Info(s)
 	if contains {
