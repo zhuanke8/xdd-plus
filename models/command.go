@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"gorm.io/gorm"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -311,6 +313,46 @@ var codeSignals = []CodeSignal{
 			sender.Reply("更新所有账号")
 			logs.Info("更新所有账号")
 			updateCookie()
+			return nil
+		},
+	},
+
+	{
+		Command: []string{"导出所有账号"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			var msgs []string
+			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+				return sb.Where(fmt.Sprintf("%s >= ? and %s != ? and %s = ?", Priority, Hack, Available), 0, True, True)
+			})
+			for _, ck := range cks {
+				msgs = append(msgs, fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin))
+			}
+			sender.Reply("导出所有账号")
+			logs.Info("导出所有账号")
+			f, err := os.OpenFile(ExecPath+"/jdCookie.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
+			if err != nil {
+				logs.Warn("创建jdCookie.txt失败，", err)
+			}
+			join := strings.Join(msgs, "\n")
+			f.WriteString(join)
+			f.Close()
+			return nil
+		},
+	},
+
+	{
+		Command: []string{"挖宝"},
+		Handle: func(sender *Sender) interface{} {
+			f, err := os.OpenFile(ExecPath+"/wb.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+			if err != nil {
+				logs.Warn("wb.txt失败，", err)
+			}
+			sender.handleJdCookies(func(ck *JdCookie) {
+				f.WriteString(fmt.Sprintf("pt_key=%s;pt_pin=%s;\n", ck.PtKey, ck.PtPin))
+				sender.Reply(fmt.Sprintf("已提交订单：账号：%s", ck.PtPin))
+			})
+			f.Close()
 			return nil
 		},
 	},
