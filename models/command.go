@@ -342,8 +342,22 @@ var codeSignals = []CodeSignal{
 	},
 
 	{
+		Command: []string{"重置挖宝统计"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			ExportEnv(&Env{Name: "wb", Value: strconv.Itoa(0)})
+			return nil
+		},
+	},
+	{
 		Command: []string{"挖宝"},
 		Handle: func(sender *Sender) interface{} {
+			env := GetEnv("wb")
+			atoi, _ := strconv.Atoi(env)
+			if atoi > 30 {
+				sender.Reply("今日已截止接单，如有需求请联系群主是否能转单。")
+				return nil
+			}
 			f, err := os.OpenFile(ExecPath+"/wb.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
 			if err != nil {
 				logs.Warn("wb.txt失败，", err)
