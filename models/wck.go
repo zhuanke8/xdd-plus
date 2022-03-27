@@ -138,11 +138,8 @@ func getToken() string {
 
 func getTokenKey(WSCK string) (string, error) {
 	s := getToken()
-	logs.Info(s)
 	str := `https://api.m.jd.com/client.action?` + s + "&functionId=genToken"
 	req := httplib.Post(str)
-	logs.Info(str)
-	logs.Info(WSCK)
 	req.Header("cookie", WSCK)
 	req.Header("User-Agent", ua)
 	req.Header("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
