@@ -12,10 +12,10 @@ type User struct {
 	Number   int `gorm:"unique"`
 	Class    string
 	ActiveAt time.Time
-	Coin     float64
+	Coin     int
     Womail   string
 }
-func ClearCoin(uid int) float64 {
+func ClearCoin(uid int) int {
 	var u User
 	if db.Where("number = ?", uid).First(&u).Error != nil {
 		return 0
@@ -26,7 +26,7 @@ func ClearCoin(uid int) float64 {
 	u.Coin=1
 	return u.Coin
 }
-func AdddCoin(uid int , num float64) float64 {
+func AdddCoin(uid int , num int) int {
 	var u User
 	if db.Where("number = ?", uid).First(&u).Error != nil {
 		return 0
@@ -37,7 +37,7 @@ func AdddCoin(uid int , num float64) float64 {
 	u.Coin+=num
 	return u.Coin
 }
-func AddCoin(uid int) float64 {
+func AddCoin(uid int) int {
 	var u User
 	if db.Where("number = ?", uid).First(&u).Error != nil {
 		return 0
@@ -49,17 +49,17 @@ func AddCoin(uid int) float64 {
 	return u.Coin
 }
 
-func RemCoin(uid int, num float64) float64 {
+func RemCoin(uid int, num int) int {
 	var u User
 	db.Where("number = ?", uid).First(&u)
 	db.Model(u).Updates(map[string]interface{}{
-		"coin": gorm.Expr(fmt.Sprintf("coin-%f", num)),
+		"coin": gorm.Expr(fmt.Sprintf("coin-%d", num)),
 	})
 	u.Coin -= num
 	return u.Coin
 }
 
-func GetCoin(uid int) float64 {
+func GetCoin(uid int) int {
 	var u User
 	db.Where("number = ?", uid).First(&u)
 	return u.Coin
