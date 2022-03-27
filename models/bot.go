@@ -750,7 +750,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
 							}
 							RemCoin(sender.UserID, Config.Tyt)
-							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分", Config.Tyt))
+							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，剩余%d", Config.Tyt, GetCoin(sender.UserID)))
 						} else {
 							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
 						}
