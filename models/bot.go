@@ -915,6 +915,7 @@ func starttyt(red string) (num int, f bool) {
 			logs.Info(jsonparser.GetString([]byte(data), "data", "amount"))
 		} else {
 			if strings.Contains(data, "完成") {
+				logs.Info("返回完成")
 				return k, true
 			} else if strings.Contains(data, "帮砍机会已用完") {
 
