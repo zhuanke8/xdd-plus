@@ -8,7 +8,6 @@ import (
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
 	"github.com/skip2/go-qrcode"
-	"gorm.io/gorm"
 	"io/ioutil"
 	"math/rand"
 	"net/url"
@@ -890,9 +889,12 @@ func runtyt(sender *Sender, code string) {
 
 func starttyt(red string) (num int, f bool) {
 	k := 0
-	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
-		return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), False, True)
-	})
+	//cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+	//	return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), False, True)
+	//})
+	cks := []JdCookie{}
+	db.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available)).Order("RAND()").Find(&cks)
+
 	for _, ck := range cks {
 		time.Sleep(time.Second * 5)
 		logs.Info(ck.PtPin)
