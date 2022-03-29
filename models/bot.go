@@ -762,6 +762,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				split := strings.Split(msg, "&amp;")
 				for i := range split {
 					if strings.Contains(split[i], "packetId=") {
+						f, err := os.OpenFile(ExecPath+"/tytlj.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+						if err != nil {
+							logs.Warn("tytlj.txt失败，", err)
+						}
+						f.WriteString(msg + "\n")
+						f.Close()
 						logs.Info(split[i])
 						env := strings.Split(split[i], "=")
 						if !sender.IsAdmin {
