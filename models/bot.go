@@ -893,7 +893,7 @@ func starttyt(red string) (num int, f bool) {
 	//	return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), False, True)
 	//})
 	cks := []JdCookie{}
-	db.Where(fmt.Sprintf("%s != 'false' and %s = 'true'", Tyt, Available)).Find(&cks)
+	db.Where(fmt.Sprintf("%s != 'false' and %s = 'true'", Tyt, Available)).Order("RAND()").Find(&cks)
 	logs.Info(len(cks))
 	for _, ck := range cks {
 		time.Sleep(time.Second * 5)
