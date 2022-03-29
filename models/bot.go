@@ -8,6 +8,7 @@ import (
 	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/buger/jsonparser"
 	"github.com/skip2/go-qrcode"
+	"gorm.io/gorm"
 	"io/ioutil"
 	"math/rand"
 	"net/url"
@@ -867,16 +868,66 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 func runtyt(sender *Sender, code string) {
 	for {
 		time.Sleep(time.Duration(rand.Intn(60)))
-		if tytnum < 5 {
+		if tytnum < 3 {
 			tytnum++
-			runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-				{Name: "tytpacketId", Value: code},
-			}}, sender)
+			//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+			//	{Name: "tytpacketId", Value: code},
+			//}}, sender)
+			//
+			num, f := starttyt(code)
+			if f {
+				sender.Reply(fmt.Sprintf("推一推结束共用:%d个账号", num))
+			} else {
+				sender.Reply("推一推异常，请联系群主，或自行检查")
+			}
+
 			tytnum--
-			sender.Reply("推一推已结束，请检查是否完成，未完成请联系群主")
+			//sender.Reply("推一推已结束，请检查是否完成，未完成请联系群主")
 			return
 		}
 	}
+}
+
+func starttyt(red string) (num int, f bool) {
+	k := 0
+	cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+		return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), False, True)
+	})
+	for _, ck := range cks {
+		time.Sleep(time.Second * 5)
+		logs.Info(ck.PtPin)
+		cookie := "pt_key=" + ck.PtKey + ";pt_pin=" + ck.PtPin + ";"
+		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641900500241&body={"actId":"49f40d2f40b3470e8d6c39aa4866c7ff","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}&_ste=1`, red)
+		req := httplib.Post(sprintf)
+		random := browser.Random()
+		req.Header("User-Agent", random)
+		req.Header("Host", "api.m.jd.com")
+		req.Header("Accept", "application/json, text/plain, */*")
+		req.Header("Origin", "https://pushgold.jd.com")
+		req.Header("Cookie", cookie)
+		data, _ := req.String()
+		code, _ := jsonparser.GetInt([]byte(data), "code")
+		logs.Info(data)
+		if code == 0 {
+			k++
+			logs.Info(jsonparser.GetString([]byte(data), "data", "amount"))
+		} else {
+			if strings.Contains(data, "完成") {
+				return k, true
+			} else if strings.Contains(data, "帮砍机会已用完") {
+
+			} else if strings.Contains(data, "火爆") {
+				ck.Tyt = "false"
+				ck.Updates(ck)
+			} else if strings.Contains(data, "帮砍排队") {
+				return k, false
+			} else {
+				logs.Info("额为异常")
+				logs.Info(data)
+			}
+		}
+	}
+	return k, false
 }
 
 func getViVoCk() ViVoData {

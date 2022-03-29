@@ -18,6 +18,12 @@ type Repo struct {
 	path     string
 }
 
+type FanLi struct {
+	appid    string
+	appkey   string
+	union_id string
+}
+
 var reposPath = ""
 
 func (rp *Repo) init() {

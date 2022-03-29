@@ -43,3 +43,7 @@ no_ghproxy: true
 daily_asset_push_cron:
 repos:
   - git: https://github.com/shufflewzc/faker2.git
+fanli:
+  - appid:
+  - appkey:
+  - union_id:

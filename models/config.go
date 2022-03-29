@@ -11,53 +11,54 @@ import (
 )
 
 type Yaml struct {
-	Containers         []Container
-	Tasks              []Task
-	Qrcode             string
-	Master             string
-	Mode               string
-	Static             string
-	Database           string
-	QywxKey            string `yaml:"qywx_key"`
-	Resident           string
-	UserAgent          string `yaml:"user_agent"`
-	Theme              string
-	TelegramBotToken   string `yaml:"telegram_bot_token"`
-	TelegramUserID     int    `yaml:"telegram_user_id"`
-	QQID               int64  `yaml:"qquid"`
-	QQGroupID          int64  `yaml:"qqgid"`
-	DefaultPriority    int    `yaml:"default_priority"`
-	NoGhproxy          bool   `yaml:"no_ghproxy"`
-	QbotPublicMode     bool   `yaml:"qbot_public_mode"`
-	DailyAssetPushCron string `yaml:"daily_asset_push_cron"`
-	Version            string `yaml:"version"`
-	CTime              string `yaml:"AtTime"`
-	IsHelp             bool   `yaml:"IsHelp"`
-	IsOldV4            bool   `yaml:"IsOldV4"`
-	ApiToken           string `yaml:"ApiToken"`
-	Invalid            string `yaml:"Invalid"`
-	Query              string `yaml:"Query"`
-	Query1             string `yaml:"Query1"`
-	Wskey              bool   `yaml:"Wskey"`
-	TGURL              string `yaml:"TGURL"`
-	SMSAddress         string `yaml:"SMSAddress"`
-	IsAddFriend        bool   `yaml:"IsAddFriend"`
-	Lim                int    `yaml:"Lim"`
-	Tyt                int    `yaml:"Tyt"`
-	IFC                bool   `yaml:"IFC"`
-	Later              int    `yaml:"Later"`
-	Jdcurl             string `yaml:"Jdcurl"`
-	GAMEOPEN           bool   `yaml:"GameOpen"`
-	Note               string `yaml:"Note"`
-	VIP                bool
-	Node               string
-	Npm                string
-	Python             string
-	Pip                string
-
+	Containers          []Container
+	Tasks               []Task
+	Qrcode              string
+	Master              string
+	Mode                string
+	Static              string
+	Database            string
+	QywxKey             string `yaml:"qywx_key"`
+	Resident            string
+	UserAgent           string `yaml:"user_agent"`
+	Theme               string
+	TelegramBotToken    string `yaml:"telegram_bot_token"`
+	TelegramUserID      int    `yaml:"telegram_user_id"`
+	QQID                int64  `yaml:"qquid"`
+	QQGroupID           int64  `yaml:"qqgid"`
+	DefaultPriority     int    `yaml:"default_priority"`
+	NoGhproxy           bool   `yaml:"no_ghproxy"`
+	QbotPublicMode      bool   `yaml:"qbot_public_mode"`
+	DailyAssetPushCron  string `yaml:"daily_asset_push_cron"`
+	Version             string `yaml:"version"`
+	CTime               string `yaml:"AtTime"`
+	IsHelp              bool   `yaml:"IsHelp"`
+	IsOldV4             bool   `yaml:"IsOldV4"`
+	ApiToken            string `yaml:"ApiToken"`
+	Invalid             string `yaml:"Invalid"`
+	Query               string `yaml:"Query"`
+	Query1              string `yaml:"Query1"`
+	Wskey               bool   `yaml:"Wskey"`
+	TGURL               string `yaml:"TGURL"`
+	SMSAddress          string `yaml:"SMSAddress"`
+	IsAddFriend         bool   `yaml:"IsAddFriend"`
+	Lim                 int    `yaml:"Lim"`
+	Tyt                 int    `yaml:"Tyt"`
+	IFC                 bool   `yaml:"IFC"`
+	Later               int    `yaml:"Later"`
+	Jdcurl              string `yaml:"Jdcurl"`
+	GAMEOPEN            bool   `yaml:"GameOpen"`
+	Note                string `yaml:"Note"`
+	VIP                 bool
+	Node                string
+	Npm                 string
+	Python              string
+	Pip                 string
+	OpenFan             bool
 	NoAdmin             bool   `yaml:"no_admin"`
 	QbotConfigFile      string `yaml:"qbot_config_file"`
 	Repos               []Repo
+	FanLis              FanLi
 	HttpProxyServerPort int    `yaml:"http_proxy_server_port"`
 	Priority            int    `yaml:"Priority"`
 	DailyCompletePush   string `yaml:"daily_complete_push"`
@@ -149,5 +150,10 @@ func initConfig() {
 	}
 	if Config.Pip == "" {
 		Config.Pip = "pip3"
+	}
+	if Config.FanLis.appid == "" || Config.FanLis.appkey == "" || Config.FanLis.union_id == "" {
+		Config.OpenFan = false
+	} else {
+		Config.OpenFan = true
 	}
 }

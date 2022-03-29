@@ -268,9 +268,17 @@ var codeSignals = []CodeSignal{
 	},
 
 	{
-		Command: []string{"coin", "积分", "余额", "yu", "yue"},
+		Command: []string{"coin", "积分"},
 		Handle: func(sender *Sender) interface{} {
-			return fmt.Sprintf("积分余额%d", GetCoin(sender.UserID))
+			return fmt.Sprintf("积分:%d", GetCoin(sender.UserID))
+		},
+	},
+
+	{
+		Command: []string{"推一推状态"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			return fmt.Sprintf("推一推正在运行线程:%d,闲置线程:%d", tytnum, 3-tytnum)
 		},
 	},
 
@@ -370,6 +378,7 @@ var codeSignals = []CodeSignal{
 				} else {
 					sender.Reply("积分不足")
 				}
+				ExportEnv(&Env{Name: "wb", Value: string(atoi + 1)})
 			})
 			f.Close()
 			return nil
