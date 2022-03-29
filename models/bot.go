@@ -894,7 +894,7 @@ func starttyt(red string) (num int, f bool) {
 	//})
 	cks := []JdCookie{}
 	db.Where(fmt.Sprintf("%s != 'false' and %s = 'true'", Tyt, Available)).Find(&cks)
-
+	logs.Info(len(cks))
 	for _, ck := range cks {
 		time.Sleep(time.Second * 5)
 		logs.Info(ck.PtPin)
