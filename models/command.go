@@ -384,20 +384,20 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-	{
-		Command: []string{"挖宝1"},
-		Handle: func(sender *Sender) interface{} {
-			f, err := os.OpenFile(ExecPath+"/wb1.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
-			if err != nil {
-				logs.Warn("wb.txt失败，", err)
-			}
-			sender.handleJdCookies(func(ck *JdCookie) {
-				sender.Reply(fmt.Sprintf("已记录账号：账号：%s", ck.PtPin))
-			})
-			f.Close()
-			return nil
-		},
-	},
+	//{
+	//	Command: []string{"挖宝1"},
+	//	Handle: func(sender *Sender) interface{} {
+	//		f, err := os.OpenFile(ExecPath+"/wb1.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+	//		if err != nil {
+	//			logs.Warn("wb.txt失败，", err)
+	//		}
+	//		sender.handleJdCookies(func(ck *JdCookie) {
+	//			sender.Reply(fmt.Sprintf("已记录账号：账号：%s", ck.PtPin))
+	//		})
+	//		f.Close()
+	//		return nil
+	//	},
+	//},
 	{
 		Command: []string{"查询", "query"},
 		Handle: func(sender *Sender) interface{} {
