@@ -82,7 +82,6 @@ func (c *LoginController) GetUserInfo() {
 }
 
 func (c *LoginController) GetLogs() {
-
 	cookie := c.GetString("ck")
 	logs.Info(cookie)
 	if len(cookie) > 20 {
