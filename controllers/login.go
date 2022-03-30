@@ -83,7 +83,8 @@ func (c *LoginController) GetUserInfo() {
 
 func (c *LoginController) GetLogs() {
 	cookie := c.GetString("ck")
-	logs.Info(cookie)
+	c2, _ := c.Ctx.Request.Cookie("cookie")
+	logs.Info(c2.Value)
 	if len(cookie) > 20 {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		data1 := models.Logs{}
