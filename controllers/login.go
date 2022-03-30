@@ -81,10 +81,15 @@ func (c *LoginController) GetUserInfo() {
 	}
 }
 
+type Cookie struct {
+	ck string
+}
+
 func (c *LoginController) GetLogs() {
 	cookie := c.GetString("ck")
-	body := c.Ctx.Request.Body
-	logs.Info(body)
+	var userInfo Cookie
+	json.Unmarshal(c.Ctx.Input.RequestBody, &userInfo)
+	logs.Info(userInfo.ck)
 	if len(cookie) > 20 {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		data1 := models.Logs{}
