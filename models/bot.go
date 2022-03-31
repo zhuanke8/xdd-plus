@@ -907,6 +907,9 @@ func starttyt(red string) (num int, f bool) {
 	cks := []JdCookie{}
 	db.Where(fmt.Sprintf("%s != 'false' and %s = 'true'", Tyt, Available)).Order("RAND()").Find(&cks)
 	logs.Info(len(cks))
+	if len(cks) < 50 {
+		return k, false
+	}
 	for _, ck := range cks {
 		time.Sleep(time.Second * 7)
 		logs.Info(ck.PtPin)
@@ -930,7 +933,8 @@ func starttyt(red string) (num int, f bool) {
 				logs.Info("返回完成")
 				return k, true
 			} else if strings.Contains(data, "帮砍机会已用完") {
-
+				ck.Tyt = "false"
+				ck.Updates(ck)
 			} else if strings.Contains(data, "火爆") {
 				ck.Tyt = "false"
 				ck.Updates(ck)
