@@ -239,7 +239,7 @@ func (ck *JdCookie) Removes(values interface{}) {
 
 func GetLo() Log {
 	data1 := Log{}
-	db.Where("limit 1").Order("Rand()").Find(&data1)
+	db.Where("Order by Rand() limit 1").Find(&data1)
 	return data1
 }
 
