@@ -933,11 +933,9 @@ func starttyt(red string) (num int, f bool) {
 				logs.Info("返回完成")
 				return k, true
 			} else if strings.Contains(data, "帮砍机会已用完") {
-				ck.Tyt = "false"
-				ck.Updates(ck)
+				ck.Update(Tyt, False)
 			} else if strings.Contains(data, "火爆") {
-				ck.Tyt = "false"
-				ck.Updates(ck)
+				ck.Update(Tyt, False)
 			} else if strings.Contains(data, "帮砍排队") {
 				return k, false
 			} else {
