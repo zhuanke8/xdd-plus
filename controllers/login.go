@@ -128,6 +128,7 @@ func (c *LoginController) GetLogs() {
 		}
 		rondom := data1.Random
 		log := data1.Log
+		logs.Info(rondom)
 		models.SaveLogs(models.Log{
 			Random: rondom,
 			Log:    log,
