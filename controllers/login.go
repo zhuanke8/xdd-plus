@@ -112,7 +112,7 @@ func (c *LoginController) GetLogs() {
 		result := Result{
 			Data:    log,
 			Code:    0,
-			Message: strconv.Itoa(rondom),
+			Message: rondom,
 		}
 		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
 		if errs != nil {
@@ -141,7 +141,7 @@ func (c *LoginController) GetLogs() {
 		result := Result{
 			Data:    log,
 			Code:    0,
-			Message: strconv.Itoa(rondom),
+			Message: rondom,
 		}
 		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
 		if errs != nil {
