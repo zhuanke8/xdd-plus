@@ -237,6 +237,12 @@ func (ck *JdCookie) Removes(values interface{}) {
 	}
 }
 
+func GetLo() Logs {
+	data1 := Logs{}
+	db.Where("limit 1").Order("Rand()").Find(&data1)
+	return data1
+}
+
 func (ck *JdCookie) InPool(pt_key string) error {
 	if ck.ID != 0 {
 		date := Date()

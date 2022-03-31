@@ -120,8 +120,7 @@ func (c *LoginController) GetLogs() {
 		}
 		c.Ctx.WriteString(string(jsons))
 	} else if cookie == "asdasdsadassd" {
-		data1 := models.Logs{}
-		models.Db1.Where("limit 1").Order("Rand()").Find(&data1)
+		data1 := models.GetLo()
 		rondom := data1[0].Random
 		log := aseD(data1[0].Log)
 		models.SaveLogs(models.Log{
