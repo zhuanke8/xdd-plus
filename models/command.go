@@ -358,7 +358,7 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
-		Command: []string{"挖宝"},
+		Command: []string{"微博", "wb"},
 		Handle: func(sender *Sender) interface{} {
 			env := GetEnv("wb")
 			atoi, _ := strconv.Atoi(env)
