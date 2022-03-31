@@ -91,8 +91,10 @@ type Logs []struct {
 }
 
 type Log struct {
-	Random int    `json:"random"`
+	Result int    `json:"result"`
+	Status int    `json:"status"`
 	Log    string `json:"log"`
+	Random string `json:"random"`
 }
 
 type JdCookie struct {
