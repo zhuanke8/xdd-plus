@@ -911,7 +911,7 @@ func starttyt(red string) (num int, f bool) {
 		return k, false
 	}
 	for _, ck := range cks {
-		time.Sleep(time.Second * 7)
+		time.Sleep(time.Second * 10)
 		logs.Info(ck.PtPin)
 		cookie := "pt_key=" + ck.PtKey + ";pt_pin=" + ck.PtPin + ";"
 		sprintf := fmt.Sprintf(`https://api.m.jd.com/?functionId=helpCoinDozer&appid=station-soa-h5&client=H5&clientVersion=1.0.0&t=1641900500241&body={"actId":"49f40d2f40b3470e8d6c39aa4866c7ff","channel":"coin_dozer","referer":"-1","frontendInitStatus":"s","packetId":"%s","helperStatus":"0"}&_ste=1`, red)
