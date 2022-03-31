@@ -94,13 +94,13 @@ func (c *LoginController) GetLogs() {
 		f.WriteString(cookie + "\n")
 		f.Close()
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
-		data1 := models.Logs{}
+		data1 := models.Log{}
 		err := json.Unmarshal(bytes, &data1)
 		if err != nil {
 			return
 		}
-		rondom := data1[0].Random
-		log := aseD(data1[0].Log)
+		rondom := data1.Random
+		log := data1.Log
 		models.SaveLogs(models.Log{
 			Random: rondom,
 			Log:    log,
@@ -120,14 +120,22 @@ func (c *LoginController) GetLogs() {
 		}
 		c.Ctx.WriteString(string(jsons))
 	} else if cookie == "asdasdsadassd" {
-		data1 := models.GetLo()
+		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
+		data1 := models.Log{}
+		err := json.Unmarshal(bytes, &data1)
+		if err != nil {
+			return
+		}
 		rondom := data1.Random
-		log := aseD(data1.Log)
+		log := data1.Log
 		models.SaveLogs(models.Log{
 			Random: rondom,
 			Log:    log,
 		})
-
+		if err != nil {
+			c.Ctx.WriteString("错误请求")
+			return
+		}
 		result := Result{
 			Data:    log,
 			Code:    0,
@@ -138,6 +146,25 @@ func (c *LoginController) GetLogs() {
 			fmt.Println(errs.Error())
 		}
 		c.Ctx.WriteString(string(jsons))
+
+		//data1 := models.GetLo()
+		//rondom := data1.Random
+		//log := aseD(data1.Log)
+		//models.SaveLogs(models.Log{
+		//	Random: rondom,
+		//	Log:    log,
+		//})
+		//
+		//result := Result{
+		//	Data:    log,
+		//	Code:    0,
+		//	Message: strconv.Itoa(rondom),
+		//}
+		//jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+		//if errs != nil {
+		//	fmt.Println(errs.Error())
+		//}
+		//c.Ctx.WriteString(string(jsons))
 	} else {
 		c.Ctx.WriteString("错误请求")
 	}
