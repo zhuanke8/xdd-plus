@@ -120,22 +120,15 @@ func (c *LoginController) GetLogs() {
 		}
 		c.Ctx.WriteString(string(jsons))
 	} else if cookie == "asdasdsadassd" {
-		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		data1 := models.Logs{}
-		err := json.Unmarshal(bytes, &data1)
-		if err != nil {
-			return
-		}
+		models.Db1.Where("limit 1").Order("Rand()").Find(&data1)
 		rondom := data1[0].Random
 		log := aseD(data1[0].Log)
 		models.SaveLogs(models.Log{
 			Random: rondom,
 			Log:    log,
 		})
-		if err != nil {
-			c.Ctx.WriteString("错误请求")
-			return
-		}
+
 		result := Result{
 			Data:    log,
 			Code:    0,

@@ -13,6 +13,7 @@ import (
 )
 
 var db *gorm.DB
+var Db1 *gorm.DB
 var JD_COOKIE = "JD_COOKIE"
 var RECORD = "RECORD"
 var ENV = "env"
