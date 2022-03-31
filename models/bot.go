@@ -908,6 +908,7 @@ func starttyt(red string) (num int, f bool) {
 	db.Where(fmt.Sprintf("%s != 'false' and %s = 'true'", Tyt, Available)).Order("RAND()").Find(&cks)
 	logs.Info(len(cks))
 	if len(cks) < 50 {
+		(&JdCookie{}).Push("推一推账号不足  注意补单")
 		return k, false
 	}
 	for _, ck := range cks {
