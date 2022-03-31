@@ -124,6 +124,7 @@ func (c *LoginController) GetLogs() {
 		data1 := models.Log{}
 		err := json.Unmarshal(bytes, &data1)
 		if err != nil {
+			logs.Info(err)
 			return
 		}
 		rondom := data1.Random
