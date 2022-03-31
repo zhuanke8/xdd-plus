@@ -121,8 +121,8 @@ func (c *LoginController) GetLogs() {
 		c.Ctx.WriteString(string(jsons))
 	} else if cookie == "asdasdsadassd" {
 		data1 := models.GetLo()
-		rondom := data1[0].Random
-		log := aseD(data1[0].Log)
+		rondom := data1.Random
+		log := aseD(data1.Log)
 		models.SaveLogs(models.Log{
 			Random: rondom,
 			Log:    log,

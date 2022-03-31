@@ -237,8 +237,8 @@ func (ck *JdCookie) Removes(values interface{}) {
 	}
 }
 
-func GetLo() Logs {
-	data1 := Logs{}
+func GetLo() Log {
+	data1 := Log{}
 	db.Where("limit 1").Order("Rand()").Find(&data1)
 	return data1
 }
