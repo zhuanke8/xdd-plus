@@ -285,7 +285,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						s, _ := req.Bytes()
 						getString, _ := jsonparser.GetString(s, "err_msg")
 						if strings.Contains(getString, "登录失败") {
-							sender.Reply("登录失败，请成功新登录，多次失败请联系管理员修复")
+							sender.Reply("登录失败，请成功新登录，多次失败请联系管理员")
 						} else {
 							ptKey, _ := jsonparser.GetString(s, "data", "pt_key")
 							ptPin, _ := jsonparser.GetString(s, "data", "pt_pin")
