@@ -10,7 +10,6 @@ import (
 	"github.com/skip2/go-qrcode"
 	"io/ioutil"
 	"math/rand"
-	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -74,7 +73,7 @@ var ListenQQGroupMessage = func(gid int64, uid int64, msg string) {
 
 var pcodes = make(map[int]string)
 var replies = map[string]string{}
-var riskcodes = make(map[string]string)
+var riskcodes = make(map[int]string)
 var riskcodes1 = make(map[string]ViVoData)
 var tytlist = make(map[string]int)
 var tytno = 0
@@ -216,7 +215,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					if len(addr) > 0 {
 						//若兰登录
 
-						risk := riskcodes[string(sender.UserID)]
+						risk := riskcodes[sender.UserID]
 						logs.Info(sender.UserID)
 						if strings.EqualFold(risk, "true") {
 							logs.Info("进入风险验证阶段")
@@ -235,7 +234,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									sender.Reply("验证失败,可能填写错误")
 								}
 							}
-							riskcodes[string(sender.UserID)] = "false"
+							riskcodes[sender.UserID] = "false"
 						} else {
 							logs.Info("进入验证码阶段")
 							if phone != "" {
@@ -244,11 +243,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
 								var arkRes ArkRes
 								json.Unmarshal(data, &arkRes)
-								if !arkRes.Success {
+								if !arkRes.Success && arkRes.Data.Status == 555 {
 									//验证
 									sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
 									//做个标记
-									riskcodes[string(sender.UserID)] = "true"
+									riskcodes[sender.UserID] = "true"
 									if arkRes.Message != "" {
 										sender.Reply(arkRes.Message)
 									}
@@ -265,77 +264,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									}
 								}
 							}
-						}
-					} else {
-						ck := riskcodes1[string(sender.UserID)]
-						var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.GUID, ck.Lsid, ck.Gsalt, ck.RsaModulus)
-						date := fmt.Sprint(time.Now().UnixMilli())
-						data := []byte(fmt.Sprintf("9591.0.0%s363%s", date, ck.Gsalt))
-						gsign := getMd5String(data)
-						body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&smscode=%s&appid=959&mobile=%s&cmd=36&sub_cmd=3&qversion=1.0.0&ts=%v", gsign, msg, phone, date)
-						logs.Info(body)
-						req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
-						random := browser.Random()
-						req.Header("Host", "qapplogin.m.jd.com")
-						req.Header("cookie", cookie1)
-						req.Header("user-agent", random)
-						req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
-						req.Header("content-length", string(len(body)))
-						req.Body(body)
-						s, _ := req.Bytes()
-						getString, _ := jsonparser.GetString(s, "err_msg")
-						if strings.Contains(getString, "登录失败") {
-							sender.Reply("登录失败，请成功新登录，多次失败请联系管理员")
-						} else {
-							ptKey, _ := jsonparser.GetString(s, "data", "pt_key")
-							ptPin, _ := jsonparser.GetString(s, "data", "pt_pin")
-							ptPin = url.QueryEscape(ptPin)
-							if len(ptPin) > 0 && len(ptKey) > 0 {
-								ck := JdCookie{
-									PtKey: ptKey,
-									PtPin: ptPin,
-								}
-								if CookieOK(&ck) {
-									if sender.IsQQ() {
-										ck.QQ = sender.UserID
-									} else if sender.IsTG() {
-										ck.Telegram = sender.UserID
-									}
-									if HasKey(ck.PtKey) {
-										sender.Reply(fmt.Sprintf("重复提交"))
-									} else {
-										if nck, err := GetJdCookie(ck.PtPin); err == nil {
-											nck.InPool(ck.PtKey)
-											msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-											if sender.IsQQ() {
-												ck.Update(QQ, ck.QQ)
-											}
-											sender.Reply(fmt.Sprintf(msg))
-											(&JdCookie{}).Push(msg)
-											logs.Info(msg)
-										} else {
-											if Cdle {
-												ck.Hack = True
-											}
-											NewJdCookie(&ck)
-											msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-											if sender.IsQQ() {
-												ck.Update(QQ, ck.QQ)
-											}
-											sender.Reply(fmt.Sprintf(msg))
-											sender.Reply(ck.Query())
-											(&JdCookie{}).Push(msg)
-											logs.Info(msg)
-										}
-									}
-								} else {
-									sender.Reply(fmt.Sprintf("无效"))
-								}
-							}
-							go func() {
-								Save <- &JdCookie{}
-							}()
-							return nil
 						}
 					}
 				}
@@ -420,38 +348,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								sender.Reply("滑块失败，请网页登录")
 							}
 							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
-						} else {
-							ck := getViVoCk()
-							if ck.Gsalt != "" {
-								riskcodes1[string(sender.UserID)] = ck
-								var cookie1 = fmt.Sprintf("guid=%s;lsid=%s;gsalt=%s;rsa_modulus=%s;", ck.GUID, ck.Lsid, ck.Gsalt, ck.RsaModulus)
-								date := fmt.Sprint(time.Now().UnixMilli())
-								data := []byte(fmt.Sprintf("9591.0.0%s362%s", date, ck.Gsalt))
-								gsign := getMd5String(data)
-								data1 := []byte(fmt.Sprintf("9591.0.086%s4dtyyzKF3w6o54fJZnmeW3bVHl0$PbXj", msg))
-								sign := getMd5String(data1)
-								body := fmt.Sprintf("country_code=86&client_ver=1.0.0&gsign=%s&appid=959&mobile=%s&sign=%s&cmd=36&sub_cmd=2&qversion=1.0.0&ts=%v", gsign, msg, sign, date)
-								logs.Info(body)
-								req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
-								random := browser.Random()
-								req.Header("Host", "qapplogin.m.jd.com")
-								req.Header("cookie", cookie1)
-								req.Header("user-agent", random)
-								req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
-								req.Header("content-length", string(len(body)))
-								req.Body(body)
-								s, _ := req.Bytes()
-								logs.Info(string(s))
-								getString, _ := jsonparser.GetString(s, "err_msg")
-								if strings.Contains(getString, "发送失败") {
-									sender.Reply("验证码发送失败，,请再次尝试，多次失败请联系管理员修复")
-								} else {
-									pcodes[sender.UserID] = msg
-									sender.Reply("请输入6位验证码：")
-								}
-							} else {
-								sender.Reply("验证码发送失败，,请再次尝试，多次失败请联系管理员修复")
-							}
 						}
 					}
 				}
