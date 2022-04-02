@@ -206,7 +206,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 			//验证码
 			{
-				regex := "^\\d{6}$"
+				regex := "^\\d{5}(\\d|X|x)$"
 				reg := regexp.MustCompile(regex)
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
