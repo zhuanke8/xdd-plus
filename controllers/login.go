@@ -101,10 +101,10 @@ func (c *LoginController) GetLogs() {
 		}
 		rondom := data1.Random
 		log := data1.Log
-		models.SaveLogs(models.Log{
-			Random: rondom,
-			Log:    log,
-		})
+		//models.SaveLogs(models.Log{
+		//	Random: rondom,
+		//	Log:    log,
+		//})
 		if err != nil {
 			c.Ctx.WriteString("错误请求")
 			return
@@ -129,11 +129,11 @@ func (c *LoginController) GetLogs() {
 		}
 		rondom := data1.Random
 		log := data1.Log
-		logs.Info(rondom)
-		models.SaveLogs(models.Log{
-			Random: rondom,
-			Log:    log,
-		})
+		//logs.Info(rondom)
+		//models.SaveLogs(models.Log{
+		//	Random: rondom,
+		//	Log:    log,
+		//})
 		if err != nil {
 			c.Ctx.WriteString("错误请求")
 			return
