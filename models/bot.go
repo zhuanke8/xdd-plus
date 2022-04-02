@@ -370,6 +370,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							tabcount, _ = jsonparser.GetInt(data, "data", "autocount")
 							if tabcount != 0 {
 								pcodes[sender.UserID] = "true"
+								riskcodes[sender.UserID] = "false"
 								sender.Reply("若兰为您服务，请输入11位手机号：")
 							} else {
 								sender.Reply("服务忙，请稍后再试。")
