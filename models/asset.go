@@ -133,6 +133,8 @@ func (ck *JdCookie) Query() string {
 
 	if i < 500 {
 		msgs = append(msgs, fmt.Sprintf("您已挂机：%d天", i))
+	} else {
+		msgs = append(msgs, fmt.Sprintf("您距离失效还有：28天"))
 		msgs = append(msgs, "账号登录成功!")
 		return strings.Join(msgs, "\n")
 	}
