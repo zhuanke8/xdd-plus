@@ -122,13 +122,19 @@ func (ck *JdCookie) Query1() string {
 }
 
 func (ck *JdCookie) Query() string {
+
+	msgs := []string{
+		fmt.Sprintf("账号昵称：%s", ck.Nickname),
+	}
 	parse, _ := time.Parse("2006-01-02", ck.CreateAt)
 	t, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	f := t.Sub(parse).Hours() / 24
 	i, _ := strconv.Atoi(fmt.Sprintf("%1.0f", f))
-	msgs := []string{
-		fmt.Sprintf("账号昵称：%s", ck.Nickname),
-		fmt.Sprintf("您已挂机：%d天", i),
+
+	if i < 500 {
+		msgs = append(msgs, fmt.Sprintf("您已挂机：%d天", i))
+		msgs = append(msgs, "账号登录成功!")
+		return strings.Join(msgs, "\n")
 	}
 	if ck.Note != "" {
 		msgs = append(msgs, fmt.Sprintf("账号备注：%s", ck.Note))

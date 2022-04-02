@@ -321,10 +321,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										break
 									}
 									if i > 5 {
-										pcodes[sender.UserID] = msg
-										s := Config.Jdcurl + "/Captcha/" + msg
-										sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
-										//sender.Reply("滑块验证失败,请联系管理员或者手动登录")
+										//pcodes[sender.UserID] = msg
+										//s := Config.Jdcurl + "/Captcha/" + msg
+										//sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+										sender.Reply("滑块验证失败,请尝试重新登录")
 										break
 									}
 									if status == 666 {
