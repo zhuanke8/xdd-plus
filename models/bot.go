@@ -458,35 +458,35 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 
 			//识别登录
-			//{
-			//	if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
-			//
-			//		if len(Config.Jdcurl) > 0 {
-			//			var tabcount int64
-			//			addr := Config.Jdcurl
-			//			if addr == "" {
-			//				return "若兰很忙，请稍后再试。"
-			//			}
-			//			logs.Info(addr + "/api/Config")
-			//			if addr != "" {
-			//				data, _ := httplib.Get(addr + "/api/Config").Bytes()
-			//				logs.Info(string(data) + "返回数据")
-			//				tabcount, _ = jsonparser.GetInt(data, "data", "autocount")
-			//				if tabcount != 0 {
-			//					pcodes[sender.UserID] = "true"
-			//					sender.Reply("若兰为您服务，请输入11位手机号：")
-			//				} else {
-			//					sender.Reply("服务忙，请稍后再试。")
-			//				}
-			//			}
-			//		} else {
-			//			//pcodes[sender.UserID] = "true"
-			//			//sender.Reply("小滴滴")
-			//		}
-			//
-			//		//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
-			//	}
-			//}
+			{
+				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
+
+					if len(Config.Jdcurl) > 0 {
+						var tabcount int64
+						addr := Config.Jdcurl
+						if addr == "" {
+							return "若兰很忙，请稍后再试。"
+						}
+						logs.Info(addr + "/api/Config")
+						if addr != "" {
+							data, _ := httplib.Get(addr + "/api/Config").Bytes()
+							logs.Info(string(data) + "返回数据")
+							tabcount, _ = jsonparser.GetInt(data, "data", "autocount")
+							if tabcount != 0 {
+								pcodes[sender.UserID] = "true"
+								sender.Reply("若兰为您服务，请输入11位手机号：")
+							} else {
+								sender.Reply("服务忙，请稍后再试。")
+							}
+						}
+					} else {
+						//pcodes[sender.UserID] = "true"
+						//sender.Reply("小滴滴")
+					}
+
+					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
+				}
+			}
 
 		}
 	}
@@ -905,7 +905,7 @@ func starttyt(red string) (num int, f bool) {
 	//	return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), False, True)
 	//})
 	cks := []JdCookie{}
-	db.Where(fmt.Sprintf("%s != 'false' and %s = 'true'", Tyt, Available)).Order("RAND()").Find(&cks)
+	db.Where(fmt.Sprintf("%s = 'true' and %s = 'true'", Tyt, Available)).Order("RAND()").Find(&cks)
 	logs.Info(len(cks))
 	if len(cks) < 50 {
 		(&JdCookie{}).Push("推一推账号不足  注意补单")
@@ -939,6 +939,8 @@ func starttyt(red string) (num int, f bool) {
 				ck.Update(Tyt, False)
 			} else if strings.Contains(data, "帮砍排队") {
 				return k, false
+			} else if strings.Contains(data, "need") {
+				ck.Update(Tyt, "need verity")
 			} else {
 				logs.Info("额为异常")
 				logs.Info(data)
