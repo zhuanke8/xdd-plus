@@ -838,6 +838,8 @@ func starttyt(red string) (num int, f bool) {
 				return k, false
 			} else if strings.Contains(data, "need") {
 				ck.Update(Tyt, "need verity")
+			} else if strings.Contains(data, "未登录") {
+				CookieOK(&ck)
 			} else {
 				logs.Info("额为异常")
 				logs.Info(data)

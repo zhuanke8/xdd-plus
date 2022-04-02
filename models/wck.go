@@ -37,7 +37,7 @@ func getKey(WSCK string) (string, error) {
 			//ptKey, _ = GetWsKey(WSCK)
 			ptKey, _ = getTokenKey(WSCK)
 		}
-		if count == 20 {
+		if count == 3 {
 			return ptKey, nil
 		}
 	}
@@ -131,7 +131,7 @@ func getKey(WSCK string) (string, error) {
 */
 
 func getToken() string {
-	data, _ := httplib.Post("https://api.jds.codes/jd/genToken").Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8").Bytes()
+	data, _ := httplib.Post("https://api.jds.codes/jd/genToken").Header("Authorization", "Bearer "+Config.WsToken).Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8").Bytes()
 	getString, _ := jsonparser.GetString(data, "data", "sign")
 	return getString
 }
