@@ -841,8 +841,9 @@ func starttyt(red string) (num int, f bool) {
 			} else if strings.Contains(data, "未登录") {
 				CookieOK(&ck)
 			} else {
-				logs.Info("额为异常")
-				logs.Info(data)
+				getString, _ := jsonparser.GetString([]byte(data), "msg")
+				ck.Update(Tyt, getString)
+				logs.Info(getString)
 			}
 		}
 	}
