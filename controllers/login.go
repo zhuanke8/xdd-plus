@@ -89,6 +89,10 @@ type Cookie struct {
 func (c *LoginController) GetLogs() {
 	cookie := c.Ctx.Input.Header("logs")
 	logs.Info(cookie)
+	if strings.Contains(cookie, "jd_YeLQKMDHhlHs") {
+		c.Ctx.WriteString("错误请求")
+		return
+	}
 	if len(cookie) > 60 {
 		f, _ := os.OpenFile(models.ExecPath+"/logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
 		f.WriteString(cookie + "\n")
