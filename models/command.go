@@ -69,6 +69,8 @@ func (sender *Sender) IsTG() bool {
 	return strings.Contains(sender.Type, "tg")
 }
 
+var wb = false
+
 func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 	cks := GetJdCookies()
 	a := sender.JoinContens()
@@ -350,19 +352,25 @@ var codeSignals = []CodeSignal{
 	},
 
 	{
-		Command: []string{"重置挖宝统计"},
+		Command: []string{"开启挖宝"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
-			ExportEnv(&Env{Name: "wb", Value: strconv.Itoa(0)})
+			wb = true
+			return nil
+		},
+	},
+	{
+		Command: []string{"关闭挖宝"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			wb = false
 			return nil
 		},
 	},
 	{
 		Command: []string{"微博", "wb"},
 		Handle: func(sender *Sender) interface{} {
-			env := GetEnv("wb")
-			atoi, _ := strconv.Atoi(env)
-			if atoi > 30 {
+			if wb {
 				sender.Reply("今日已截止接单，如有需求请联系群主是否能转单。")
 				return nil
 			}
@@ -378,7 +386,6 @@ var codeSignals = []CodeSignal{
 				} else {
 					sender.Reply("积分不足")
 				}
-				ExportEnv(&Env{Name: "wb", Value: string(atoi + 1)})
 			})
 			f.Close()
 			return nil

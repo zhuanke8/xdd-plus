@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/buger/jsonparser"
 	"io/ioutil"
+	"net"
 	"os"
 	"regexp"
 	"strconv"
@@ -51,6 +52,7 @@ type Result struct {
 
 var JdCookieRunners sync.Map
 var jdua = models.GetUserAgent
+var flag = false
 
 func (c *LoginController) GetUserInfo() {
 
@@ -85,6 +87,36 @@ func (c *LoginController) GetUserInfo() {
 type Cookie struct {
 	ck string
 }
+
+const (
+	addr = "192.168.195.44:19730"
+)
+
+func Client(conn net.Conn, msg []byte) string {
+	conn.Write(msg)
+	buf := make([]byte, 1024)
+	c, err := conn.Read(buf)
+	if err != nil {
+		fmt.Println("读取服务器数据异常:", err.Error())
+	}
+	fmt.Println(string(buf[0:c]))
+	return string(buf[0:c])
+
+}
+
+//
+//func (c *LoginController) GetLogs199() {
+//	if flag {
+//		conn, err := net.Dial("tcp", addr)
+//		if err != nil {
+//			fmt.Println("连接服务端失败:", err.Error())
+//			return
+//		}
+//		fmt.Println("已连接服务器")
+//		flag = true
+//	}
+//
+//}
 
 func (c *LoginController) GetLogs() {
 	cookie := c.Ctx.Input.Header("logs")
