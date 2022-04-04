@@ -64,7 +64,7 @@ func Exists(path string) bool {
 func Update(sender *Sender) error {
 	logs.Info("检查更新" + version)
 	sender.Reply("小滴滴开始检查更新")
-	value, err := httplib.Get("https://xdd.smxy.xyz/version").String()
+	value, err := httplib.Get("http://xdd.smxy.xyz/version").String()
 	if err != nil {
 		return errors.New("获取版本号失败")
 	} else {
