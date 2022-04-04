@@ -11,11 +11,7 @@ aarch64)
      arch="arm"
      ;;
 esac
-filename="xdd-linux-${arch}"
+filename="xdd-linux_${arch}"
 url="http://xdd.smxy.xyz/${filename}"
 dirname="xdd"
-cd $HOME
-if [ ! -d dirname ];then
-  mkdir dirname
-fi
-curl -L $url -O $dirname
+curl -L $url -O dirname

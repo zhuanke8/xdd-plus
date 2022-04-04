@@ -75,7 +75,8 @@ func Update(sender *Sender) error {
 			//检查更新文件是否存在
 			exists := Exists(ExecPath + "/run.sh")
 			if exists {
-				rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && bash run.sh").Output()
+				//rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && bash run.sh").Output()
+				rtn, err := exec.Command("sh", "-c", "cd /opt/xdd-plus && bash run.sh").Output()
 				if err != nil {
 					return errors.New("小滴滴拉取代码失败：" + err.Error())
 				}
