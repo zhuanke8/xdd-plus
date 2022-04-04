@@ -18,4 +18,4 @@ cd $HOME
 if [ ! -d dirname ];then
   mkdir dirname
 fi
-curl -L $url -O $filename
+curl -L $url -O $dirname
