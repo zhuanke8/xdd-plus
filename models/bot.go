@@ -666,7 +666,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						logs.Info(split[i])
 						env := strings.Split(split[i], "=")
 						if strings.Contains(env[1], "微信") {
-							return "微信渠道暂时无法识别"
+							sender.Reply("微信渠道暂时无法识别")
 						}
 						f.WriteString(env[1] + "\n")
 						f.Close()

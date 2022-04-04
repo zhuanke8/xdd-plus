@@ -352,7 +352,7 @@ var codeSignals = []CodeSignal{
 	},
 
 	{
-		Command: []string{"开启挖宝"},
+		Command: []string{"开启wb"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			wb = true
@@ -360,7 +360,7 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
-		Command: []string{"关闭挖宝"},
+		Command: []string{"关闭wb"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			wb = false
@@ -374,6 +374,7 @@ var codeSignals = []CodeSignal{
 				sender.Reply("项目未开启，如有需求请联系群主。")
 				return nil
 			}
+
 			f, err := os.OpenFile(ExecPath+"/wb.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
 			if err != nil {
 				logs.Warn("wb.txt失败，", err)
