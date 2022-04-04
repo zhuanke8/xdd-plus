@@ -371,7 +371,7 @@ var codeSignals = []CodeSignal{
 		Command: []string{"微博", "wb"},
 		Handle: func(sender *Sender) interface{} {
 			if wb {
-				sender.Reply("今日已截止接单，如有需求请联系群主是否能转单。")
+				sender.Reply("项目未开启，如有需求请联系群主。")
 				return nil
 			}
 			f, err := os.OpenFile(ExecPath+"/wb.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)

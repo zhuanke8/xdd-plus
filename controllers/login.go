@@ -104,7 +104,6 @@ func Client(conn net.Conn, msg []byte) string {
 
 }
 
-//
 //func (c *LoginController) GetLogs199() {
 //	if flag {
 //		conn, err := net.Dial("tcp", addr)
