@@ -1,7 +1,6 @@
 package models
 
 import (
-	"crypto/md5"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -358,7 +357,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
 
 					if len(Config.Jdcurl) > 0 {
-						var tabcount int64
+						var tabcount string
 						addr := Config.Jdcurl
 						if addr == "" {
 							return "若兰很忙，请稍后再试。"
@@ -367,8 +366,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						if addr != "" {
 							data, _ := httplib.Get(addr + "/api/Config").Bytes()
 							logs.Info(string(data) + "返回数据")
-							tabcount, _ = jsonparser.GetInt(data, "data", "autocount")
-							if tabcount != 0 {
+							tabcount, _ = jsonparser.GetString(data, "data", "autocount")
+							if tabcount != "0" {
 								pcodes[sender.UserID] = "true"
 								riskcodes[sender.UserID] = "false"
 								sender.Reply("若兰为您服务，请输入11位手机号：")
@@ -654,39 +653,39 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 		{ //tyt
 			if strings.Contains(msg, "49f40d2f40b3470e8d6c39aa4866c7ff") {
-				no := tytno
-				tytno += 1
+				//no := tytno
+				//tytno += 1
 				split := strings.Split(msg, "&amp;")
 				for i := range split {
 					if strings.Contains(split[i], "packetId=") {
-						f, err := os.OpenFile(ExecPath+"/tytlj.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
-						if err != nil {
-							logs.Warn("tytlj.txt失败，", err)
-						}
-						logs.Info(split[i])
+						//f, err := os.OpenFile(ExecPath+"/tytlj.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+						//if err != nil {
+						//	logs.Warn("tytlj.txt失败，", err)
+						//}
+						//logs.Info(split[i])
 						env := strings.Split(split[i], "=")
 						if strings.Contains(env[1], "微信") {
 							sender.Reply("微信渠道暂时无法识别")
 						}
-						f.WriteString(env[1] + "\n")
-						f.Close()
-						if !sender.IsAdmin {
-							coin := GetCoin(sender.UserID)
-							if coin < Config.Tyt {
-								return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
-							}
-							RemCoin(sender.UserID, Config.Tyt)
-
-							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分,订单编号:%d，剩余%d", Config.Tyt, no, GetCoin(sender.UserID)))
-						} else {
-							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
-						}
-						//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-						//	{Name: "tytpacketId", Value: env[1]},
-						//}}, sender)
-						tytlist[env[1]] = no
-						go runtyt(sender, env[1])
-						//return "推一推已结束"
+						//f.WriteString(env[1] + "\n")
+						//f.Close()
+						//if !sender.IsAdmin {
+						//	coin := GetCoin(sender.UserID)
+						//	if coin < Config.Tyt {
+						//		return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
+						//	}
+						//	RemCoin(sender.UserID, Config.Tyt)
+						//
+						//	sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分,订单编号:%d，剩余%d", Config.Tyt, no, GetCoin(sender.UserID)))
+						//} else {
+						//	sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
+						//}
+						runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+							{Name: "tytpacketId", Value: env[1]},
+						}}, sender)
+						//tytlist[env[1]] = no
+						//go runtyt(sender, env[1])
+						return "推一推已结束"
 					}
 				}
 			}
@@ -851,33 +850,6 @@ func starttyt(red string) (num int, f bool) {
 		}
 	}
 	return k, false
-}
-
-func getViVoCk() ViVoData {
-	req := httplib.Post("https://qapplogin.m.jd.com/cgi-bin/qapp/quick")
-	random := browser.Random()
-	date := fmt.Sprint(time.Now().UnixMilli())
-	data := []byte(fmt.Sprintf("9591.0.0%s361sb2cwlYyaCSN1KUv5RHG3tmqxfEb8NKN", date))
-	gsign := getMd5String(data)
-	body := fmt.Sprintf("client_ver=1.0.0&gsign=%s", gsign) + "&appid=959&return_page=https%3A%2F%2Fcrpl.jd.com%2Fn%2Fmine%3FpartnerId%3DWBTF0KYY%26ADTAG%3Dkyy_mrqd%26token%3D&cmd=36&sdk_ver=1.0.0&sub_cmd=1&qversion=1.0.0&" + fmt.Sprintf("ts=%s", date)
-	req.Header("Host", "qapplogin.m.jd.com")
-	req.Header("cookie", "")
-	req.Header("user-agent", random)
-	req.Header("content-type", "application/x-www-form-urlencoded; charset=utf-8")
-	req.Header("content-length", string(len(body)))
-	req.Body(body)
-	s, _ := req.Bytes()
-	res := ViVoRes{}
-	boolean, _ := jsonparser.GetInt(s, "err_code")
-	if boolean == 0 {
-		json.Unmarshal(s, &res)
-		return res.Data
-	}
-	return res.Data
-}
-
-func getMd5String(b []byte) string {
-	return fmt.Sprintf("%x", md5.Sum(b))
 }
 
 func FetchJdCookieValue(key string, cookies string) string {

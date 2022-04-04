@@ -2,13 +2,15 @@ package models
 
 import (
 	"errors"
+	"github.com/beego/beego/v2/client/httplib"
+	"github.com/beego/beego/v2/core/logs"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 )
 
-var version = "v3.1"
+var version = "v3.2"
 var describe = "最终稳定版"
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
@@ -39,28 +41,53 @@ func initVersion() {
 	//}
 }
 
-func Update(sender *Sender) error {
-	sender.Reply("小滴滴开始拉取代码")
-	rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && git stash && git pull").Output()
+func Exists(path string) bool {
+
+	_, err := os.Stat(path) //os.Stat获取文件信息
+
 	if err != nil {
-		return errors.New("小滴滴拉取代失败：" + err.Error())
+
+		if os.IsExist(err) {
+
+			return true
+
+		}
+
+		return false
+
 	}
-	t := string(rtn)
-	if !strings.Contains(t, "changed") {
-		if strings.Contains(t, "Already") || strings.Contains(t, "已经是最新") {
+
+	return true
+
+}
+
+func Update(sender *Sender) error {
+	logs.Info("检查更新" + version)
+	sender.Reply("小滴滴开始检查更新")
+	value, err := httplib.Get("https://xdd.smxy.xyz/version").String()
+	if err != nil {
+		return errors.New("获取版本号失败")
+	} else {
+		if strings.Contains(Config.Version, value) {
 			return errors.New("小滴滴已是最新版啦")
 		} else {
-			return errors.New("小滴滴拉取代失败：" + t)
+			sender.Reply("小滴滴开始更新程序")
+			//检查更新文件是否存在
+			exists := Exists(ExecPath + "/run.sh")
+			if exists {
+				rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && bash run.sh").Output()
+				if err != nil {
+					return errors.New("小滴滴拉取代码失败：" + err.Error())
+				}
+				t := string(rtn)
+				if !strings.Contains(t, "错误") {
+					sender.Reply("小滴滴拉取代码成功")
+					os.Chmod(ExecPath+"/xdd", 0777)
+				}
+			} else {
+				return errors.New("更新文件不存在")
+			}
 		}
-	} else {
-		sender.Reply("小滴滴拉取代码成功")
+		return nil
 	}
-	sender.Reply("小滴滴正在编译程序")
-	rtn, err = exec.Command("sh", "-c", "cd "+ExecPath+" && go build -o "+pname).Output()
-	if err != nil {
-		return errors.New("小滴滴编译失败：" + err.Error())
-	} else {
-		sender.Reply("小滴滴编译成功")
-	}
-	return nil
 }
