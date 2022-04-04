@@ -663,10 +663,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						if err != nil {
 							logs.Warn("tytlj.txt失败，", err)
 						}
-						f.WriteString(msg + "\n")
-						f.Close()
 						logs.Info(split[i])
 						env := strings.Split(split[i], "=")
+						f.WriteString(env[1] + "\n")
+						f.Close()
 						if !sender.IsAdmin {
 							coin := GetCoin(sender.UserID)
 							if coin < Config.Tyt {
