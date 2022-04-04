@@ -370,7 +370,7 @@ var codeSignals = []CodeSignal{
 	{
 		Command: []string{"微博", "wb"},
 		Handle: func(sender *Sender) interface{} {
-			if wb {
+			if wb == true {
 				sender.Reply("项目未开启，如有需求请联系群主。")
 				return nil
 			}
