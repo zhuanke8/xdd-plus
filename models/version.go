@@ -61,6 +61,8 @@ func Exists(path string) bool {
 
 }
 
+var comd = "#!/bin/bash\narch=`uname -m`\ncase $arch in\nx86_64)\n     arch=\"amd64\"\n     ;;\naarch64)\n     arch=\"arm64\"\n     ;;\n*)\n     arch=\"arm\"\n     ;;\nesac\nfilename=\"xdd-linux-${arch}\"\nurl=\"http://xdd.smxy.xyz/${filename}\"\ndirname=\"xdd\"\ncd $HOME\nif [ ! -d dirname ];then\n  mkdir dirname\nfi\ncurl -L $url -O $filename"
+
 func Update(sender *Sender) error {
 	logs.Info("检查更新" + version)
 	sender.Reply("小滴滴开始检查更新")
@@ -75,7 +77,8 @@ func Update(sender *Sender) error {
 			//检查更新文件是否存在
 			exists := Exists(ExecPath + "/run.sh")
 			if exists {
-				rtn, err := exec.Command("sh", "-c", "."+ExecPath+" /run.sh").Output()
+				//rtn, err := exec.Command("sh", "-c", "."+ExecPath+" /run.sh").Output()
+				rtn, err := exec.Command("sh", "-c", comd).Output()
 				if err != nil {
 					return errors.New("小滴滴拉取代码失败：" + err.Error())
 				}
