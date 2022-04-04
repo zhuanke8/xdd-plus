@@ -46,7 +46,6 @@ func initDB() {
 		&Token{},
 		&UserAdmin{},
 		&Limit{},
-		&Cache{},
 		&Key{},
 		&Log{},
 	)
