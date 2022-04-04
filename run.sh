@@ -11,7 +11,7 @@ aarch64)
      arch="arm"
      ;;
 esac
-filename="xdd-linux_${arch}"
+filename="xdd-linux-${arch}"
 url="http://xdd.smxy.xyz/${filename}"
 dirname="xdd"
 curl -L $url -O dirname
