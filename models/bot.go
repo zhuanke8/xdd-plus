@@ -653,8 +653,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 		{ //tyt
 			if strings.Contains(msg, "49f40d2f40b3470e8d6c39aa4866c7ff") {
-				//no := tytno
-				//tytno += 1
+				no := tytno
+				tytno += 1
 				split := strings.Split(msg, "&amp;")
 				for i := range split {
 					if strings.Contains(split[i], "packetId=") {
@@ -669,23 +669,23 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						}
 						//f.WriteString(env[1] + "\n")
 						//f.Close()
-						//if !sender.IsAdmin {
-						//	coin := GetCoin(sender.UserID)
-						//	if coin < Config.Tyt {
-						//		return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
-						//	}
-						//	RemCoin(sender.UserID, Config.Tyt)
-						//
-						//	sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分,订单编号:%d，剩余%d", Config.Tyt, no, GetCoin(sender.UserID)))
-						//} else {
-						//	sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
-						//}
+						if !sender.IsAdmin {
+							coin := GetCoin(sender.UserID)
+							if coin < Config.Tyt {
+								return fmt.Sprintf("推一推需要%d个积分", Config.Tyt)
+							}
+							RemCoin(sender.UserID, Config.Tyt)
+
+							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分,订单编号:%d，剩余%d", Config.Tyt, no, GetCoin(sender.UserID)))
+						} else {
+							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
+						}
 						runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 							{Name: "tytpacketId", Value: env[1]},
 						}}, sender)
 						//tytlist[env[1]] = no
 						//go runtyt(sender, env[1])
-						return "推一推已结束"
+						return fmt.Sprintf("订单编号：%d,推一推结束", no)
 					}
 				}
 			}
