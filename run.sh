@@ -14,4 +14,4 @@ esac
 filename="xdd-linux-${arch}"
 url="http://xdd.smxy.xyz/${filename}"
 dirname="xdd"
-curl -L $url -O dirname
+curl -O dirname $url

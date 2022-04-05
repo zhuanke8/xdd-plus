@@ -5,7 +5,6 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"os"
-	"os/exec"
 	"regexp"
 	"strings"
 )
@@ -73,21 +72,22 @@ func Update(sender *Sender) error {
 		} else {
 			sender.Reply("小滴滴开始更新程序")
 			//检查更新文件是否存在
-			exists := Exists(ExecPath + "/run.sh")
-			if exists {
-				//rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && bash run.sh").Output()
-				rtn, err := exec.Command("sh", "-c", "cd /opt/xdd-plus && bash run.sh").Output()
-				if err != nil {
-					return errors.New("小滴滴拉取代码失败：" + err.Error())
-				}
-				t := string(rtn)
-				if !strings.Contains(t, "错误") {
-					sender.Reply("小滴滴拉取代码成功")
-					os.Chmod(ExecPath+"/xdd", 0777)
-				}
-			} else {
-				return errors.New("更新文件不存在")
-			}
+			//exists := Exists(ExecPath + "/run.sh")
+			//if exists {
+			//	//rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && bash run.sh").Output()
+			//	rtn, err := exec.Command("sh", "-c", "cd /opt/xdd-plus && bash run.sh").Output()
+			//	if err != nil {
+			//		return errors.New("小滴滴拉取代码失败：" + err.Error())
+			//	}
+			//	t := string(rtn)
+			//	if !strings.Contains(t, "错误") {
+			//		sender.Reply("小滴滴拉取代码成功")
+			//		os.Chmod(ExecPath+"/xdd", 0777)
+			//	}
+			//} else {
+			//	return errors.New("更新文件不存在")
+			//}
+
 		}
 		return nil
 	}
