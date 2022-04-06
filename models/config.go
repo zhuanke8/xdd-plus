@@ -24,6 +24,7 @@ type Yaml struct {
 	Theme               string
 	TelegramBotToken    string `yaml:"telegram_bot_token"`
 	TelegramUserID      int    `yaml:"telegram_user_id"`
+	OpenQQ              string `yaml:"OpenQQ"`
 	QQID                int64  `yaml:"qquid"`
 	QQGroupID           int64  `yaml:"qqgid"`
 	DefaultPriority     int    `yaml:"default_priority"`
@@ -156,5 +157,8 @@ func initConfig() {
 		Config.OpenFan = false
 	} else {
 		Config.OpenFan = true
+	}
+	if Config.OpenQQ != "" {
+		Config.QQID = 0
 	}
 }

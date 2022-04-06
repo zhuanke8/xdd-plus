@@ -35,6 +35,8 @@ user_agent:
 telegram_bot_token:
 telegram_user_id:
 TGURL: #填写TG代理地址参考https://www.kejiwanjia.com/server/5221.html#3worker
+# OpenQQ填写任意参数 视为不启动QQ，如果无此需求不要配置
+OpenQQ:
 qquid:
 qqgid:
 qbot_public_mode: true
