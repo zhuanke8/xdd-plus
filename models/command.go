@@ -334,7 +334,18 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-
+	{
+		Command: []string{"查Q", "CQ"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			str := ""
+			sender.Contents = sender.Contents[0:]
+			sender.handleJdCookies(func(ck *JdCookie) {
+				str = str + fmt.Sprintf("账号：%s (%s) QQ：%d \n", ck.Nickname, ck.PtPin, ck.QQ)
+			})
+			return str
+		},
+	},
 	{
 		Command: []string{"查询", "query"},
 		Handle: func(sender *Sender) interface{} {
