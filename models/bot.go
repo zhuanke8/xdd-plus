@@ -680,11 +680,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						} else {
 							sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个积分，管理员通道", Config.Tyt))
 						}
-						runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-							{Name: "tytpacketId", Value: env[1]},
-						}}, sender)
-						//tytlist[env[1]] = no
-						//go runtyt(sender, env[1])
+						//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+						//	{Name: "tytpacketId", Value: env[1]},
+						//}}, sender)
+						tytlist[env[1]] = no
+						go runtyt(sender, env[1])
 						return fmt.Sprintf("订单编号：%d,推一推结束", no)
 					}
 				}
