@@ -798,13 +798,22 @@ func runtyt(sender *Sender, code string) {
 	}
 }
 
+//随机slice数组
+func randShuffle(slice []JdCookie) {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(slice), func(i, j int) {
+		slice[i], slice[j] = slice[j], slice[i]
+	})
+}
+
 func starttyt(red string) (num int, f bool) {
 	k := 0
 	//cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
 	//	return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), False, True)
 	//})
-	cks := []JdCookie{}
-	db.Where(fmt.Sprintf("%s = 'true' and %s = 'true'", Tyt, Available)).Order("RAND()").Find(&cks)
+	var cks []JdCookie
+	db.Where(fmt.Sprintf("%s = 'true' and %s = 'true'", Tyt, Available)).Find(&cks)
+	randShuffle(cks)
 	logs.Info(len(cks))
 	if len(cks) < 50 {
 		(&JdCookie{}).Push("推一推账号不足  注意补单")
