@@ -69,8 +69,6 @@ func (sender *Sender) IsTG() bool {
 	return strings.Contains(sender.Type, "tg")
 }
 
-var wb = false
-
 func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 	cks := GetJdCookies()
 	a := sender.JoinContens()
@@ -344,6 +342,22 @@ var codeSignals = []CodeSignal{
 				str = str + fmt.Sprintf("账号：%s (%s) QQ：%d \n", ck.Nickname, ck.PtPin, ck.QQ)
 			})
 			return str
+		},
+	},
+	{
+		Command: []string{"通知过期账号", "通知失效账号"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.Reply("好的长官。")
+			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+				return sb.Where(fmt.Sprintf("%s = ? ", Available), False)
+			})
+			for _, ck := range cks {
+				rt := fmt.Sprintf("你的账号【%s】已过期，请对机器人发（登录）重新上车", ck.Nickname)
+				ck.Push(rt)
+				time.Sleep(500)
+			}
+			return nil
 		},
 	},
 	{
