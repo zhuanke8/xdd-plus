@@ -777,6 +777,19 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
+		Command: []string{"重置推一推"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
+				return sb.Where(fmt.Sprintf("%s != ? and %s = ? ORDER BY RAND()", Tyt, Available), True, True)
+			})
+			for _, ck := range cks {
+				ck.Update(Tyt, True)
+			}
+			return nil
+		},
+	},
+	{
 		Command: []string{"unset-env", "ue", "unexport", "de"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
