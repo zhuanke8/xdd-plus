@@ -49,6 +49,7 @@ type Yaml struct {
 	IFC                 bool   `yaml:"IFC"`
 	Later               int    `yaml:"Later"`
 	Jdcurl              string `yaml:"Jdcurl"`
+	Madurl              string `yaml:"Madurl"`
 	GAMEOPEN            bool   `yaml:"GameOpen"`
 	Note                string `yaml:"Note"`
 	VIP                 bool

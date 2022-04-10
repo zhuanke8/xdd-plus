@@ -209,7 +209,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				reg := regexp.MustCompile(regex)
 				if reg.MatchString(msg) {
 					logs.Info("进入验证码阶段")
-					addr := Config.Jdcurl
+					var addr string
+					if len(Config.Jdcurl) > 0 {
+						addr = Config.Jdcurl
+					} else if len(Config.Madurl) > 0 {
+						addr = Config.Madurl
+					}
 					phone := pcodes[sender.UserID]
 					if len(addr) > 0 {
 						//若兰登录
@@ -347,6 +352,65 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								sender.Reply("滑块失败，请网页登录")
 							}
 							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
+						} else if len(Config.Madurl) > 0 {
+							sender.Reply("请耐心等待...")
+							addr := Config.Madurl
+							req := httplib.Post(addr + "/api/SendSMS")
+							req.Header("content-type", "application/json")
+							data, _ := req.Body(`{"Phone":"` + msg + `","qlkey":0}`).Bytes()
+							message, _ := jsonparser.GetString(data, "message")
+							success, _ := jsonparser.GetBoolean(data, "success")
+							status, _ := jsonparser.GetInt(data, "data", "status")
+							if message != "" && status != 666 {
+								sender.Reply(message)
+							}
+							i := 1
+
+							if success {
+								pcodes[sender.UserID] = msg
+								logs.Info(string(sender.UserID))
+								sender.Reply("请输入6位验证码：")
+								break
+							}
+							//{"success":true,"message":"","data":{"ckcount":0,"tabcount":3}}
+							if !success && status == 666 && i < 5 {
+
+								sender.Reply("正在进行验证...")
+								for {
+									req = httplib.Post(addr + "/api/AutoCaptcha")
+									req.Header("content-type", "application/json")
+									data, _ := req.Body(`{"Phone":"` + msg + `"}`).Bytes()
+									message, _ := jsonparser.GetString(data, "message")
+									success, _ := jsonparser.GetBoolean(data, "success")
+									status, _ := jsonparser.GetInt(data, "data", "status")
+									if !success {
+										//s.Reply("滑块验证失败：" + string(data))
+									}
+									if success {
+										pcodes[sender.UserID] = msg
+										sender.Reply("请输入6位验证码：")
+										break
+									}
+									if i > 5 {
+										//pcodes[sender.UserID] = msg
+										//s := Config.Jdcurl + "/Captcha/" + msg
+										//sender.Reply(fmt.Sprintf("请访问网址进行手动验证%s", s))
+										sender.Reply("滑块验证失败,请尝试重新登录")
+										break
+									}
+									if status == 666 {
+										i++
+										sender.Reply(fmt.Sprintf("正在进行第%d次滑块验证...", i))
+										continue
+									}
+									if strings.Contains(message, "上限") {
+										i = 6
+										sender.Reply(message)
+									}
+								}
+							} else {
+								sender.Reply("滑块失败，请网页登录")
+							}
 						}
 					}
 				}
@@ -355,29 +419,32 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			//识别登录
 			{
 				if strings.Contains(msg, "登录") || strings.Contains(msg, "登陆") {
-
+					var tabcount string
+					var addr string
 					if len(Config.Jdcurl) > 0 {
-						var tabcount string
-						addr := Config.Jdcurl
-						if addr == "" {
-							return "若兰很忙，请稍后再试。"
-						}
-						logs.Info(addr + "/api/Config")
-						if addr != "" {
-							data, _ := httplib.Get(addr + "/api/Config").Bytes()
-							logs.Info(string(data) + "返回数据")
-							tabcount, _ = jsonparser.GetString(data, "data", "autocount")
-							if tabcount != "0" {
-								pcodes[sender.UserID] = "true"
-								riskcodes[sender.UserID] = "false"
+						addr = Config.Jdcurl
+					} else if len(Config.Madurl) > 0 {
+						addr = Config.Madurl
+					}
+					if addr == "" {
+						return "暂未对接机器人登录"
+					}
+					logs.Info(addr + "/api/Config")
+					if addr != "" {
+						data, _ := httplib.Get(addr + "/api/Config").Bytes()
+						logs.Info(string(data) + "返回数据")
+						tabcount, _ = jsonparser.GetString(data, "data", "autocount")
+						if tabcount != "0" {
+							pcodes[sender.UserID] = "true"
+							riskcodes[sender.UserID] = "false"
+							if len(Config.Jdcurl) > 0 {
 								sender.Reply("若兰为您服务，请输入11位手机号：")
-							} else {
-								sender.Reply("服务忙，请稍后再试。")
+							} else if len(Config.Madurl) > 0 {
+								sender.Reply("疯兔为您服务，请输入11位手机号：")
 							}
+						} else {
+							sender.Reply("服务忙，请稍后再试。")
 						}
-					} else {
-						//pcodes[sender.UserID] = "true"
-						//sender.Reply("小滴滴")
 					}
 
 					//sender.Reply("服务升级中，目前登录请私聊群主谢谢")
