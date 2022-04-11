@@ -846,20 +846,13 @@ func runtyt(sender *Sender, code string) {
 		time.Sleep(time.Duration(rand.Intn(60)))
 		if tytnum < 3 {
 			tytnum++
-			//runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
-			//	{Name: "tytpacketId", Value: code},
-			//}}, sender)
-			//
-			num, f := starttyt(code)
-			no := tytlist[code]
-			if f {
-				sender.Reply(fmt.Sprintf("订单编号：%d,推一推结束共用:%d个账号", no, num))
-			} else {
-				sender.Reply(fmt.Sprintf("订单编号：%d,推一推异常，请联系群主，或自行检查", no))
-			}
+			runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
+				{Name: "tytpacketId", Value: code},
+			}}, sender)
 
+			no := tytlist[code]
+			sender.Reply(fmt.Sprintf("订单编号：%d,推一推结束", no))
 			tytnum--
-			//sender.Reply("推一推已结束，请检查是否完成，未完成请联系群主")
 			return
 		}
 	}
