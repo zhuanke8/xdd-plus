@@ -752,7 +752,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						//}}, sender)
 						tytlist[env[1]] = no
 						go runtyt(sender, env[1])
-						return fmt.Sprintf("订单编号：%d,推一推结束", no)
+						//return fmt.Sprintf("订单编号：%d,推一推结束", no)
 					}
 				}
 			}
