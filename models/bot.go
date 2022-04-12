@@ -247,7 +247,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								data, _ := req.Body(`{"Phone":"` + phone + `","QQ":"` + strconv.Itoa(sender.UserID) + `","qlkey":0,"Code":"` + msg + `"}`).Bytes()
 								var arkRes ArkRes
 								json.Unmarshal(data, &arkRes)
-								if !arkRes.Success && arkRes.Data.Status == 555 {
+								if arkRes.Data.Status == 555 {
 									//验证
 									sender.Reply("你的账号需要验证才能登陆，请输入你的京东账号绑定的身份证前两位和后四位，最后一位如果是X，请输入大写X\n例如：31122X")
 									//做个标记
