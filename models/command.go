@@ -1188,6 +1188,8 @@ func LimitJdCookie(cks []JdCookie, a string) []JdCookie {
 			for _, x := range xx {
 				if fmt.Sprint(i+1) == x[1] {
 					ncks = append(ncks, cks[i])
+					} else if strconv.Itoa(cks[i].QQ) == x[1] {
+						ncks = append(ncks, cks[i])
 				}
 			}
 
