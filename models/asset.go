@@ -126,7 +126,10 @@ func (ck *JdCookie) Query() string {
 	msgs := []string{
 		fmt.Sprintf("账号昵称：%s", ck.Nickname),
 	}
-	parse, _ := time.Parse("2006-01-02", ck.CreateAt)
+	parse, err := time.Parse("2006-01-02", ck.CreateAt)
+	if err != nil {
+		parse, _ = time.Parse("2006/01/02", ck.CreateAt)
+	}
 	t, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	f := t.Sub(parse).Hours() / 24
 	i, _ := strconv.Atoi(fmt.Sprintf("%1.0f", f))
