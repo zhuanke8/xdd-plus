@@ -18,6 +18,7 @@ func Daemon() {
 		if strings.Index(args[i], "-d") == 0 {
 			continue
 		}
+
 		execArgs = append(execArgs, args[i])
 	}
 	proc := exec.Command(os.Args[0], execArgs...)
