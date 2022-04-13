@@ -223,6 +223,83 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
+    {
+		Command: []string{"自动挖宝"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			cost := sender.Contents[0]
+			url_help :=sender.Contents[1]
+			if len(sender.Contents) >= 3 {
+				sender.Contents = sender.Contents[2:]
+				sender.handleJdCookies(func(ck *JdCookie) {
+				ptk := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey,ck.PtPin)
+				sender.Reply(fmt.Sprintf("已配置从第%s个账号开始自动挖宝",cost))
+				rsp := cmd(fmt.Sprintf(`python3 ./auto_wabao.py "%s" "%s" "%s"`, ptk,cost,url_help), &Sender{})
+				sender.Reply(rsp)
+			})
+			}else{
+			sender.Reply("请配置开始信息")
+			}
+			return nil
+		},
+	},
+	{
+		Command: []string{"助力挖宝"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			cost := sender.Contents[0]
+			url_help :=sender.Contents[1]
+			if len(sender.Contents) >= 3 {
+				sender.Contents = sender.Contents[2:]
+				sender.handleJdCookies(func(ck *JdCookie) {
+				ptk := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey,ck.PtPin)
+				sender.Reply(fmt.Sprintf("已配置从第%s个账号开始自动挖宝",cost))
+				rsp := cmd(fmt.Sprintf(`python3 ./wabao.py "%s" "%s" "%s"`, ptk,cost,url_help), &Sender{})
+				sender.Reply(rsp)
+			})
+			}else{
+			sender.Reply("请配置开始信息")
+			}
+			return nil
+		},
+	},
+	{
+		Command: []string{"我要挖宝"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			cost := sender.Contents[0]
+			if len(sender.Contents) >= 2 {
+				sender.Contents = sender.Contents[1:]
+				sender.handleJdCookies(func(ck *JdCookie) {
+				ptk := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey,ck.PtPin)
+				sender.Reply(fmt.Sprintf("已配置从第%s个账号开始自动挖宝",cost))
+				rsp := cmd(fmt.Sprintf(`python3 ./auto_wabao1.py "%s" "%s"`, ptk,cost), &Sender{})
+				sender.Reply(rsp)
+			})
+			}else{
+			sender.Reply("请配置开始信息")
+			}
+			return nil
+		},
+	},
+	{
+		Command: []string{"助我挖宝"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			cost := sender.Contents[0]
+			url_help :=sender.Contents[1]
+			sender.Reply(url_help)
+			if len(sender.Contents) >= 2 {
+				//sender.Contents = sender.Contents[1:]
+				sender.Reply(fmt.Sprintf("已配置从第%s个账号开始自动挖宝",cost))
+				rsp := cmd(fmt.Sprintf(`python3 ./help_wabao.py "%s" "%s"`, url_help,cost), &Sender{})
+				sender.Reply(rsp)
+			}else{
+			sender.Reply("请配置开始信息")
+			}
+			return nil
+		},
+	},
 
 	{
 		Command: []string{"清零"},
