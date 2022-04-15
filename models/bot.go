@@ -675,34 +675,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		//	}
 		//}
 		//{
-		//	//dyj
-		//	inviterId := regexp.MustCompile(`inviterId=(\S+)(&|&amp;)helpType`).FindStringSubmatch(msg)
-		//	redEnvelopeId := regexp.MustCompile(`redEnvelopeId=(\S+)(&|&amp;)inviterId`).FindStringSubmatch(msg)
-		//	if len(inviterId) > 0 && len(redEnvelopeId) > 0 {
-		//		if !sender.IsAdmin {
-		//			sender.Reply("仅管理员可用")
-		//		} else {
-		//			sender.Reply(fmt.Sprintf("大赢家开始，管理员通道"))
-		//			num, num1, f, f1 := startdyj(inviterId[1], redEnvelopeId[1], 1)
-		//			if f {
-		//				sender.Reply(fmt.Sprintf("助力完成，助力成功：%d个,火爆账号:%d个", num, num1))
-		//				if f1 {
-		//					sender.Reply("满足提现条件，开始自动提现助力")
-		//					n, i, _, f12 := startdyj(inviterId[1], redEnvelopeId[1], 2)
-		//					if f12 {
-		//						sender.Reply(fmt.Sprintf("提现助力完成，助力成功：%d个,火爆账号:%d个", n, i))
-		//					}
-		//				}
-		//			} else {
-		//				sender.Reply(fmt.Sprintf("你已经黑IP拉！，助力成功：%d个,火爆账号:%d个", num, num1))
-		//			}
-		//
-		//		}
-		//		return nil
-		//	}
-		//
-		//}
-		//{
 		//	//k1k
 		//	ss := regexp.MustCompile(`launchid=(\S+)(&|&amp;)ptag`).FindStringSubmatch(msg)
 		//	if len(ss) > 0 {
