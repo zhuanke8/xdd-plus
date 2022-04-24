@@ -280,6 +280,7 @@ func (c *Container) read() error {
 			err = json.Unmarshal(data, &a)
 			if err != nil {
 				c.Available = false
+				logs.Info(c.Address + "地址错误")
 				return err
 			}
 			c.Delete = []string{}
