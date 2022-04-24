@@ -466,6 +466,7 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 				return data, nil
 			} else {
 				logs.Warn(string(data))
+				logs.Info(c.Address + "异常")
 				if i >= 5 {
 					return nil, errors.New("异常")
 				}
