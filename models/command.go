@@ -425,6 +425,28 @@ var codeSignals = []CodeSignal{
 			return str
 		},
 	},
+
+    {
+			Command: []string{"备注", "bz"},
+			Handle: func(sender *Sender) interface{} {
+				if len(sender.Contents) > 1 {
+					note := sender.Contents[0]
+					sender.Contents = sender.Contents[1:]
+					str := sender.Contents[0]
+					number, err := strconv.Atoi(str)
+					count := 0
+					sender.handleJdCookies(func(ck *JdCookie) {
+						count++
+						if (err == nil && number == count) || ck.PtPin == str || sender.IsAdmin {
+							ck.Update("Note", note)
+							sender.Reply(fmt.Sprintf("已设置账号%s(%s)的备注为%s。", ck.PtPin, ck.Nickname, note))
+						}
+					})
+				}
+				return nil
+			},
+		},
+        
     {
 			Command: []string{"备注", "bz"},
 			Handle: func(sender *Sender) interface{} {
