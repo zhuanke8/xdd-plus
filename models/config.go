@@ -159,7 +159,5 @@ func initConfig() {
 	} else {
 		Config.OpenFan = true
 	}
-	if Config.OpenQQ != "" {
-		Config.QQID = 0
-	}
+
 }

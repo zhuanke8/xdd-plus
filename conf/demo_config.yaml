@@ -39,7 +39,7 @@ qquid:
 qqgid:
 qbot_public_mode: true
 default_priority:
-qbot_config_file:./conf/qbot.conf
+qbot_config_file: ./conf/qbot.conf
 no_ghproxy: true
 daily_asset_push_cron:
 repos:

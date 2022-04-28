@@ -85,8 +85,10 @@ func main() {
 		(&models.JdCookie{}).Push(fmt.Sprintf("小滴滴已启动，版本号:%s", models.Config.Version))
 
 	}()
-	if models.Config.QQID != 0 || models.Config.QQGroupID != 0 {
+	if models.Config.QQID != 0 && models.Config.OpenQQ == "" {
 		go qbot.Main()
+	} else {
+		logs.Info("不启动QQ")
 	}
 	web.Run()
 }
