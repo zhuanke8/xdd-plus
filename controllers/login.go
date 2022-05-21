@@ -51,36 +51,6 @@ var JdCookieRunners sync.Map
 var jdua = models.GetUserAgent
 var flag = false
 
-func (c *LoginController) GetUserInfo() {
-
-	pin := c.GetString("pin")
-	cookie, err := models.GetJdCookie(pin)
-	if err != nil {
-		logs.Error(err)
-		result := Result{
-			Data:    "null",
-			Code:    1,
-			Message: "查无匹配的pin",
-		}
-		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-		if errs != nil {
-			fmt.Println(errs.Error())
-		}
-		c.Ctx.WriteString(string(jsons))
-	} else {
-		result := Result{
-			Data:    cookie.Query(),
-			Code:    0,
-			Message: "查询成功",
-		}
-		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-		if errs != nil {
-			fmt.Println(errs.Error())
-		}
-		c.Ctx.WriteString(string(jsons))
-	}
-}
-
 type Cookie struct {
 	ck string
 }
