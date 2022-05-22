@@ -8,8 +8,8 @@ var Admin = `<html lang="zh-cn">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>账号管理</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/cdle/static/layui/css/layui.css">
-        <script src="https://cdn.jsdelivr.net/gh/cdle/static/layui/layui.all.js"></script>
+        <link type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+        <script src="https://www.layuicdn.com/auto/layui.js" e="layui.all"></script>
     </head>
     
     <body>
