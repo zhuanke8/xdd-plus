@@ -9,7 +9,7 @@ var Admin = `<html lang="zh-cn">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>账号管理</title>
         <link type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
-        <script src="https://www.layuicdn.com/auto/layui.js" e="layui.all"></script>
+<script src="https://www.layuicdn.com/auto/layui.js" v="layui" e="layui"></script>
     </head>
     
     <body>
